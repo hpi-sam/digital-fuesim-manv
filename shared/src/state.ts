@@ -55,6 +55,7 @@ import { defaultPatientCategories } from './data/default-state/patient-templates
 import { defaultVehicleTemplates } from './data/default-state/vehicle-templates';
 import { defaultMapImagesTemplates } from './data/default-state/map-images-templates';
 import type { LogEntry } from './models/log-entry';
+import { TreatmentAssignment } from './store/action-reducers/exercise';
 
 export class ExerciseState {
     @IsUUID(4, uuidValidationOptions)
@@ -152,6 +153,10 @@ export class ExerciseState {
     @Type(() => ExerciseConfiguration)
     public readonly configuration = ExerciseConfiguration.create();
 
+    @IsInt()
+    @Min(0)
+    public readonly patientCounter: number = 0;
+
     /**
      * The log entries generated for the statistics.
      * This must not be defined on a normal state,
@@ -159,6 +164,9 @@ export class ExerciseState {
      */
     @Equals(undefined)
     public logEntries?: LogEntry[];
+
+    @Equals(undefined)
+    public previousTreatmentAssignment?: TreatmentAssignment;
 
     /**
      * @deprecated Use {@link create} instead.
@@ -174,5 +182,5 @@ export class ExerciseState {
      *
      * This number MUST be increased every time a change to any object (that is part of the state or the state itself) is made in a way that there may be states valid before that are no longer valid.
      */
-    static readonly currentStateVersion = 35;
+    static readonly currentStateVersion = 37;
 }

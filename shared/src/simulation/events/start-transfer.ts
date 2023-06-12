@@ -1,16 +1,16 @@
 import { IsOptional, IsString, IsUUID } from 'class-validator';
 import { Type } from 'class-transformer';
-import {
-    ExerciseOccupation,
-    getCreate,
-    occupationTypeOptions,
-} from '../../models/utils';
 import { UUID, uuidValidationOptions } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import {
     TransferDestination,
     transferDestinationTypeAllowedValues,
 } from '../utils/transfer-destination';
+import {
+    ExerciseOccupation,
+    occupationTypeOptions,
+} from '../../models/utils/occupations/exercise-occupation';
+import { getCreate } from '../../models/utils/get-create';
 import type { SimulationEvent } from './simulation-event';
 
 export class StartTransferEvent implements SimulationEvent {
@@ -18,7 +18,7 @@ export class StartTransferEvent implements SimulationEvent {
     readonly type = 'startTransferEvent';
 
     @IsUUID(4, uuidValidationOptions)
-    readonly vehicleId!: UUID;
+    readonly vehicleId: UUID;
 
     @IsLiteralUnion(transferDestinationTypeAllowedValues)
     readonly transferDestinationType: TransferDestination;

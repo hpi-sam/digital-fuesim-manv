@@ -16,7 +16,6 @@ import {
     getRgbaColor,
     rgbColorPalette,
 } from 'src/app/shared/functions/colors';
-import { formatDuration } from 'src/app/shared/functions/format-duration';
 import type { AppState } from 'src/app/state/app.state';
 import {
     selectSimulatedRegions,
@@ -87,9 +86,7 @@ export class ExerciseStatisticsModalComponent implements OnInit {
                         backgroundColor,
                     })
                 ),
-                labels: statistics.map(({ exerciseTime }) =>
-                    formatDuration(exerciseTime)
-                ),
+                labels: statistics.map(({ exerciseTime }) => exerciseTime),
             }))
         );
 
@@ -131,9 +128,7 @@ export class ExerciseStatisticsModalComponent implements OnInit {
                         ),
                         backgroundColor: this.getColor(index),
                     })),
-                    labels: statistics.map(({ exerciseTime }) =>
-                        formatDuration(exerciseTime)
-                    ),
+                    labels: statistics.map(({ exerciseTime }) => exerciseTime),
                 };
             })
         );
@@ -181,9 +176,7 @@ export class ExerciseStatisticsModalComponent implements OnInit {
                         backgroundColor: color,
                     })
                 ),
-                labels: statistics.map(({ exerciseTime }) =>
-                    formatDuration(exerciseTime)
-                ),
+                labels: statistics.map(({ exerciseTime }) => exerciseTime),
             }))
         );
 

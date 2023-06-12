@@ -3,10 +3,7 @@ import type { Migration } from './migration-functions';
 
 export const renameIncorrectPatientImages12: Migration = {
     action: (_intermediaryState, action) => {
-        if (
-            (action as { type: string } | null)?.type ===
-            '[Patient] Add patient'
-        ) {
+        if ((action as { type: string }).type === '[Patient] Add patient') {
             migrateImageProperties(
                 (action as { patient: { image: { url: string } } }).patient
                     .image

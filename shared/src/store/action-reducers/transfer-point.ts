@@ -22,6 +22,10 @@ import { ReducerError } from '../reducer-error';
 import { letElementArrive } from './transfer';
 import { calculateDistance } from './utils/calculate-distance';
 import { getElement } from './utils/get-element';
+import {
+    logTransferPointConnection,
+    logTransferPointConnectionRemoved,
+} from './utils/log';
 
 // TODO check: type "TransferPoint" the T is big, in other files, the second word starts with a small letter
 
@@ -200,6 +204,14 @@ export namespace TransferPointActionReducers {
                 transferPoint2.reachableTransferPoints[transferPointId1] = {
                     duration: _duration,
                 };
+
+                logTransferPointConnection(
+                    draftState,
+                    transferPointId1,
+                    transferPointId2,
+                    'transferPoint'
+                );
+
                 return draftState;
             },
             rights: 'trainer',
@@ -227,6 +239,14 @@ export namespace TransferPointActionReducers {
                 );
                 delete transferPoint1.reachableTransferPoints[transferPointId2];
                 delete transferPoint2.reachableTransferPoints[transferPointId1];
+
+                logTransferPointConnectionRemoved(
+                    draftState,
+                    transferPointId1,
+                    transferPointId2,
+                    'transferPoint'
+                );
+
                 return draftState;
             },
             rights: 'trainer',
@@ -306,6 +326,14 @@ export namespace TransferPointActionReducers {
                 transferPointId
             );
             transferPoint.reachableHospitals[hospitalId] = true;
+
+            logTransferPointConnection(
+                draftState,
+                transferPointId,
+                hospitalId,
+                'hospital'
+            );
+
             return draftState;
         },
         rights: 'trainer',
@@ -322,6 +350,14 @@ export namespace TransferPointActionReducers {
                 transferPointId
             );
             delete transferPoint.reachableHospitals[hospitalId];
+
+            logTransferPointConnectionRemoved(
+                draftState,
+                transferPointId,
+                hospitalId,
+                'hospital'
+            );
+
             return draftState;
         },
         rights: 'trainer',

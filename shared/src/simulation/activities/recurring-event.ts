@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer';
 import { IsInt, IsUUID, Min, ValidateNested } from 'class-validator';
-import { getCreate } from '../../models/utils';
+import { getCreate } from '../../models/utils/get-create';
 import { UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import {

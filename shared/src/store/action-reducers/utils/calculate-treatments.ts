@@ -4,7 +4,7 @@ import {
     currentCoordinatesOf,
     isNotOnMap,
     isInSimulatedRegion,
-} from '../../../models/utils';
+} from '../../../models/utils/position/position-helpers';
 import { SpatialTree } from '../../../models/utils/spatial-tree';
 import type { ExerciseState } from '../../../state';
 import { maxTreatmentRange } from '../../../state-helpers/max-treatment-range';
@@ -146,6 +146,8 @@ export function removeTreatmentsOfElement(
             delete patient.assignedPersonnelIds[personnel.id];
         }
         personnel.assignedPatientIds = {};
+        // Safeguard, if the function signature changes
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     } else if (element.type === 'material') {
         const material = element;
         // This material doesn't treat any patients anymore

@@ -109,12 +109,7 @@ export abstract class MoveableFeatureManager<
     getFeatureFromElement(
         element: ManagedElement
     ): Feature<FeatureType> | undefined {
-        return (
-            (this.layer
-                .getSource()!
-                .getFeatureById(element.id) as Feature<FeatureType> | null) ??
-            undefined
-        );
+        return this.layer.getSource()!.getFeatureById(element.id) ?? undefined;
     }
 
     protected addMarking(

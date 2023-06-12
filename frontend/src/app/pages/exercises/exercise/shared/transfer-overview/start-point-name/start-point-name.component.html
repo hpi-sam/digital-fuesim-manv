@@ -1,5 +1,13 @@
 <ng-container *ngIf="startPoint.type === 'alarmGroupStartPoint'">
-    {{ startPoint.alarmGroupName }}
+    <ng-container
+        *ngIf="
+            alarmGroupName$ | async as alarmGroupName;
+            else alarmGroupDeleted
+        "
+    >
+        {{ alarmGroupName }}
+    </ng-container>
+    <ng-template #alarmGroupDeleted>Gelöschte Alarmgruppe</ng-template>
 </ng-container>
 <app-transfer-point-name
     *ngIf="startPoint.type === 'transferStartPoint'"

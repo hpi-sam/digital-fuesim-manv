@@ -1,10 +1,4 @@
 import { IsInt, IsOptional, IsUUID, Min } from 'class-validator';
-import type { PatientStatus, PersonnelType } from '../../models/utils';
-import {
-    PersonnelResource,
-    getCreate,
-    isInSpecificSimulatedRegion,
-} from '../../models/utils';
 import type { ExerciseState } from '../../state';
 import type { CatersFor } from '../../store/action-reducers/utils/calculate-treatments';
 import {
@@ -39,6 +33,12 @@ import {
     scaleResourceDescription,
     subtractResourceDescription,
 } from '../../models/utils/resource-description';
+import { logTreatmentStatusChangedInSimulatedRegion } from '../../store/action-reducers/utils/log';
+import { getCreate } from '../../models/utils/get-create';
+import { isInSpecificSimulatedRegion } from '../../models/utils/position/position-helpers';
+import type { PersonnelType } from '../../models/utils/personnel-type';
+import { PersonnelResource } from '../../models/utils/rescue-resource';
+import type { PatientStatus } from '../../models/utils/patient-status';
 import type {
     SimulationActivity,
     SimulationActivityState,
@@ -106,7 +106,7 @@ export const reassignTreatmentsActivity: SimulationActivity<ReassignTreatmentsAc
             const leaderId = (
                 simulatedRegion.behaviors.find(
                     (behavior) => behavior.type === 'assignLeaderBehavior'
-                ) as AssignLeaderBehaviorState
+                ) as AssignLeaderBehaviorState | undefined
             )?.leaderId;
 
             let leaderIndex: number;
@@ -117,11 +117,17 @@ export const reassignTreatmentsActivity: SimulationActivity<ReassignTreatmentsAc
                 )) === -1
             ) {
                 // No leader is present in the region.
-                if (progress !== 'noTreatment')
+                if (progress !== 'noTreatment') {
                     sendSimulationEvent(
                         simulatedRegion,
                         TreatmentProgressChangedEvent.create('noTreatment')
                     );
+                    logTreatmentStatusChangedInSimulatedRegion(
+                        draftState,
+                        'noTreatment',
+                        simulatedRegion.id
+                    );
+                }
                 terminate();
                 return;
             }
@@ -147,6 +153,11 @@ export const reassignTreatmentsActivity: SimulationActivity<ReassignTreatmentsAc
                         simulatedRegion,
                         TreatmentProgressChangedEvent.create('unknown')
                     );
+                    logTreatmentStatusChangedInSimulatedRegion(
+                        draftState,
+                        'unknown',
+                        simulatedRegion.id
+                    );
                     break;
                 }
                 case 'unknown': {
@@ -155,6 +166,11 @@ export const reassignTreatmentsActivity: SimulationActivity<ReassignTreatmentsAc
                         sendSimulationEvent(
                             simulatedRegion,
                             TreatmentProgressChangedEvent.create('counted')
+                        );
+                        logTreatmentStatusChangedInSimulatedRegion(
+                            draftState,
+                            'counted',
+                            simulatedRegion.id
                         );
                     }
                     allowTerminate = finished;
@@ -177,6 +193,11 @@ export const reassignTreatmentsActivity: SimulationActivity<ReassignTreatmentsAc
                                 simulatedRegion,
                                 TreatmentProgressChangedEvent.create('counted')
                             );
+                            logTreatmentStatusChangedInSimulatedRegion(
+                                draftState,
+                                'counted',
+                                simulatedRegion.id
+                            );
                         }
                         break;
                     }
@@ -194,12 +215,22 @@ export const reassignTreatmentsActivity: SimulationActivity<ReassignTreatmentsAc
                             simulatedRegion,
                             TreatmentProgressChangedEvent.create('secured')
                         );
+                        logTreatmentStatusChangedInSimulatedRegion(
+                            draftState,
+                            'secured',
+                            simulatedRegion.id
+                        );
                         break;
                     }
                     if (!secured && progress !== 'triaged') {
                         sendSimulationEvent(
                             simulatedRegion,
                             TreatmentProgressChangedEvent.create('triaged')
+                        );
+                        logTreatmentStatusChangedInSimulatedRegion(
+                            draftState,
+                            'triaged',
+                            simulatedRegion.id
                         );
                         break;
                     }
@@ -994,7 +1025,7 @@ function applySubstitutions(
             );
             if (substitutionIndex === -1) break;
             const substitution = substitutions.splice(substitutionIndex, 1)[0]!;
-            stillMissing[substitution!.to] -= 1;
+            stillMissing[substitution.to] -= 1;
 
             stillMissing = addResourceDescription(
                 stillMissing,

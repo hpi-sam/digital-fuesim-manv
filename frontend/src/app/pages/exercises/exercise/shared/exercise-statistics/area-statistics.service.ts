@@ -29,7 +29,9 @@ export class AreaStatisticsService {
                                     ? statisticEntry.exercise
                                     : areaSpec.type === 'viewport'
                                     ? statisticEntry.viewports[areaSpec.id]
-                                    : areaSpec.type === 'simulatedRegion'
+                                    : // Safeguard for when new types are added
+                                    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+                                    areaSpec.type === 'simulatedRegion'
                                     ? statisticEntry.simulatedRegions[
                                           areaSpec.id
                                       ]

@@ -337,9 +337,7 @@ module.exports = {
         '@typescript-eslint/no-require-imports': 'warn',
         '@typescript-eslint/no-type-alias': 'off',
         '@typescript-eslint/no-unnecessary-boolean-literal-compare': 'warn',
-        // Disabled because of incorrect typings from libraries and
-        // checks after type assertions without `undefined` in the type
-        '@typescript-eslint/no-unnecessary-condition': 'off',
+        '@typescript-eslint/no-unnecessary-condition': 'warn',
         '@typescript-eslint/no-unnecessary-qualifier': 'warn',
         '@typescript-eslint/no-unnecessary-type-arguments': 'warn',
         '@typescript-eslint/no-unnecessary-type-constraint': 'warn',
@@ -399,6 +397,6 @@ module.exports = {
         ],
         '@typescript-eslint/no-misused-new': 'warn',
         '@typescript-eslint/no-non-null-assertion': 'off',
-        '@typescript-eslint/no-unnecessary-type-assertion': 'off',
+        '@typescript-eslint/no-unnecessary-type-assertion': 'warn',
     },
 };

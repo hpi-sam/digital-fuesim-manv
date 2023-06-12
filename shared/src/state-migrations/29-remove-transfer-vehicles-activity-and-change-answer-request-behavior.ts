@@ -11,6 +11,8 @@ export const removeTransferVehiclesActivityAndChangeAnswerRequestBehavior29: Mig
                     behaviorState: BehaviorStateStub;
                 };
                 if (
+                    // Disabled due to incomplete typings in the migration
+                    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                     typedAction.behaviorState.type === 'answerRequestsBehavior'
                 ) {
                     typedAction.behaviorState.receivedEvents = [];
@@ -71,6 +73,8 @@ function migrateSimulatedRegion(simulatedRegion: SimulatedRegionStub) {
     });
 
     simulatedRegion.behaviors.forEach((behavior) => {
+        // Disabled due to incomplete typings in the migration
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (behavior.type === 'answerRequestsBehavior') {
             behavior.receivedEvents = [];
             behavior.requestsHandled = 0;

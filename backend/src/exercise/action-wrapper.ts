@@ -90,7 +90,7 @@ export class ActionWrapper extends NormalType<
         );
     }
 
-    public readonly index!: number;
+    public readonly index: number;
 
     /**
      * @param emitterId `null` iff the emitter was the server, the client id otherwise
