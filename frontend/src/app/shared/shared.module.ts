@@ -47,6 +47,7 @@ import { GeographicCoordinateDirective } from './validation/geographic-coordinat
 import { SimulatedRegionNameComponent } from './components/simulated-region-name/simulated-region-name.component';
 import { SearchableDropdownComponent } from './components/searchable-dropdown/searchable-dropdown.component';
 import { PatientIdentifierComponent } from './components/patient-identifier/patient-identifier.component';
+import { HotkeysService } from './services/hotkeys.service';
 
 @NgModule({
     declarations: [
@@ -137,5 +138,6 @@ import { PatientIdentifierComponent } from './components/patient-identifier/pati
         SearchableDropdownComponent,
         PatientIdentifierComponent,
     ],
+    providers: [HotkeysService],
 })
 export class SharedModule {}
