@@ -2,9 +2,14 @@ import { Injectable } from '@angular/core';
 import type { UUID } from 'digital-fuesim-manv-shared';
 import { uuid } from 'digital-fuesim-manv-shared';
 import { Subject } from 'rxjs';
-// import * as x from '@rwh/keystrokes';
+import {
+    bindKey,
+    bindKeyCombo,
+    unbindKey,
+    unbindKeyCombo,
+} from '@rwh/keystrokes';
 
-class Hotkey {
+export class Hotkey {
     public readonly enabled = new Subject<boolean>();
 
     constructor(
@@ -23,14 +28,28 @@ class Hotkey {
     }
 }
 
-class HotkeyLayer {
-    public readonly id = uuid();
+export class HotkeyLayer {
+    public readonly id: UUID = uuid();
     public readonly hotkeys: Hotkey[] = [];
 
-    constructor(private readonly service: HotkeysService) {}
+    constructor(
+        private readonly service: HotkeysService,
+        public readonly disableAll: boolean
+    ) {}
 
-    public addHotkey() {
-        // Make sure people don't add directly to the array!
+    public addHotkey(hotkey: Hotkey) {
+        this.hotkeys.push(hotkey);
+
+        this.service.recomputeHandlers();
+    }
+
+    public removeHotkey(keys: string) {
+        const index = this.hotkeys.findIndex((hotkey) => hotkey.keys === keys);
+
+        if (index !== -1) {
+            this.hotkeys.splice(index, 1);
+        }
+
         this.service.recomputeHandlers();
     }
 }
@@ -40,10 +59,10 @@ class HotkeyLayer {
 })
 export class HotkeysService {
     private readonly layers: HotkeyLayer[] = [];
-    constructor() {}
+    private registeredHotkeys: { [key: string]: boolean } = {};
 
-    public createLayer() {
-        const layer = new HotkeyLayer(this);
+    public createLayer(disableAll: boolean = false) {
+        const layer = new HotkeyLayer(this, disableAll);
         this.layers.push(layer);
 
         return layer;
@@ -59,6 +78,36 @@ export class HotkeysService {
     }
 
     public recomputeHandlers() {
-        //
+        Object.entries(this.registeredHotkeys).forEach(([hotkey, isCombo]) => {
+            if (isCombo) {
+                unbindKeyCombo(hotkey);
+            } else {
+                unbindKey(hotkey);
+            }
+        });
+        this.registeredHotkeys = {};
+
+        let disableAll = false;
+
+        [...this.layers].reverse().forEach((layer) => {
+            layer.hotkeys.forEach((hotkey) => {
+                if (!(hotkey.keys in this.registeredHotkeys) && !disableAll) {
+                    if (hotkey.isCombo) {
+                        bindKeyCombo(hotkey.keys, hotkey.callback);
+                    } else {
+                        bindKey(hotkey.keys, hotkey.callback);
+                    }
+
+                    this.registeredHotkeys[hotkey.keys] = hotkey.isCombo;
+                    hotkey.enable();
+                } else {
+                    hotkey.disable();
+                }
+            });
+
+            if (layer.disableAll) {
+                disableAll = true;
+            }
+        });
     }
 }

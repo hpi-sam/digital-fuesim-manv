@@ -1,28 +1,26 @@
-import type { AfterViewInit, OnDestroy, OnInit } from '@angular/core';
-import { Component, Input, ViewChild, ElementRef } from '@angular/core';
+import type { OnDestroy, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { UUID } from 'digital-fuesim-manv-shared';
 import { Subject } from 'rxjs';
-import { HotkeysService } from 'src/app/shared/services/hotkeys.service';
+import type { HotkeyLayer } from 'src/app/shared/services/hotkeys.service';
+import {
+    Hotkey,
+    HotkeysService,
+} from 'src/app/shared/services/hotkeys.service';
 
 @Component({
     selector: 'app-signaller-modal',
     templateUrl: './signaller-modal.component.html',
     styleUrls: ['./signaller-modal.component.scss'],
 })
-export class SignallerModalComponent
-    implements OnInit, AfterViewInit, OnDestroy
-{
+export class SignallerModalComponent implements OnInit, OnDestroy {
     private readonly destroy$ = new Subject<void>();
+    private baseLayer!: HotkeyLayer;
+    private additionalLayer: HotkeyLayer | null = null;
 
     @Input()
     currentSimulatedRegionId!: UUID;
-
-    @ViewChild('modal')
-    private readonly modalRef!: ElementRef;
-
-    @ViewChild('button')
-    private readonly buttonRef!: ElementRef;
 
     constructor(
         private readonly activeModal: NgbActiveModal,
@@ -30,18 +28,17 @@ export class SignallerModalComponent
     ) {}
 
     ngOnInit() {
-        console.log('dummy');
-    }
-
-    ngAfterViewInit() {
-        // this.hotkeys
-        //     .addShortcut({
-        //         keys: 'F1',
-        //         element: this.modalRef.nativeElement,
-        //     })
-        //     .pipe(takeUntil(this.destroy$))
-        //     .subscribe((e) => console.log('F1', e));
-        console.log('dummy');
+        this.baseLayer = this.hotkeys.createLayer();
+        this.baseLayer.addHotkey(
+            new Hotkey('f1', false, () => {
+                console.log('Base F1');
+            })
+        );
+        this.baseLayer.addHotkey(
+            new Hotkey('f2', false, () => {
+                console.log('Base F2');
+            })
+        );
     }
 
     ngOnDestroy() {
@@ -50,9 +47,21 @@ export class SignallerModalComponent
 
     public close() {
         this.activeModal.close();
-        // this.hotkeys
-        //     .addShortcut({ keys: 'F1', element: this.buttonRef.nativeElement })
-        //     .pipe(takeUntil(this.destroy$))
-        //     .subscribe((e) => console.log('New F1', e));
+    }
+
+    public openLayer() {
+        if (!this.additionalLayer) {
+            this.additionalLayer = this.hotkeys.createLayer(true);
+            this.additionalLayer.addHotkey(
+                new Hotkey('f1', false, () => console.log('Additional F1'))
+            );
+        }
+    }
+
+    public closeLayer() {
+        if (this.additionalLayer) {
+            this.hotkeys.removeLayer(this.additionalLayer);
+            this.additionalLayer = null;
+        }
     }
 }
