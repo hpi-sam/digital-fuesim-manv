@@ -48,6 +48,7 @@ import { SimulatedRegionNameComponent } from './components/simulated-region-name
 import { SearchableDropdownComponent } from './components/searchable-dropdown/searchable-dropdown.component';
 import { PatientIdentifierComponent } from './components/patient-identifier/patient-identifier.component';
 import { HotkeysService } from './services/hotkeys.service';
+import { HotkeyIndicatorComponent } from './components/hotkey-indicator/hotkey-indicator.component';
 
 @NgModule({
     declarations: [
@@ -91,6 +92,7 @@ import { HotkeysService } from './services/hotkeys.service';
         GeographicCoordinateDirective,
         SearchableDropdownComponent,
         PatientIdentifierComponent,
+        HotkeyIndicatorComponent,
     ],
     imports: [
         CommonModule,
@@ -137,6 +139,7 @@ import { HotkeysService } from './services/hotkeys.service';
         GeographicCoordinateDirective,
         SearchableDropdownComponent,
         PatientIdentifierComponent,
+        HotkeyIndicatorComponent,
     ],
     providers: [HotkeysService],
 })
