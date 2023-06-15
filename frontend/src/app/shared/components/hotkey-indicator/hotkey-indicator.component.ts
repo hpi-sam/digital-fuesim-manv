@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { Hotkey } from '../../services/hotkeys.service';
+import type { Hotkey } from '../../services/hotkeys.service';
 
 @Component({
     selector: 'app-hotkey-indicator',
@@ -7,5 +7,6 @@ import { Hotkey } from '../../services/hotkeys.service';
     styleUrls: ['./hotkey-indicator.component.scss'],
 })
 export class HotkeyIndicatorComponent {
-    @Input() hotkey!: Hotkey;
+    @Input() hotkey: Hotkey | null = null;
+    @Input() keys: string | null = null;
 }

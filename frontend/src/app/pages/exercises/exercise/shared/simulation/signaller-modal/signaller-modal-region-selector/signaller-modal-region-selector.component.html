@@ -1,0 +1,35 @@
+<div class="flex-shrink-1 d-flex flex-row">
+    <div class="flex-shrink-1">
+        <button
+            class="btn btn-primary h-100 text-nowrap me-2"
+            [ngbPopover]="selectRegionTemplate"
+            autoClose="outside"
+            #selectRegionPopover="ngbPopover"
+        >
+            <i class="bi bi-arrow-left-right me-1"></i>
+            <app-hotkey-indicator [hotkey]="switchSimulatedRegionHotkey" />
+        </button>
+
+        <ng-template #selectRegionTemplate>
+            <app-searchable-dropdown
+                [options]="(simulatedRegionNames$ | async)!"
+                (selected)="selectRegion($event); selectRegionPopover.close()"
+            />
+        </ng-template>
+    </div>
+    <ul
+        class="flex-grow-1 flex-shrink-1 list-group list-group-horizontal overflow-auto"
+    >
+        <button
+            *ngFor="let simulatedRegion of simulatedRegionNames$ | async"
+            class="list-group-item list-group-item-action w-auto"
+            [class.active]="
+                simulatedRegion.identifier ===
+                (selectRegionService.selectedSimulatedRegion$ | async)
+            "
+            (click)="selectRegion(simulatedRegion.identifier)"
+        >
+            {{ simulatedRegion.name }}
+        </button>
+    </ul>
+</div>

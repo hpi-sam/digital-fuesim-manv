@@ -7,6 +7,7 @@ import {
     NgbCollapseModule,
     NgbDropdownModule,
     NgbNavModule,
+    NgbPopoverModule,
     NgbProgressbarModule,
     NgbTooltipModule,
 } from '@ng-bootstrap/ng-bootstrap';
@@ -61,6 +62,8 @@ import { ManagePatientTransportToHospitalManagedRegionsTableComponent } from './
 import { ManagePatientTransportToHospitalVehiclesForCategoriesEditorComponent } from './trainer-modal/tabs/behavior-tab/behaviors/manage-patient-transport-to-hospital/shared/manage-patient-transport-to-hospital-vehicles-for-categories-editor/manage-patient-transport-to-hospital-vehicles-for-categories-editor.component';
 import { ManagePatientTransportToHospitalSettingsEditorComponent } from './trainer-modal/tabs/behavior-tab/behaviors/manage-patient-transport-to-hospital/shared/manage-patient-transport-to-hospital-settings-editor/manage-patient-transport-to-hospital-settings-editor.component';
 import { SignallerModalComponent } from './signaller-modal/signaller-modal/signaller-modal.component';
+import { SignallerModalRegionSelectorComponent } from './signaller-modal/signaller-modal-region-selector/signaller-modal-region-selector.component';
+import { SelectSignallerRegionService } from './signaller-modal/select-signaller-region.service';
 
 @NgModule({
     declarations: [
@@ -112,6 +115,7 @@ import { SignallerModalComponent } from './signaller-modal/signaller-modal/signa
         ManagePatientTransportToHospitalVehiclesForCategoriesEditorComponent,
         ManagePatientTransportToHospitalSettingsEditorComponent,
         SignallerModalComponent,
+        SignallerModalRegionSelectorComponent,
     ],
     imports: [
         FormsModule,
@@ -122,10 +126,15 @@ import { SignallerModalComponent } from './signaller-modal/signaller-modal/signa
         NgbDropdownModule,
         NgbProgressbarModule,
         NgbTooltipModule,
+        NgbPopoverModule,
         DragDropModule,
         TransferPointOverviewModule,
     ],
     exports: [SimulatedRegionOverviewGeneralComponent],
-    providers: [SelectPatientService, StartTransferService],
+    providers: [
+        SelectPatientService,
+        StartTransferService,
+        SelectSignallerRegionService,
+    ],
 })
 export class SimulationModalsModule {}
