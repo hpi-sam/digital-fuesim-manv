@@ -6,7 +6,7 @@ import {
     HotkeysService,
 } from 'src/app/shared/services/hotkeys.service';
 import type { Observable } from 'rxjs';
-import { map } from 'rxjs';
+import { map, Subject, takeUntil } from 'rxjs';
 import type { UUID } from 'digital-fuesim-manv-shared';
 import { Store } from '@ngrx/store';
 import type { AppState } from 'src/app/state/app.state';
@@ -33,9 +33,15 @@ export class SignallerModalRegionSelectorComponent
 
     @ViewChild(NgbPopover, { static: true }) popover!: NgbPopover;
 
-    switchSimulatedRegionHotkey = new Hotkey('F2', false, () => {
-        this.popover.open();
-    });
+    public readonly switchSimulatedRegionHotkey = new Hotkey(
+        'F2',
+        false,
+        () => {
+            this.popover.open();
+        }
+    );
+
+    private readonly destroy$ = new Subject<void>();
 
     constructor(
         private readonly store: Store<AppState>,
@@ -61,10 +67,23 @@ export class SignallerModalRegionSelectorComponent
 
         this.baseLayer = this.hotkeys.createLayer();
         this.baseLayer.addHotkey(this.switchSimulatedRegionHotkey);
+
+        this.selectRegionService.selectedSimulatedRegion$
+            .pipe(takeUntil(this.destroy$))
+            .subscribe((id) => {
+                document
+                    .querySelector(
+                        `#signaller-modal-simulated-region-tab-${id}`
+                    )
+                    ?.scrollIntoView({
+                        behavior: 'smooth',
+                    });
+            });
     }
 
     ngOnDestroy() {
         this.hotkeys.removeLayer(this.baseLayer);
+        this.destroy$.next();
     }
 
     public selectRegion(id: UUID) {
