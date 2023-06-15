@@ -37,9 +37,12 @@
         <app-radiogram-card
             *ngFor="
                 let radiogram of visibleRadiograms$ | async;
+                first as first;
                 trackBy: 'id' | appTrackByProperty: (visibleRadiograms$ | async)
             "
             [radiogramId]="radiogram.id"
+            [first]="first"
+            [shownInSignallerModal]="shownInSignallerModal"
         ></app-radiogram-card>
         <ng-template #noRadiograms>
             <div

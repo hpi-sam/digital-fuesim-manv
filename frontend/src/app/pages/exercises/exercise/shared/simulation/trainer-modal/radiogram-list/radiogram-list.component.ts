@@ -1,5 +1,5 @@
 import type { OnInit } from '@angular/core';
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type { ExerciseRadiogram, UUID } from 'digital-fuesim-manv-shared';
 import {
@@ -25,6 +25,8 @@ import { RadiogramListService } from './radiogram-list.service';
     standalone: false,
 })
 export class RadiogramListComponent implements OnInit {
+    @Input() shownInSignallerModal = false;
+
     ownClientId!: UUID;
     publishedRadiograms$!: Observable<ExerciseRadiogram[]>;
     visibleRadiograms$!: Observable<ExerciseRadiogram[]>;

@@ -17,6 +17,10 @@
                 <span>Bereit zur Durchsage</span>
                 <button class="btn btn-primary float-end" (click)="accept()">
                     Durchsagen
+                    <app-hotkey-indicator
+                        *ngIf="first && shownInSignallerModal"
+                        [hotkey]="acceptHotkey"
+                    />
                 </button>
             </ng-container>
             <ng-container *ngSwitchCase="'ownAccepted'">
@@ -27,8 +31,12 @@
                         (click)="markAsDone()"
                     >
                         Fertig
-                    </button></span
-                >
+                        <app-hotkey-indicator
+                            *ngIf="first && shownInSignallerModal"
+                            [hotkey]="acceptHotkey"
+                        />
+                    </button>
+                </span>
             </ng-container>
             <ng-container *ngSwitchCase="'otherAccepted'">
                 <span class="card-text">
