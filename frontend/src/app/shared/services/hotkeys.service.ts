@@ -42,7 +42,11 @@ export class HotkeyLayer {
         this.service.recomputeHandlers();
     }
 
-    public removeHotkey(keys: string) {
+    public removeHotkey(hotkey: Hotkey) {
+        this.removeHotkeyByKeys(hotkey.keys);
+    }
+
+    public removeHotkeyByKeys(keys: string) {
         const index = this.hotkeys.findIndex((hotkey) => hotkey.keys === keys);
 
         if (index !== -1) {
