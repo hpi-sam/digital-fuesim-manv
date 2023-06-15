@@ -15,7 +15,6 @@ export class Hotkey {
     constructor(
         public readonly keys: string,
         public readonly isCombo: boolean,
-        // public readonly element: HTMLElement,
         public readonly callback: () => void
     ) {}
 
@@ -91,14 +90,15 @@ export class HotkeysService {
 
         [...this.layers].reverse().forEach((layer) => {
             layer.hotkeys.forEach((hotkey) => {
-                if (!(hotkey.keys in this.registeredHotkeys) && !disableAll) {
+                const lowerCaseKeys = hotkey.keys.toLowerCase();
+                if (!(lowerCaseKeys in this.registeredHotkeys) && !disableAll) {
                     if (hotkey.isCombo) {
                         bindKeyCombo(hotkey.keys, hotkey.callback);
                     } else {
                         bindKey(hotkey.keys, hotkey.callback);
                     }
 
-                    this.registeredHotkeys[hotkey.keys] = hotkey.isCombo;
+                    this.registeredHotkeys[lowerCaseKeys] = hotkey.isCombo;
                     hotkey.enable();
                 } else {
                     hotkey.disable();
