@@ -64,6 +64,7 @@ import { ManagePatientTransportToHospitalSettingsEditorComponent } from './train
 import { SignallerModalComponent } from './signaller-modal/signaller-modal/signaller-modal.component';
 import { SignallerModalRegionSelectorComponent } from './signaller-modal/signaller-modal-region-selector/signaller-modal-region-selector.component';
 import { SelectSignallerRegionService } from './signaller-modal/select-signaller-region.service';
+import { SignallerModalRegionOverviewComponent } from './signaller-modal/signaller-modal-region-overview/signaller-modal-region-overview.component';
 
 @NgModule({
     declarations: [
@@ -116,6 +117,7 @@ import { SelectSignallerRegionService } from './signaller-modal/select-signaller
         ManagePatientTransportToHospitalSettingsEditorComponent,
         SignallerModalComponent,
         SignallerModalRegionSelectorComponent,
+        SignallerModalRegionOverviewComponent,
     ],
     imports: [
         FormsModule,
