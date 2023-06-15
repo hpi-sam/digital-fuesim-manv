@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import type { UUID } from 'digital-fuesim-manv-shared';
 import { uuid } from 'digital-fuesim-manv-shared';
-import { Subject } from 'rxjs';
+import { ReplaySubject } from 'rxjs';
 import {
     bindKey,
     bindKeyCombo,
@@ -10,7 +10,7 @@ import {
 } from '@rwh/keystrokes';
 
 export class Hotkey {
-    public readonly enabled = new Subject<boolean>();
+    public readonly enabled = new ReplaySubject<boolean>(1);
 
     constructor(
         public readonly keys: string,
