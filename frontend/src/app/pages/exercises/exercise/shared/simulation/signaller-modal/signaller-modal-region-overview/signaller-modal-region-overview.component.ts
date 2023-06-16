@@ -1,4 +1,4 @@
-import type { OnInit } from '@angular/core';
+import type { OnChanges } from '@angular/core';
 import { Component, Input } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type { SimulatedRegion } from 'digital-fuesim-manv-shared';
@@ -12,16 +12,21 @@ import { createSelectSimulatedRegion } from 'src/app/state/application/selectors
     templateUrl: './signaller-modal-region-overview.component.html',
     styleUrls: ['./signaller-modal-region-overview.component.scss'],
 })
-export class SignallerModalRegionOverviewComponent implements OnInit {
+export class SignallerModalRegionOverviewComponent implements OnChanges {
     @Input() simulatedRegionId!: UUID;
 
     simulatedRegion$!: Observable<SimulatedRegion>;
+    noLeaderOverlayVisible = false;
 
     constructor(private readonly store: Store<AppState>) {}
 
-    ngOnInit() {
+    ngOnChanges() {
         this.simulatedRegion$ = this.store.select(
             createSelectSimulatedRegion(this.simulatedRegionId)
         );
+    }
+
+    public setNoLeaderOverlayState(newState: boolean) {
+        this.noLeaderOverlayVisible = newState;
     }
 }

@@ -66,6 +66,9 @@ import { SignallerModalRegionSelectorComponent } from './signaller-modal/signall
 import { SelectSignallerRegionService } from './signaller-modal/select-signaller-region.service';
 import { SignallerModalRegionOverviewComponent } from './signaller-modal/signaller-modal-region-overview/signaller-modal-region-overview.component';
 import { SignallerModalRegionLeaderComponent } from './signaller-modal/signaller-modal-region-leader/signaller-modal-region-leader.component';
+import { SignallerModalRegionInformationComponent } from './signaller-modal/signaller-modal-region-information/signaller-modal-region-information.component';
+import { SignallerModalRegionCommandsComponent } from './signaller-modal/signaller-modal-region-commands/signaller-modal-region-commands.component';
+import { SignallerModalNoLeaderOverlayComponent } from './signaller-modal/signaller-modal-no-leader-overlay/signaller-modal-no-leader-overlay.component';
 
 @NgModule({
     declarations: [
@@ -120,6 +123,9 @@ import { SignallerModalRegionLeaderComponent } from './signaller-modal/signaller
         SignallerModalRegionSelectorComponent,
         SignallerModalRegionOverviewComponent,
         SignallerModalRegionLeaderComponent,
+        SignallerModalRegionInformationComponent,
+        SignallerModalRegionCommandsComponent,
+        SignallerModalNoLeaderOverlayComponent,
     ],
     exports: [SimulatedRegionOverviewGeneralComponent],
     providers: [
