@@ -65,6 +65,7 @@ import { SignallerModalComponent } from './signaller-modal/signaller-modal/signa
 import { SignallerModalRegionSelectorComponent } from './signaller-modal/signaller-modal-region-selector/signaller-modal-region-selector.component';
 import { SelectSignallerRegionService } from './signaller-modal/select-signaller-region.service';
 import { SignallerModalRegionOverviewComponent } from './signaller-modal/signaller-modal-region-overview/signaller-modal-region-overview.component';
+import { SignallerModalRegionLeaderComponent } from './signaller-modal/signaller-modal-region-leader/signaller-modal-region-leader.component';
 
 @NgModule({
     declarations: [
@@ -118,6 +119,13 @@ import { SignallerModalRegionOverviewComponent } from './signaller-modal/signall
         SignallerModalComponent,
         SignallerModalRegionSelectorComponent,
         SignallerModalRegionOverviewComponent,
+        SignallerModalRegionLeaderComponent,
+    ],
+    exports: [SimulatedRegionOverviewGeneralComponent],
+    providers: [
+        SelectPatientService,
+        StartTransferService,
+        SelectSignallerRegionService,
     ],
     imports: [
         FormsModule,
@@ -131,12 +139,6 @@ import { SignallerModalRegionOverviewComponent } from './signaller-modal/signall
         NgbPopoverModule,
         DragDropModule,
         TransferPointOverviewModule,
-    ],
-    exports: [SimulatedRegionOverviewGeneralComponent],
-    providers: [
-        SelectPatientService,
-        StartTransferService,
-        SelectSignallerRegionService,
     ],
 })
 export class SimulationModalsModule {}

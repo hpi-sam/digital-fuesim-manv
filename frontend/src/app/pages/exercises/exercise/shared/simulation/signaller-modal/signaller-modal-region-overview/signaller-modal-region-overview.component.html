@@ -1,1 +1,8 @@
-{{ simulatedRegionId }}
+<h3 class="d-inline-block">
+    {{ (simulatedRegion$ | async)?.name }}
+</h3>
+<h4 class="d-inline-block ms-4">
+    <app-signaller-modal-region-leader
+        [simulatedRegionId]="simulatedRegionId"
+    />
+</h4>
