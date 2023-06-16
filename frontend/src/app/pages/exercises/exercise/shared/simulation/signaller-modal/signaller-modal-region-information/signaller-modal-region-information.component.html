@@ -1,1 +1,43 @@
 <h5>Informationen</h5>
+
+<p *ngIf="(hasReportBehavior$ | async) === false" class="text-danger">
+    Diesem Bereich wurde die Verhaltensweise <em>Berichte erstellen</em> nicht
+    zugewiesen. Daher können manche der unten genannten Informationen
+    gegebenenfalls nicht abgefragt werden.
+</p>
+
+<ul class="list-group list-group-flush">
+    <li
+        *ngFor="let information of informationTypes"
+        class="list-group-item d-flex flex-row"
+    >
+        <ng-container
+            *appLet="(requestable$ | async)?.[information.key] as enabled"
+        >
+            <div class="flex-grow-1">
+                <span [class.text-muted]="!enabled">
+                    <strong>{{ information.title }}</strong>
+                    <span *ngIf="information.details as details"
+                        >, {{ details }}</span
+                    >
+                </span>
+                <ng-container *ngIf="!enabled && information.errorMessage">
+                    <br />
+                    <span class="text-warning">{{
+                        information.errorMessage
+                    }}</span>
+                </ng-container>
+            </div>
+            <div class="flex-shrink-1">
+                <button
+                    [disabled]="!enabled"
+                    class="btn btn-primary"
+                    (click)="information.callback()"
+                >
+                    Anfragen
+                    <app-hotkey-indicator [hotkey]="information.hotkey" />
+                </button>
+            </div>
+        </ng-container>
+    </li>
+</ul>

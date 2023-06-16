@@ -1,5 +1,5 @@
 <div class="d-flex flex-column h-100 w-100">
-    <div class="flex-shrink-1">
+    <div class="flex-shrink-1 py-2">
         <h3 class="d-inline-block">
             {{ (simulatedRegion$ | async)?.name }}
         </h3>
@@ -16,7 +16,9 @@
         style="height: 1px"
     >
         <div class="flex-grow-1 overflow-auto" style="max-width: 50%">
-            <app-signaller-modal-region-information />
+            <app-signaller-modal-region-information
+                [simulatedRegionId]="simulatedRegionId"
+            />
         </div>
         <div class="vr mx-1 h-100"></div>
         <div class="flex-grow-1 overflow-auto" style="max-width: 50%">
