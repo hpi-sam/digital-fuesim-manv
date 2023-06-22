@@ -156,6 +156,7 @@ export class SimulatedRegionOverviewBehaviorReportComponent implements OnInit {
                 type: '[ReportBehavior] Create Report',
                 simulatedRegionId: this.simulatedRegionId,
                 informationType,
+                interfaceSignallerKey: null,
             });
         }
 

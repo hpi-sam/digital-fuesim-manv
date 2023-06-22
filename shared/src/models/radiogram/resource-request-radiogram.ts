@@ -4,6 +4,7 @@ import {
     IsOptional,
     IsString,
     IsUUID,
+    ValidateIf,
     ValidateNested,
 } from 'class-validator';
 import type { UUID } from '../../utils/index.js';
@@ -40,12 +41,16 @@ export class ResourceRequestRadiogram implements Radiogram {
     @IsBoolean()
     readonly informationAvailable: boolean = true;
 
+    @IsString()
+    @ValidateIf((_, value) => value !== null)
+    public readonly key: string | null = null;
+
     @Type(() => VehicleResource)
     @ValidateNested()
     readonly requiredResource: VehicleResource;
 
     @IsString()
-    readonly key: string;
+    readonly requestKey: string;
 
     /**
      * @deprecated Use {@link create} instead
@@ -55,13 +60,13 @@ export class ResourceRequestRadiogram implements Radiogram {
         simulatedRegionId: UUID,
         status: ExerciseRadiogramStatus,
         requiredResource: VehicleResource,
-        key: string
+        requestKey: string
     ) {
         this.id = id;
         this.simulatedRegionId = simulatedRegionId;
         this.status = status;
         this.requiredResource = requiredResource;
-        this.key = key;
+        this.requestKey = requestKey;
     }
 
     static readonly create = getCreate(this);

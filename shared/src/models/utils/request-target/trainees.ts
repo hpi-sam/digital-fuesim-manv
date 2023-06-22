@@ -39,7 +39,7 @@ export const traineesRequestTarget: RequestTarget<TraineesRequestTargetConfigura
                 (radiogram) =>
                     radiogram.type === 'resourceRequestRadiogram' &&
                     isUnread(radiogram) &&
-                    radiogram.key === key
+                    radiogram.requestKey === key
             ) as Mutable<ResourceRequestRadiogram> | undefined;
             if (unreadRadiogram) {
                 if (isEmptyResource(requestedResource)) {
@@ -55,7 +55,7 @@ export const traineesRequestTarget: RequestTarget<TraineesRequestTargetConfigura
                     .filter(
                         (radiogram) =>
                             radiogram.type === 'resourceRequestRadiogram' &&
-                            radiogram.key === key
+                            radiogram.requestKey === key
                     )
                     .every(isDone) &&
                 !isEmptyResource(requestedResource)

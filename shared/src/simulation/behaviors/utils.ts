@@ -39,6 +39,7 @@ export const createRadiogramMap: {
     [Key in ReportableInformation]: (
         id: UUID,
         simulatedRegionId: UUID,
+        key: string | null,
         status: ExerciseRadiogramStatus
     ) => ExerciseRadiogram;
 } = {
