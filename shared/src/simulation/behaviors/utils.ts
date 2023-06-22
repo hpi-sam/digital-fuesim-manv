@@ -1,4 +1,7 @@
-import { TransferCountsRadiogram } from '../../models/radiogram/index.js';
+import {
+    TransferConnectionsRadiogram,
+    TransferCountsRadiogram,
+} from '../../models/radiogram/index.js';
 import type { ExerciseRadiogram } from '../../models/radiogram/exercise-radiogram.js';
 import { MaterialCountRadiogram } from '../../models/radiogram/material-count-radiogram.js';
 import { PatientCountRadiogram } from '../../models/radiogram/patient-count-radiogram.js';
@@ -17,6 +20,7 @@ export const reportableInformationAllowedValues: AllowedValues<ReportableInforma
         personnelCount: true,
         vehicleCount: true,
         singleRegionTransferCounts: true,
+        transferConnections: true,
         transportManagementTransferCounts: true,
         treatmentStatus: true,
         materialCount: true,
@@ -31,6 +35,7 @@ export type ReportableInformation =
     | 'patientCount'
     | 'personnelCount'
     | 'singleRegionTransferCounts'
+    | 'transferConnections'
     | 'transportManagementTransferCounts'
     | 'treatmentStatus'
     | 'vehicleCount';
@@ -47,6 +52,7 @@ export const createRadiogramMap: {
     personnelCount: PersonnelCountRadiogram.create,
     vehicleCount: VehicleCountRadiogram.create,
     singleRegionTransferCounts: TransferCountsRadiogram.create,
+    transferConnections: TransferConnectionsRadiogram.create,
     transportManagementTransferCounts: TransferCountsRadiogram.create,
     treatmentStatus: TreatmentStatusRadiogram.create,
     materialCount: MaterialCountRadiogram.create,
@@ -75,6 +81,7 @@ export const reportableInformationTypeToGermanNameDictionary: {
     vehicleCount: 'Anzahl an Fahrzeugen',
     personnelCount: 'Anzahl an Rettungskräften',
     materialCount: 'Anzahl an Material',
+    transferConnections: 'Transferverbindungen',
     treatmentStatus: 'Behandlungsstatus',
     singleRegionTransferCounts:
         'Anzahl aus diesem Bereich in Krankenhäuser abtransportierter Patienten',

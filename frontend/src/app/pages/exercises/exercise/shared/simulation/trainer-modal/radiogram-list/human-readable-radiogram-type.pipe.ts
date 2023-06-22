@@ -10,6 +10,7 @@ const map: { [Key in ExerciseRadiogram['type']]: string } = {
     treatmentStatusRadiogram: 'Behandlungsstatus',
     vehicleCountRadiogram: 'Anzahl an Fahrzeugen',
     resourceRequestRadiogram: 'Anfrage nach Fahrzeugen',
+    transferConnectionsRadiogram: 'Transferverbindungen',
     transferCountsRadiogram: 'Anzahl abtransportierter Patienten',
     transferCategoryCompletedRadiogram: 'Transport für SK abgeschlossen',
     newPatientDataRequestedRadiogram: 'Anfrage nach Patientenzahlen',

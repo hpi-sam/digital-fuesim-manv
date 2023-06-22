@@ -30,6 +30,10 @@
         *ngSwitchCase="'resourceRequestRadiogram'"
         [radiogramId]="radiogram.id"
     />
+    <app-radiogram-card-content-transfer-connections
+        *ngSwitchCase="'transferConnectionsRadiogram'"
+        [radiogramId]="radiogram.id"
+    />
     <app-radiogram-card-content-transfer-counts
         *ngSwitchCase="'transferCountsRadiogram'"
         [radiogramId]="radiogram.id"

@@ -133,13 +133,23 @@ export class SignallerModalRegionInformationComponent
         },
         // TODO: Location
         // TODO: Vehicle occupation
-        // TODO: Interaction
+        {
+            key: 'transferConnections',
+            title: 'Transferverbindungen',
+            details: 'zu anderen Bereichen',
+            hotkey: new Hotkey('7', false, () =>
+                this.requestTransferConnections()
+            ),
+            callback: () => this.requestTransferConnections(),
+            requiredBehaviors: [],
+            loading$: new BehaviorSubject<boolean>(false),
+        },
         // TODO: Patient treatments
         {
             key: 'personnelCount',
             title: 'Anzahl Personal',
             details: 'nach Typ',
-            hotkey: new Hotkey('7', false, () => this.requestPersonnelCount()),
+            hotkey: new Hotkey('8', false, () => this.requestPersonnelCount()),
             callback: () => this.requestPersonnelCount(),
             requiredBehaviors: [],
             loading$: new BehaviorSubject<boolean>(false),
@@ -290,6 +300,14 @@ export class SignallerModalRegionInformationComponent
 
         this.setLoadingState(key, true);
         this.requestSimpleReport('treatmentStatus', key);
+    }
+
+    public requestTransferConnections() {
+        const key = 'transferConnections';
+        if (this.requestBlocked(key)) return;
+
+        this.setLoadingState(key, true);
+        this.requestSimpleReport('transferConnections', key);
     }
 
     public requestPersonnelCount() {

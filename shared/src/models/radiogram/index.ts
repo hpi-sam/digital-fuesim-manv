@@ -8,6 +8,7 @@ export * from './treatment-status-radiogram.js';
 export * from './vehicle-count-radiogram.js';
 export * from './resource-request-radiogram.js';
 export * from './status/index.js';
+export * from './transfer-connections-radiogram.js';
 export * from './transfer-counts-radiogram.js';
 export * from './transfer-category-completed-radiogram.js';
 export * from './utils/index.js';
