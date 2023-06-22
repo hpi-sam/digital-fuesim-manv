@@ -108,13 +108,15 @@ export class SignallerModalRegionInformationComponent
             loading$: new BehaviorSubject<boolean>(false),
         },
         {
-            key: 'requiredVehicles',
+            key: 'requiredResources',
             title: 'Benötigte Fahrzeuge',
             details:
                 'um alle Patienten zu behandeln (PA) oder Anfragen zu erfüllen (B-Raum)',
             // TODO: Hotkey, callback, ...
-            hotkey: new Hotkey('5', false, () => this.requestPatientCount()),
-            callback: () => this.requestPatientCount(),
+            hotkey: new Hotkey('5', false, () =>
+                this.requestRequiredResources()
+            ),
+            callback: () => this.requestRequiredResources(),
             requiredBehaviors: ['requestBehavior'],
             errorMessage:
                 'Dieser Bereich benötigt keine Fahrzeuge für seine Arbeit',
@@ -284,6 +286,14 @@ export class SignallerModalRegionInformationComponent
 
         this.setLoadingState(key, true);
         this.requestSimpleReport('singleRegionTransferCounts', key);
+    }
+
+    public requestRequiredResources() {
+        const key = 'requiredResources';
+        if (this.requestBlocked(key)) return;
+
+        this.setLoadingState(key, true);
+        this.requestSimpleReport('requiredResources', key);
     }
 
     public requestVehicleCount() {

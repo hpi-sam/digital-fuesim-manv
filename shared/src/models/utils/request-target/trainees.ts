@@ -60,18 +60,18 @@ export const traineesRequestTarget: RequestTarget<TraineesRequestTargetConfigura
                     .every(isDone) &&
                 !isEmptyResource(requestedResource)
             ) {
-                publishRadiogram(
-                    draftState,
-                    cloneDeepMutable(
-                        ResourceRequestRadiogram.create(
-                            nextUUID(draftState),
-                            requestingSimulatedRegionId,
-                            RadiogramUnpublishedStatus.create(),
-                            requestedResource,
-                            key
-                        )
+                const radiogram = cloneDeepMutable(
+                    ResourceRequestRadiogram.create(
+                        nextUUID(draftState),
+                        requestingSimulatedRegionId,
+                        null,
+                        RadiogramUnpublishedStatus.create()
                     )
                 );
+                radiogram.requiredResource = requestedResource;
+                radiogram.requestKey = key;
+                radiogram.informationAvailable = true;
+                publishRadiogram(draftState, radiogram);
                 // eslint-disable-next-line no-useless-return
                 return;
             }

@@ -1,17 +1,29 @@
 <ng-container *ngIf="radiogram$ | async as radiogram">
-    <h5>Anfrage von Ressourcen</h5>
+    <h5>
+        {{
+            radiogram.canBeAccepted
+                ? 'Anfrage von Ressourcen'
+                : 'Benötigte Ressourcen'
+        }}
+    </h5>
 
     <ng-container
         *ngIf="
-            (radiogram.requiredResource | keys).length > 0;
+            (radiogram.requiredResource.vehicleCounts | keys).length > 0;
             else noResourcesRequired
         "
     >
         <table class="table card-text">
             <thead>
                 <tr>
-                    <th class="w-75">Kategorie</th>
+                    <th class="w-50">Kategorie</th>
                     <th class="w-25">Anzahl</th>
+                    <th
+                        *ngIf="radiogram.alreadyPromisedResource !== null"
+                        class="w-25"
+                    >
+                        Bereits angefragt
+                    </th>
                 </tr>
             </thead>
             <tbody>
@@ -29,10 +41,17 @@
                             ]
                         }}
                     </td>
+                    <td *ngIf="radiogram.alreadyPromisedResource !== null">
+                        {{
+                            radiogram.alreadyPromisedResource.vehicleCounts[
+                                vehicleType
+                            ]
+                        }}
+                    </td>
                 </tr>
             </tbody>
         </table>
-        <div class="d-flex row my-1">
+        <div *ngIf="radiogram.canBeAccepted" class="d-flex row my-1">
             <ng-container *ngIf="showAnswer$ | async; else actionButtons">
                 <p class="card-text">
                     <ng-container

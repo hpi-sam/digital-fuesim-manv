@@ -39,18 +39,26 @@ export class ResourceRequestRadiogram implements Radiogram {
     readonly resourcesPromised?: boolean;
 
     @IsBoolean()
-    readonly informationAvailable: boolean = true;
+    readonly informationAvailable: boolean = false;
 
     @IsString()
     @ValidateIf((_, value) => value !== null)
-    public readonly key: string | null = null;
+    public readonly key: string | null;
 
     @Type(() => VehicleResource)
     @ValidateNested()
-    readonly requiredResource: VehicleResource;
+    readonly requiredResource: VehicleResource = VehicleResource.create({});
+
+    @Type(() => VehicleResource)
+    @ValidateNested()
+    @ValidateIf((_, value) => value !== null)
+    readonly alreadyPromisedResource: VehicleResource | null = null;
+
+    @IsBoolean()
+    readonly canBeAccepted: boolean = true;
 
     @IsString()
-    readonly requestKey: string;
+    readonly requestKey: string = '';
 
     /**
      * @deprecated Use {@link create} instead
@@ -58,15 +66,13 @@ export class ResourceRequestRadiogram implements Radiogram {
     constructor(
         id: UUID,
         simulatedRegionId: UUID,
-        status: ExerciseRadiogramStatus,
-        requiredResource: VehicleResource,
-        requestKey: string
+        key: string | null,
+        status: ExerciseRadiogramStatus
     ) {
         this.id = id;
         this.simulatedRegionId = simulatedRegionId;
+        this.key = key;
         this.status = status;
-        this.requiredResource = requiredResource;
-        this.requestKey = requestKey;
     }
 
     static readonly create = getCreate(this);
