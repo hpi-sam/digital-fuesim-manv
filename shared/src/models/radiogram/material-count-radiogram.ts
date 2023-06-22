@@ -38,7 +38,7 @@ export class MaterialCountRadiogram implements Radiogram {
 
     @IsString()
     @ValidateIf((_, value) => value !== null)
-    public readonly key: string | null = null;
+    public readonly key: string | null;
 
     @ValidateNested()
     @Type(() => CanCaterFor)

@@ -42,7 +42,7 @@ export class TransferCountsRadiogram implements Radiogram {
 
     @IsString()
     @ValidateIf((_, value) => value !== null)
-    public readonly key!: string | null;
+    public readonly key: string | null;
 
     @IsResourceDescription(patientStatusAllowedValues)
     readonly transferredPatientsCounts: ResourceDescription<PatientStatus> = {

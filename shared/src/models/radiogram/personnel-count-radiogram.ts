@@ -40,7 +40,7 @@ export class PersonnelCountRadiogram implements Radiogram {
 
     @IsString()
     @ValidateIf((_, value) => value !== null)
-    public readonly key!: string | null;
+    public readonly key: string | null;
 
     @IsPersonnelCount()
     readonly personnelCount: PersonnelCount;

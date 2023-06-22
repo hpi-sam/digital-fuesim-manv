@@ -38,7 +38,7 @@ export class TreatmentStatusRadiogram implements Radiogram {
 
     @IsString()
     @ValidateIf((_, value) => value !== null)
-    public readonly key!: string | null;
+    public readonly key: string | null;
 
     @IsLiteralUnion(treatmentProgressAllowedValues)
     readonly treatmentStatus: TreatmentProgress;
