@@ -132,6 +132,19 @@ export class SignallerModalRegionInformationComponent
             loading$: new BehaviorSubject<boolean>(false),
         },
         // TODO: Location
+        // TODO: Vehicle occupation
+        // TODO: Interaction
+        // TODO: Patient treatments
+        {
+            key: 'personnelCount',
+            title: 'Anzahl Personal',
+            details: 'nach Typ',
+            hotkey: new Hotkey('7', false, () => this.requestPersonnelCount()),
+            callback: () => this.requestPersonnelCount(),
+            requiredBehaviors: [],
+            loading$: new BehaviorSubject<boolean>(false),
+        },
+        // TODO: Patient details
     ];
     behaviors$!: Observable<readonly ExerciseSimulationBehaviorState[]>;
     hasReportBehavior$!: Observable<boolean>;
@@ -277,6 +290,14 @@ export class SignallerModalRegionInformationComponent
 
         this.setLoadingState(key, true);
         this.requestSimpleReport('treatmentStatus', key);
+    }
+
+    public requestPersonnelCount() {
+        const key = 'personnelCount';
+        if (this.requestBlocked(key)) return;
+
+        this.setLoadingState(key, true);
+        this.requestSimpleReport('personnelCount', key);
     }
 
     /**
