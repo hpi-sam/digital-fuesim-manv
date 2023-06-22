@@ -9,6 +9,8 @@ import {
     publishTimeOf,
     isUnpublished,
     StrictObject,
+    isUnread,
+    isInterfaceSignallerKey,
 } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { map, combineLatest } from 'rxjs';
@@ -75,12 +77,17 @@ export class RadiogramListComponent implements OnInit {
         showOthers: boolean
     ): boolean {
         if (!showDone && isDone(radiogram)) return false;
+
         if (
             !showOthers &&
             isAccepted(radiogram) &&
             currentParticipantIdOf(radiogram) !== this.ownClientId
         )
             return false;
+
+        if (isUnread(radiogram) && isInterfaceSignallerKey(radiogram.key))
+            return false;
+
         return true;
     }
 }
