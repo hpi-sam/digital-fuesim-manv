@@ -27,7 +27,7 @@
                     "
                     [disabled]="!enabled || loading"
                     class="btn btn-primary"
-                    (click)="interaction.callback()"
+                    (click)="interaction.hotkey.callback()"
                 >
                     {{ primaryActionLabel }}
                     <app-hotkey-indicator
@@ -45,10 +45,10 @@
                 <button
                     *ngIf="showSecondaryButton"
                     [disabled]="
-                        !enabled || interaction.secondaryCallback === undefined
+                        !enabled || interaction.secondaryHotkey === undefined
                     "
                     class="btn btn-secondary ms-1"
-                    (click)="interaction.secondaryCallback?.()"
+                    (click)="interaction.secondaryHotkey?.callback()"
                 >
                     <i class="bi bi-clock-history"></i>
                     <app-hotkey-indicator

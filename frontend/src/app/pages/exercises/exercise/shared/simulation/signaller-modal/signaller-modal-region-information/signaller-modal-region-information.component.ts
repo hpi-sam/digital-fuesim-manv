@@ -34,7 +34,6 @@ export class SignallerModalRegionInformationComponent
             title: 'Anzahl Patienten',
             details: 'nach Sichtungskategorie',
             hotkey: new Hotkey('1', false, () => this.requestPatientCount()),
-            callback: () => this.requestPatientCount(),
             requiredBehaviors: ['treatPatientsBehavior'],
             errorMessage: 'Dieser Bereich behandelt keine Patienten',
             loading$: new BehaviorSubject<boolean>(false),
@@ -46,7 +45,6 @@ export class SignallerModalRegionInformationComponent
             hotkey: new Hotkey('2', false, () =>
                 this.requestFullTransportProgress()
             ),
-            callback: () => this.requestFullTransportProgress(),
             requiredBehaviors: ['managePatientTransportToHospitalBehavior'],
             errorMessage: 'Dieser Bereich verwaltet keine Transporte',
             loading$: new BehaviorSubject<boolean>(false),
@@ -58,7 +56,6 @@ export class SignallerModalRegionInformationComponent
             hotkey: new Hotkey('3', false, () =>
                 this.requestRegionTransportProgress()
             ),
-            callback: () => this.requestRegionTransportProgress(),
             requiredBehaviors: ['transferToHospitalBehavior'],
             errorMessage: 'Dieser Bereich verwaltet keine Transporte',
             loading$: new BehaviorSubject<boolean>(false),
@@ -68,7 +65,6 @@ export class SignallerModalRegionInformationComponent
             title: 'Anzahl Fahrzeuge',
             details: 'nach Typ',
             hotkey: new Hotkey('4', false, () => this.requestVehicleCount()),
-            callback: () => this.requestVehicleCount(),
             requiredBehaviors: [],
             loading$: new BehaviorSubject<boolean>(false),
         },
@@ -80,7 +76,6 @@ export class SignallerModalRegionInformationComponent
             hotkey: new Hotkey('5', false, () =>
                 this.requestRequiredResources()
             ),
-            callback: () => this.requestRequiredResources(),
             requiredBehaviors: ['requestBehavior'],
             errorMessage:
                 'Dieser Bereich benötigt keine Fahrzeuge für seine Arbeit',
@@ -92,7 +87,6 @@ export class SignallerModalRegionInformationComponent
             title: 'Behandlungsstatus',
             details: '(Erstversorgung sichergestellt?)',
             hotkey: new Hotkey('6', false, () => this.requestTreatmentStatus()),
-            callback: () => this.requestTreatmentStatus(),
             requiredBehaviors: ['treatPatientsBehavior'],
             errorMessage: 'Dieser Bereich behandelt keine Patienten',
             loading$: new BehaviorSubject<boolean>(false),
@@ -106,7 +100,6 @@ export class SignallerModalRegionInformationComponent
             hotkey: new Hotkey('7', false, () =>
                 this.requestTransferConnections()
             ),
-            callback: () => this.requestTransferConnections(),
             requiredBehaviors: [],
             loading$: new BehaviorSubject<boolean>(false),
         },
@@ -116,7 +109,6 @@ export class SignallerModalRegionInformationComponent
             title: 'Anzahl Personal',
             details: 'nach Typ',
             hotkey: new Hotkey('8', false, () => this.requestPersonnelCount()),
-            callback: () => this.requestPersonnelCount(),
             requiredBehaviors: [],
             loading$: new BehaviorSubject<boolean>(false),
         },

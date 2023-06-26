@@ -35,9 +35,7 @@ export interface InterfaceSignallerInteraction {
     title: string;
     details?: string;
     hotkey: Hotkey;
-    callback: () => void;
     secondaryHotkey?: Hotkey;
-    secondaryCallback?: () => void;
     requiredBehaviors: ExerciseSimulationBehaviorType[];
     errorMessage?: string;
     loading$?: BehaviorSubject<boolean>;
