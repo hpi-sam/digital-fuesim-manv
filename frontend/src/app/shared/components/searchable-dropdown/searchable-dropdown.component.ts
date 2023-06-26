@@ -39,10 +39,10 @@ export class SearchableDropdownComponent
     }
 
     private hotkeyLayer!: HotkeyLayer;
-    private readonly upHotkey = new Hotkey('ArrowUp', false, () =>
+    private readonly upHotkey = new Hotkey('up', false, () =>
         this.decreaseSelectedIndex()
     );
-    private readonly downHotkey = new Hotkey('ArrowDown', false, () =>
+    private readonly downHotkey = new Hotkey('down', false, () =>
         this.increaseSelectedIndex()
     );
     private readonly confirmHotkey = new Hotkey('Enter', false, () =>

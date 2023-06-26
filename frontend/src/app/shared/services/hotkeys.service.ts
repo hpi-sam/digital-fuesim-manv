@@ -2,12 +2,7 @@ import { Injectable } from '@angular/core';
 import type { UUID } from 'digital-fuesim-manv-shared';
 import { uuid } from 'digital-fuesim-manv-shared';
 import { ReplaySubject } from 'rxjs';
-import {
-    bindKey,
-    bindKeyCombo,
-    unbindKey,
-    unbindKeyCombo,
-} from '@rwh/keystrokes';
+import hotkeys from 'hotkeys-js';
 
 export class Hotkey {
     public readonly enabled = new ReplaySubject<boolean>(1);
@@ -64,6 +59,10 @@ export class HotkeysService {
     private readonly layers: HotkeyLayer[] = [];
     private registeredHotkeys: { [key: string]: boolean } = {};
 
+    constructor() {
+        hotkeys.filter = () => true;
+    }
+
     public createLayer(disableAll: boolean = false) {
         const layer = new HotkeyLayer(this, disableAll);
         this.layers.push(layer);
@@ -83,9 +82,9 @@ export class HotkeysService {
     public recomputeHandlers() {
         Object.entries(this.registeredHotkeys).forEach(([hotkey, isCombo]) => {
             if (isCombo) {
-                unbindKeyCombo(hotkey);
+                hotkeys.unbind(hotkey);
             } else {
-                unbindKey(hotkey);
+                hotkeys.unbind(hotkey);
             }
         });
         this.registeredHotkeys = {};
@@ -97,9 +96,9 @@ export class HotkeysService {
                 const lowerCaseKeys = hotkey.keys.toLowerCase();
                 if (!(lowerCaseKeys in this.registeredHotkeys) && !disableAll) {
                     if (hotkey.isCombo) {
-                        bindKeyCombo(hotkey.keys, hotkey.callback);
+                        hotkeys(hotkey.keys, hotkey.callback);
                     } else {
-                        bindKey(hotkey.keys, hotkey.callback);
+                        hotkeys(hotkey.keys, hotkey.callback);
                     }
 
                     this.registeredHotkeys[lowerCaseKeys] = hotkey.isCombo;
