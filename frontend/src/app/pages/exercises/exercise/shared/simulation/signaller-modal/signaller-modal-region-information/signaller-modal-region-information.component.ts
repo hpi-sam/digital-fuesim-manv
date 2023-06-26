@@ -112,7 +112,6 @@ export class SignallerModalRegionInformationComponent
             title: 'Benötigte Fahrzeuge',
             details:
                 'um alle Patienten zu behandeln (PA) oder Anfragen zu erfüllen (B-Raum)',
-            // TODO: Hotkey, callback, ...
             hotkey: new Hotkey('5', false, () =>
                 this.requestRequiredResources()
             ),
