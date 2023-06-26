@@ -1,53 +1,19 @@
-import type { OnChanges, OnDestroy, OnInit } from '@angular/core';
+import type { OnChanges, OnInit } from '@angular/core';
 import { Component, Input } from '@angular/core';
 import { Store } from '@ngrx/store';
-import type {
-    ExerciseRadiogram,
-    ExerciseSimulationBehaviorState,
-    ExerciseSimulationBehaviorType,
-    ReportableInformation,
-} from 'digital-fuesim-manv-shared';
-import {
-    StrictObject,
-    UUID,
-    getKeyDetails,
-    isAccepted,
-    isInterfaceSignallerKeyForClient,
-    isUnread,
-    makeInterfaceSignallerKey,
-} from 'digital-fuesim-manv-shared';
-import { groupBy } from 'lodash-es';
-import {
-    map,
-    takeUntil,
-    type Observable,
-    Subject,
-    BehaviorSubject,
-} from 'rxjs';
+import type { ReportableInformation } from 'digital-fuesim-manv-shared';
+import { UUID, makeInterfaceSignallerKey } from 'digital-fuesim-manv-shared';
+import { type Observable, BehaviorSubject, map } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
-import type { HotkeyLayer } from 'src/app/shared/services/hotkeys.service';
-import {
-    Hotkey,
-    HotkeysService,
-} from 'src/app/shared/services/hotkeys.service';
+import { Hotkey } from 'src/app/shared/services/hotkeys.service';
 import type { AppState } from 'src/app/state/app.state';
 import { selectOwnClientId } from 'src/app/state/application/selectors/application.selectors';
-import {
-    createSelectBehaviorStates,
-    selectRadiograms,
-} from 'src/app/state/application/selectors/exercise.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
-
-interface InformationType {
-    key: string;
-    title: string;
-    details?: string;
-    hotkey: Hotkey;
-    callback: () => void;
-    requiredBehaviors: ExerciseSimulationBehaviorType[];
-    errorMessage?: string;
-    loading$: BehaviorSubject<boolean>;
-}
+import { createSelectBehaviorStates } from 'src/app/state/application/selectors/exercise.selectors';
+import {
+    setLoadingState,
+    type InterfaceSignallerInteraction,
+} from '../signaller-modal-interactions/signaller-modal-interactions.component';
 
 @Component({
     selector: 'app-signaller-modal-region-information',
@@ -55,15 +21,14 @@ interface InformationType {
     styleUrls: ['./signaller-modal-region-information.component.scss'],
 })
 export class SignallerModalRegionInformationComponent
-    implements OnInit, OnChanges, OnDestroy
+    implements OnInit, OnChanges
 {
     @Input()
     simulatedRegionId!: UUID;
 
-    private hotkeyLayer!: HotkeyLayer;
     private clientId!: UUID;
 
-    informationTypes: InformationType[] = [
+    informationInteractions: InterfaceSignallerInteraction[] = [
         {
             key: 'patientCount',
             title: 'Anzahl Patienten',
@@ -157,174 +122,65 @@ export class SignallerModalRegionInformationComponent
         },
         // TODO: Patient details
     ];
-    behaviors$!: Observable<readonly ExerciseSimulationBehaviorState[]>;
     hasReportBehavior$!: Observable<boolean>;
-    requestable$!: Observable<{ [key: string]: boolean }>;
-    informationRadiograms$!: Observable<{ [key: string]: ExerciseRadiogram[] }>;
-    private readonly destroy$ = new Subject<void>();
 
     constructor(
         private readonly exerciseService: ExerciseService,
-        private readonly store: Store<AppState>,
-        private readonly hotkeysService: HotkeysService
+        private readonly store: Store<AppState>
     ) {}
 
     ngOnInit() {
-        this.hotkeyLayer = this.hotkeysService.createLayer();
         this.clientId = selectStateSnapshot(selectOwnClientId, this.store)!;
-
-        this.informationTypes.forEach((informationType) =>
-            this.hotkeyLayer.addHotkey(informationType.hotkey)
-        );
     }
 
     ngOnChanges() {
-        this.behaviors$ = this.store.select(
+        const behaviors$ = this.store.select(
             createSelectBehaviorStates(this.simulatedRegionId)
         );
 
-        this.hasReportBehavior$ = this.behaviors$.pipe(
+        this.hasReportBehavior$ = behaviors$.pipe(
             map((behaviors) =>
                 behaviors.some((behavior) => behavior.type === 'reportBehavior')
             )
         );
-
-        this.requestable$ = this.behaviors$.pipe(
-            map((behaviors) =>
-                Object.fromEntries(
-                    this.informationTypes.map((informationType) => [
-                        informationType.key,
-                        informationType.requiredBehaviors.every(
-                            (requiredBehavior) =>
-                                behaviors.some(
-                                    (behavior) =>
-                                        behavior.type === requiredBehavior
-                                )
-                        ),
-                    ])
-                )
-            )
-        );
-
-        const radiograms$ = this.store
-            .select(selectRadiograms)
-            .pipe(map((radiograms) => StrictObject.values(radiograms)));
-
-        // Automatically accept all radiograms that contain reports for requested information
-        radiograms$
-            .pipe(
-                map((radiograms) =>
-                    radiograms.filter((radiogram) => isUnread(radiogram))
-                ),
-                map((radiograms) =>
-                    radiograms.filter((radiogram) =>
-                        isInterfaceSignallerKeyForClient(
-                            radiogram.key,
-                            this.clientId
-                        )
-                    )
-                ),
-                takeUntil(this.destroy$)
-            )
-            .subscribe((radiograms) => {
-                radiograms.forEach((radiogram) => {
-                    this.exerciseService.proposeAction({
-                        type: '[Radiogram] Accept radiogram',
-                        clientId: this.clientId,
-                        radiogramId: radiogram.id,
-                    });
-
-                    this.setLoadingState(getKeyDetails(radiogram.key!), false);
-                });
-            });
-
-        this.informationRadiograms$ = radiograms$.pipe(
-            map((radiograms) =>
-                radiograms.filter((radiogram) => isAccepted(radiogram))
-            ),
-            map((radiograms) =>
-                radiograms.filter((radiogram) =>
-                    isInterfaceSignallerKeyForClient(
-                        radiogram.key,
-                        this.clientId
-                    )
-                )
-            ),
-            map((radiograms) =>
-                groupBy(radiograms, (radiogram) =>
-                    getKeyDetails(radiogram.key!)
-                )
-            )
-        );
-    }
-
-    ngOnDestroy() {
-        this.hotkeysService.removeLayer(this.hotkeyLayer);
-        this.destroy$.next();
     }
 
     public requestPatientCount() {
-        const key = 'patientCount';
-        if (this.requestBlocked(key)) return;
-
-        this.setLoadingState(key, true);
-        this.requestSimpleReport('patientCount', key);
+        this.requestSimpleReport('patientCount', 'patientCount');
     }
 
     public requestFullTransportProgress() {
-        const key = 'transportProgressFull';
-        if (this.requestBlocked(key)) return;
-
-        this.setLoadingState(key, true);
-        this.requestSimpleReport('transportManagementTransferCounts', key);
+        this.requestSimpleReport(
+            'transportManagementTransferCounts',
+            'transportProgressFull'
+        );
     }
 
     public requestRegionTransportProgress() {
-        const key = 'transportProgressRegion';
-        if (this.requestBlocked(key)) return;
-
-        this.setLoadingState(key, true);
-        this.requestSimpleReport('singleRegionTransferCounts', key);
+        this.requestSimpleReport(
+            'singleRegionTransferCounts',
+            'transportProgressRegion'
+        );
     }
 
     public requestRequiredResources() {
-        const key = 'requiredResources';
-        if (this.requestBlocked(key)) return;
-
-        this.setLoadingState(key, true);
-        this.requestSimpleReport('requiredResources', key);
+        this.requestSimpleReport('requiredResources', 'requiredResources');
     }
 
     public requestVehicleCount() {
-        const key = 'vehicleCount';
-        if (this.requestBlocked(key)) return;
-
-        this.setLoadingState(key, true);
-        this.requestSimpleReport('vehicleCount', key);
+        this.requestSimpleReport('vehicleCount', 'vehicleCount');
     }
 
     public requestTreatmentStatus() {
-        const key = 'treatmentStatus';
-        if (this.requestBlocked(key)) return;
-
-        this.setLoadingState(key, true);
-        this.requestSimpleReport('treatmentStatus', key);
+        this.requestSimpleReport('treatmentStatus', 'treatmentStatus');
     }
 
     public requestTransferConnections() {
-        const key = 'transferConnections';
-        if (this.requestBlocked(key)) return;
-
-        this.setLoadingState(key, true);
-        this.requestSimpleReport('transferConnections', key);
+        this.requestSimpleReport('transferConnections', 'transferConnections');
     }
 
     public requestPersonnelCount() {
-        const key = 'personnelCount';
-        if (this.requestBlocked(key)) return;
-
-        this.setLoadingState(key, true);
-        this.requestSimpleReport('personnelCount', key);
+        this.requestSimpleReport('personnelCount', 'personnelCount');
     }
 
     /**
@@ -332,6 +188,10 @@ export class SignallerModalRegionInformationComponent
      * @param informationType The information to be requested
      */
     requestSimpleReport(informationType: ReportableInformation, key: string) {
+        if (this.requestBlocked(key)) return;
+
+        setLoadingState(this.informationInteractions, key, true);
+
         this.exerciseService.proposeAction({
             type: '[ReportBehavior] Create Report',
             simulatedRegionId: this.simulatedRegionId,
@@ -345,15 +205,9 @@ export class SignallerModalRegionInformationComponent
 
     requestBlocked(key: string) {
         return (
-            this.informationTypes
+            this.informationInteractions
                 .find((information) => information.key === key)
-                ?.loading$.getValue() ?? false
+                ?.loading$?.getValue() ?? false
         );
-    }
-
-    setLoadingState(key: string, loadingState: boolean) {
-        this.informationTypes
-            .find((information) => information.key === key)
-            ?.loading$.next(loadingState);
     }
 }

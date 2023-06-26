@@ -70,6 +70,7 @@ import { SignallerModalRegionInformationComponent } from './signaller-modal/sign
 import { SignallerModalRegionCommandsComponent } from './signaller-modal/signaller-modal-region-commands/signaller-modal-region-commands.component';
 import { SignallerModalNoLeaderOverlayComponent } from './signaller-modal/signaller-modal-no-leader-overlay/signaller-modal-no-leader-overlay.component';
 import { RadiogramCardContentTransferConnectionsComponent } from './trainer-modal/radiogram-list/radiogram-card/radiogram-card-content-transfer-connections/radiogram-card-content-transfer-connections.component';
+import { SignallerModalInteractionsComponent } from './signaller-modal/signaller-modal-interactions/signaller-modal-interactions.component';
 
 @NgModule({
     declarations: [
@@ -128,6 +129,7 @@ import { RadiogramCardContentTransferConnectionsComponent } from './trainer-moda
         SignallerModalRegionCommandsComponent,
         SignallerModalNoLeaderOverlayComponent,
         RadiogramCardContentTransferConnectionsComponent,
+        SignallerModalInteractionsComponent,
     ],
     exports: [SimulatedRegionOverviewGeneralComponent],
     providers: [

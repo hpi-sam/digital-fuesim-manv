@@ -1,0 +1,59 @@
+<ul class="list-group list-group-flush">
+    <li *ngFor="let interaction of interactions" class="list-group-item">
+        <div
+            *appLet="(requestable$ | async)?.[interaction.key] as enabled"
+            class="d-flex flex-row mb-2"
+        >
+            <div class="flex-grow-1">
+                <span [class.text-muted]="!enabled">
+                    <strong>{{ interaction.title }}</strong>
+                    <span *ngIf="interaction.details as details"
+                        >, {{ details }}</span
+                    >
+                </span>
+                <ng-container *ngIf="!enabled && interaction.errorMessage">
+                    <br />
+                    <span class="text-warning">{{
+                        interaction.errorMessage
+                    }}</span>
+                </ng-container>
+            </div>
+            <div class="flex-shrink-1">
+                <button
+                    *appLet="interaction.loading$ | async as loading"
+                    [disabled]="!enabled || loading"
+                    class="btn btn-primary text-nowrap"
+                    (click)="interaction.callback()"
+                >
+                    Anfragen
+                    <app-hotkey-indicator
+                        *ngIf="!loading; else loadingIndicator"
+                        [hotkey]="interaction.hotkey"
+                    />
+                    <ng-template #loadingIndicator>
+                        <span
+                            class="spinner-border spinner-border-sm"
+                            role="status"
+                            aria-hidden="true"
+                        ></span>
+                    </ng-template>
+                </button>
+            </div>
+        </div>
+
+        <app-radiogram-card
+            *ngFor="
+                let radiogram of ((requestedRadiograms$ | async)?.[
+                    interaction.key
+                ] ?? []);
+                trackBy: 'id'
+                    | appTrackByProperty : ((requestedRadiograms$ | async)?.[
+                    interaction.key
+                ] ?? [])
+            "
+            [radiogramId]="radiogram.id"
+            [first]="false"
+            [shownInSignallerModal]="false"
+        />
+    </li>
+</ul>

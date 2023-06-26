@@ -6,62 +6,7 @@
     gegebenenfalls nicht abgefragt werden.
 </p>
 
-<ul class="list-group list-group-flush">
-    <li *ngFor="let information of informationTypes" class="list-group-item">
-        <div
-            *appLet="(requestable$ | async)?.[information.key] as enabled"
-            class="d-flex flex-row mb-2"
-        >
-            <div class="flex-grow-1">
-                <span [class.text-muted]="!enabled">
-                    <strong>{{ information.title }}</strong>
-                    <span *ngIf="information.details as details"
-                        >, {{ details }}</span
-                    >
-                </span>
-                <ng-container *ngIf="!enabled && information.errorMessage">
-                    <br />
-                    <span class="text-warning">{{
-                        information.errorMessage
-                    }}</span>
-                </ng-container>
-            </div>
-            <div class="flex-shrink-1">
-                <button
-                    *appLet="information.loading$ | async as loading"
-                    [disabled]="!enabled || loading"
-                    class="btn btn-primary text-nowrap"
-                    (click)="information.callback()"
-                >
-                    Anfragen
-                    <app-hotkey-indicator
-                        *ngIf="!loading; else loadingIndicator"
-                        [hotkey]="information.hotkey"
-                    />
-                    <ng-template #loadingIndicator>
-                        <span
-                            class="spinner-border spinner-border-sm"
-                            role="status"
-                            aria-hidden="true"
-                        ></span>
-                    </ng-template>
-                </button>
-            </div>
-        </div>
-
-        <app-radiogram-card
-            *ngFor="
-                let radiogram of ((informationRadiograms$ | async)?.[
-                    information.key
-                ] ?? []);
-                trackBy: 'id'
-                    | appTrackByProperty : ((informationRadiograms$ | async)?.[
-                    information.key
-                ] ?? [])
-            "
-            [radiogramId]="radiogram.id"
-            [first]="false"
-            [shownInSignallerModal]="false"
-        />
-    </li>
-</ul>
+<app-signaller-modal-interactions
+    [simulatedRegionId]="simulatedRegionId"
+    [interactions]="informationInteractions"
+/>
