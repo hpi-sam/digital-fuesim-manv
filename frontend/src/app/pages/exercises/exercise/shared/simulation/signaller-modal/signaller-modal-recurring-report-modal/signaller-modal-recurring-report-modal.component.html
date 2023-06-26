@@ -1,0 +1,47 @@
+<div class="modal-header">
+    <h4 class="modal-title">Automatischen Bericht bearbeiten</h4>
+    <button
+        type="button"
+        class="btn-close"
+        (click)="close()"
+        data-cy="hospitalClosePopupButton"
+    ></button>
+</div>
+<div class="modal-body" *ngIf="reportBehaviorId; else noReports">
+    <h5>{{ humanReadableReportType }}</h5>
+
+    <div class="form-check form-switch">
+        <input
+            class="form-check-input no-validation"
+            type="checkbox"
+            role="switch"
+            [(ngModel)]="reportsEnabled"
+        />
+        <label>Automatisch in regelmäßigen Zeitabständen berichten</label>
+    </div>
+
+    <div class="input-group">
+        <label class="input-group-text">Berichte alle</label>
+        <input
+            class="form-control no-validation"
+            type="text"
+            [disabled]="!reportsEnabled"
+            [ngModel]="reportInterval / 60 / 1000"
+            (ngModelChange)="updateInterval($event)"
+        />
+        <label class="input-group-text">Minuten</label>
+    </div>
+</div>
+<ng-template #noReports>
+    <div class="modal-body">
+        <span class="text-danger">
+            Der gewünschte simulierte Bereich kann keine Berichte erstellen.
+        </span>
+    </div>
+</ng-template>
+<div class="modal-footer text-muted">
+    <small>
+        Dieser Dialog kann mittels
+        <app-hotkey-indicator keys="Esc" /> geschlossen werden.
+    </small>
+</div>

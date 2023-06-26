@@ -10,10 +10,12 @@ import type { AppState } from 'src/app/state/app.state';
 import { selectOwnClientId } from 'src/app/state/application/selectors/application.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { createSelectBehaviorStates } from 'src/app/state/application/selectors/exercise.selectors';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import {
     setLoadingState,
     type InterfaceSignallerInteraction,
 } from '../signaller-modal-interactions/signaller-modal-interactions.component';
+import { openSimulationSignallerModalRecurringReportModal } from '../open-simulation-signaller-modal-recurring-report-modal';
 
 @Component({
     selector: 'app-signaller-modal-region-information',
@@ -34,6 +36,13 @@ export class SignallerModalRegionInformationComponent
             title: 'Anzahl Patienten',
             details: 'nach Sichtungskategorie',
             hotkey: new Hotkey('1', false, () => this.requestPatientCount()),
+            secondaryHotkey: new Hotkey('Shift + 1', true, () =>
+                openSimulationSignallerModalRecurringReportModal(
+                    this.modalService,
+                    this.simulatedRegionId,
+                    'patientCount'
+                )
+            ),
             requiredBehaviors: ['treatPatientsBehavior'],
             errorMessage: 'Dieser Bereich behandelt keine Patienten',
             loading$: new BehaviorSubject<boolean>(false),
@@ -118,7 +127,8 @@ export class SignallerModalRegionInformationComponent
 
     constructor(
         private readonly exerciseService: ExerciseService,
-        private readonly store: Store<AppState>
+        private readonly store: Store<AppState>,
+        private readonly modalService: NgbModal
     ) {}
 
     ngOnInit() {

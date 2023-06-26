@@ -22,7 +22,9 @@
         </div>
         <div class="vr mx-1 h-100"></div>
         <div class="flex-grow-1 overflow-auto" style="max-width: 50%">
-            <app-signaller-modal-region-commands />
+            <app-signaller-modal-region-commands
+                [simulatedRegionId]="simulatedRegionId"
+            />
         </div>
     </div>
     <ng-template #noLeaderOverlay>

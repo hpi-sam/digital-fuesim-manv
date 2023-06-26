@@ -71,6 +71,7 @@ import { SignallerModalRegionCommandsComponent } from './signaller-modal/signall
 import { SignallerModalNoLeaderOverlayComponent } from './signaller-modal/signaller-modal-no-leader-overlay/signaller-modal-no-leader-overlay.component';
 import { RadiogramCardContentTransferConnectionsComponent } from './trainer-modal/radiogram-list/radiogram-card/radiogram-card-content-transfer-connections/radiogram-card-content-transfer-connections.component';
 import { SignallerModalInteractionsComponent } from './signaller-modal/signaller-modal-interactions/signaller-modal-interactions.component';
+import { SignallerModalRecurringReportModalComponent } from './signaller-modal/signaller-modal-recurring-report-modal/signaller-modal-recurring-report-modal.component';
 
 @NgModule({
     declarations: [
@@ -130,6 +131,7 @@ import { SignallerModalInteractionsComponent } from './signaller-modal/signaller
         SignallerModalNoLeaderOverlayComponent,
         RadiogramCardContentTransferConnectionsComponent,
         SignallerModalInteractionsComponent,
+        SignallerModalRecurringReportModalComponent,
     ],
     exports: [SimulatedRegionOverviewGeneralComponent],
     providers: [
