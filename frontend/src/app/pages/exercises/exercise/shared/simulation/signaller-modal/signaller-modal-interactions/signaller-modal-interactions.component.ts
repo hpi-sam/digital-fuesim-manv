@@ -36,6 +36,8 @@ export interface InterfaceSignallerInteraction {
     details?: string;
     hotkey: Hotkey;
     callback: () => void;
+    secondaryHotkey?: Hotkey;
+    secondaryCallback?: () => void;
     requiredBehaviors: ExerciseSimulationBehaviorType[];
     errorMessage?: string;
     loading$?: BehaviorSubject<boolean>;
@@ -63,6 +65,10 @@ export class SignallerModalInteractionsComponent
     simulatedRegionId!: UUID;
     @Input()
     interactions: InterfaceSignallerInteraction[] = [];
+    @Input()
+    primaryActionLabel = '';
+    @Input()
+    showSecondaryButton = true;
 
     private hotkeyLayer: HotkeyLayer | null = null;
     private clientId!: UUID;
@@ -87,9 +93,13 @@ export class SignallerModalInteractionsComponent
         }
         this.hotkeyLayer = this.hotkeysService.createLayer();
 
-        this.interactions.forEach((informationType) =>
-            this.hotkeyLayer!.addHotkey(informationType.hotkey)
-        );
+        this.interactions.forEach((informationType) => {
+            this.hotkeyLayer!.addHotkey(informationType.hotkey);
+
+            if (informationType.secondaryHotkey) {
+                this.hotkeyLayer!.addHotkey(informationType.secondaryHotkey);
+            }
+        });
 
         const behaviors$ = this.store.select(
             createSelectBehaviorStates(this.simulatedRegionId)

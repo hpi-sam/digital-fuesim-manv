@@ -18,7 +18,7 @@
                     }}</span>
                 </ng-container>
             </div>
-            <div class="flex-shrink-1">
+            <div class="flex-shrink-1 text-nowrap">
                 <button
                     *appLet="
                         interaction.loading$ === undefined
@@ -26,10 +26,10 @@
                             : (interaction.loading$ | async) as loading
                     "
                     [disabled]="!enabled || loading"
-                    class="btn btn-primary text-nowrap"
+                    class="btn btn-primary"
                     (click)="interaction.callback()"
                 >
-                    Anfragen
+                    {{ primaryActionLabel }}
                     <app-hotkey-indicator
                         *ngIf="!loading; else loadingIndicator"
                         [hotkey]="interaction.hotkey"
@@ -41,6 +41,21 @@
                             aria-hidden="true"
                         ></span>
                     </ng-template>
+                </button>
+                <button
+                    *ngIf="showSecondaryButton"
+                    [disabled]="
+                        !enabled || interaction.secondaryCallback === undefined
+                    "
+                    class="btn btn-secondary ms-1"
+                    (click)="interaction.secondaryCallback?.()"
+                >
+                    <i class="bi bi-clock-history"></i>
+                    <app-hotkey-indicator
+                        *ngIf="interaction.secondaryHotkey"
+                        [hotkey]="interaction.secondaryHotkey"
+                        class="ms-1"
+                    />
                 </button>
             </div>
         </div>
