@@ -7,9 +7,9 @@
             <div class="flex-grow-1">
                 <span [class.text-muted]="!enabled">
                     <strong>{{ interaction.title }}</strong>
-                    <span *ngIf="interaction.details as details"
-                        >, {{ details }}</span
-                    >
+                    <span *ngIf="interaction.details as details">
+                        {{ details }}
+                    </span>
                 </span>
                 <ng-container *ngIf="!enabled && interaction.errorMessage">
                     <br />

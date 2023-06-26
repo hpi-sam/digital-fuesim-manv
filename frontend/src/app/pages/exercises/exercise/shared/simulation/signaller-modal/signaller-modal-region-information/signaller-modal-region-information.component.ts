@@ -90,7 +90,7 @@ export class SignallerModalRegionInformationComponent
         {
             key: 'treatmentStatus',
             title: 'Behandlungsstatus',
-            details: 'Erstversorgung sichergestellt?',
+            details: '(Erstversorgung sichergestellt?)',
             hotkey: new Hotkey('6', false, () => this.requestTreatmentStatus()),
             callback: () => this.requestTreatmentStatus(),
             requiredBehaviors: ['treatPatientsBehavior'],
