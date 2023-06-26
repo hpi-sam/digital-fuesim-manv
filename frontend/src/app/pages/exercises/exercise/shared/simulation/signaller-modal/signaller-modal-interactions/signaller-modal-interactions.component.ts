@@ -3,7 +3,6 @@ import { Component, Input } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type {
     ExerciseRadiogram,
-    ExerciseSimulationBehaviorState,
     ExerciseSimulationBehaviorType,
 } from 'digital-fuesim-manv-shared';
 import {
@@ -68,8 +67,6 @@ export class SignallerModalInteractionsComponent
     private hotkeyLayer: HotkeyLayer | null = null;
     private clientId!: UUID;
 
-    behaviors$!: Observable<readonly ExerciseSimulationBehaviorState[]>;
-    hasReportBehavior$!: Observable<boolean>;
     requestable$!: Observable<{ [key: string]: boolean }>;
     requestedRadiograms$!: Observable<{ [key: string]: ExerciseRadiogram[] }>;
     private readonly destroy$ = new Subject<void>();
@@ -94,22 +91,16 @@ export class SignallerModalInteractionsComponent
             this.hotkeyLayer!.addHotkey(informationType.hotkey)
         );
 
-        this.behaviors$ = this.store.select(
+        const behaviors$ = this.store.select(
             createSelectBehaviorStates(this.simulatedRegionId)
         );
 
-        this.hasReportBehavior$ = this.behaviors$.pipe(
-            map((behaviors) =>
-                behaviors.some((behavior) => behavior.type === 'reportBehavior')
-            )
-        );
-
-        this.requestable$ = this.behaviors$.pipe(
+        this.requestable$ = behaviors$.pipe(
             map((behaviors) =>
                 Object.fromEntries(
-                    this.interactions.map((informationType) => [
-                        informationType.key,
-                        informationType.requiredBehaviors.every(
+                    this.interactions.map((interaction) => [
+                        interaction.key,
+                        interaction.requiredBehaviors.every(
                             (requiredBehavior) =>
                                 behaviors.some(
                                     (behavior) =>
@@ -184,10 +175,4 @@ export class SignallerModalInteractionsComponent
 
         this.destroy$.next();
     }
-
-    // setLoadingState(key: string, loadingState: boolean) {
-    //     this.interactions
-    //         .find((information) => information.key === key)
-    //         ?.loading$?.next(loadingState);
-    // }
 }

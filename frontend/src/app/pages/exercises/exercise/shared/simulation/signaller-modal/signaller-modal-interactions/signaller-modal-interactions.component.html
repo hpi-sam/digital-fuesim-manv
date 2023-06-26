@@ -20,7 +20,11 @@
             </div>
             <div class="flex-shrink-1">
                 <button
-                    *appLet="interaction.loading$ | async as loading"
+                    *appLet="
+                        interaction.loading$ === undefined
+                            ? false
+                            : (interaction.loading$ | async) as loading
+                    "
                     [disabled]="!enabled || loading"
                     class="btn btn-primary text-nowrap"
                     (click)="interaction.callback()"
