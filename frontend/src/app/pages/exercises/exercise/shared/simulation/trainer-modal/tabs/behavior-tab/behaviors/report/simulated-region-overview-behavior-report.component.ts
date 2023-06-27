@@ -86,37 +86,6 @@ export class SimulatedRegionOverviewBehaviorReportComponent implements OnInit {
         this.currentTime$ = this.store.select(selectCurrentTime);
     }
 
-    updateReportTreatmentProgressChanges(reportsEnabled: boolean) {
-        this.exerciseService.proposeAction({
-            type: '[ReportBehavior] Update report treatment status changes',
-            simulatedRegionId: this.simulatedRegionId,
-            behaviorId: this.reportBehaviorId,
-            reportTreatmentProgressChanges: reportsEnabled,
-        });
-    }
-
-    updateReportTransferOfCategoryInSingleRegionCompleted(
-        reportsEnabled: boolean
-    ) {
-        this.exerciseService.proposeAction({
-            type: '[ReportBehavior] Update report transfer of category in single region completed',
-            simulatedRegionId: this.simulatedRegionId,
-            behaviorId: this.reportBehaviorId,
-            reportChanges: reportsEnabled,
-        });
-    }
-
-    updateReportTransferOfCategoryInMultipleRegionsCompleted(
-        reportsEnabled: boolean
-    ) {
-        this.exerciseService.proposeAction({
-            type: '[ReportBehavior] Update report transfer of category in multiple regions completed',
-            simulatedRegionId: this.simulatedRegionId,
-            behaviorId: this.reportBehaviorId,
-            reportChanges: reportsEnabled,
-        });
-    }
-
     updateInterval(informationType: ReportableInformation, interval: string) {
         this.exerciseService.proposeAction({
             type: '[ReportBehavior] Update Recurring Report',
