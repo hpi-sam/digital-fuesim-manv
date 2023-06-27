@@ -5,7 +5,7 @@ import { SignallerModalRecurringReportModalComponent } from './signaller-modal-r
 export function openSimulationSignallerModalRecurringReportModal(
     ngbModalService: NgbModal,
     simulatedRegionId: UUID,
-    reportableInformation: ReportableInformation
+    informationType: ReportableInformation
 ) {
     const component = ngbModalService.open(
         SignallerModalRecurringReportModalComponent,
@@ -15,5 +15,5 @@ export function openSimulationSignallerModalRecurringReportModal(
     ).componentInstance as SignallerModalRecurringReportModalComponent;
 
     component.simulatedRegionId = simulatedRegionId;
-    component.reportableInformation = reportableInformation;
+    component.informationType = informationType;
 }

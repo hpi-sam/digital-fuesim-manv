@@ -25,15 +25,16 @@ export class SignallerModalRecurringReportModalComponent implements OnInit {
     simulatedRegionId!: UUID;
 
     @Input()
-    reportableInformation!: ReportableInformation;
+    informationType!: ReportableInformation;
 
     public get humanReadableReportType() {
         return reportableInformationTypeToGermanNameDictionary[
-            this.reportableInformation
+            this.informationType
         ];
     }
 
     public reportBehaviorId: UUID | null = null;
+    public recurringActivityId: UUID | null = null;
     public reportsEnabled = false;
     public reportInterval = 15 * 60 * 1000;
 
@@ -64,10 +65,11 @@ export class SignallerModalRecurringReportModalComponent implements OnInit {
             const recurringActivity = recurringActivities.find(
                 (activity) =>
                     activity.id ===
-                    reportBehavior.activityIds[this.reportableInformation]
+                    reportBehavior.activityIds[this.informationType]
             );
 
             this.reportsEnabled = !!recurringActivity;
+            this.recurringActivityId = recurringActivity?.id ?? null;
             this.reportInterval =
                 recurringActivity?.recurrenceIntervalTime ?? 15 * 60 * 1000;
         }
@@ -77,23 +79,44 @@ export class SignallerModalRecurringReportModalComponent implements OnInit {
         this.reportInterval = Number(newInterval) * 60 * 1000;
     }
 
-    public changeEnabledState(newState: boolean) {
-        if (newState) {
+    public submit() {
+        if (!this.reportBehaviorId) {
+            this.close();
+            return;
+        }
+
+        if (this.reportsEnabled && !this.recurringActivityId) {
+            // Reports are currently not enabled but should be
             this.exerciseService.proposeAction({
                 type: '[ReportBehavior] Create Recurring Report',
                 simulatedRegionId: this.simulatedRegionId,
-                behaviorId: '', // TODO:
-                informationType: this.reportableInformation,
-                interval: 0, // TODO:
+                behaviorId: this.reportBehaviorId,
+                informationType: this.informationType,
+                interval: this.reportInterval,
             });
-        } else {
+        } else if (this.reportsEnabled && this.recurringActivityId) {
+            // Reports are currently enabled and should still be
+            this.exerciseService.proposeAction({
+                type: '[ReportBehavior] Update Recurring Report',
+                simulatedRegionId: this.simulatedRegionId,
+                behaviorId: this.reportBehaviorId,
+                informationType: this.informationType,
+                interval: this.reportInterval,
+            });
+        } else if (!this.reportsEnabled && this.recurringActivityId) {
+            // Reports are currently enabled but should not be
             this.exerciseService.proposeAction({
                 type: '[ReportBehavior] Remove Recurring Report',
                 simulatedRegionId: this.simulatedRegionId,
-                behaviorId: '', // TODO:
-                informationType: this.reportableInformation,
+                behaviorId: this.reportBehaviorId,
+                informationType: this.informationType,
             });
+        } else if (!this.reportsEnabled && !this.recurringActivityId) {
+            // Reports are currently not enabled and should not be
+            // Do nothing
         }
+
+        this.close();
     }
 
     public close() {
