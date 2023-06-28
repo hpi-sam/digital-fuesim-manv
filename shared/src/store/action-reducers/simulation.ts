@@ -166,7 +166,7 @@ export class UpdateReportTreatmentStatusChangesAction implements Action {
     public readonly behaviorId!: UUID;
 
     @IsBoolean()
-    public readonly reportTreatmentProgressChanges!: boolean;
+    public readonly reportChanges!: boolean;
 }
 
 export class UpdateReportTransferOfCategoryInSingleRegionCompletedAction
@@ -834,11 +834,7 @@ export namespace SimulationActionReducers {
             action: UpdateReportTreatmentStatusChangesAction,
             reducer(
                 draftState,
-                {
-                    simulatedRegionId,
-                    behaviorId,
-                    reportTreatmentProgressChanges,
-                }
+                { simulatedRegionId, behaviorId, reportChanges }
             ) {
                 const simulatedRegion = getElement(
                     draftState,
@@ -862,14 +858,14 @@ export namespace SimulationActionReducers {
                     } Verhalten im Bereich ${
                         simulatedRegion.name
                     } wird Behandlungsfortschrittsänderungen ${
-                        reportTreatmentProgressChanges ? '' : 'nicht '
+                        reportChanges ? '' : 'nicht '
                     }melden.`,
                     simulatedRegionId,
                     behaviorId
                 );
 
                 reportBehaviorState.reportTreatmentProgressChanges =
-                    reportTreatmentProgressChanges;
+                    reportChanges;
 
                 return draftState;
             },

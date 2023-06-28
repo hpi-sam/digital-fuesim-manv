@@ -123,7 +123,7 @@ export class SignallerModalRegionInformationComponent
         },
         // TODO: Patient details
     ];
-    hasReportBehavior$!: Observable<boolean>;
+    reportBehaviorId$!: Observable<UUID | null>;
 
     constructor(
         private readonly exerciseService: ExerciseService,
@@ -140,9 +140,12 @@ export class SignallerModalRegionInformationComponent
             createSelectBehaviorStates(this.simulatedRegionId)
         );
 
-        this.hasReportBehavior$ = behaviors$.pipe(
-            map((behaviors) =>
-                behaviors.some((behavior) => behavior.type === 'reportBehavior')
+        this.reportBehaviorId$ = behaviors$.pipe(
+            map(
+                (behaviors) =>
+                    behaviors.find(
+                        (behavior) => behavior.type === 'reportBehavior'
+                    )?.id ?? null
             )
         );
     }

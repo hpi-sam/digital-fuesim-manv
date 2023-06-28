@@ -1,6 +1,6 @@
 <h5>Informationen</h5>
 
-<p *ngIf="(hasReportBehavior$ | async) === false" class="text-danger">
+<p *ngIf="(reportBehaviorId$ | async) === null" class="text-danger">
     Diesem Bereich wurde die Verhaltensweise <em>Berichte erstellen</em> nicht
     zugewiesen. Daher können manche der unten genannten Informationen
     gegebenenfalls nicht abgefragt werden.
@@ -10,4 +10,13 @@
     [simulatedRegionId]="simulatedRegionId"
     [interactions]="informationInteractions"
     primaryActionLabel="Anfragen"
+/>
+
+<h5>Automatische Berichte bei Ereignissen</h5>
+
+<app-simulation-event-based-report-editor
+    *ngIf="(reportBehaviorId$ | async) !== null"
+    [simulatedRegionId]="simulatedRegionId"
+    [reportBehaviorId]="(reportBehaviorId$ | async)!"
+    [useHotkeys]="true"
 />

@@ -1,66 +1,152 @@
-import type { OnInit } from '@angular/core';
+import type { OnChanges, SimpleChanges } from '@angular/core';
 import { Component, Input } from '@angular/core';
 import { Store } from '@ngrx/store';
-import type { ReportBehaviorState } from 'digital-fuesim-manv-shared';
-import { UUID } from 'digital-fuesim-manv-shared';
+import type {
+    ReportBehaviorState,
+    SimulationBehaviorState,
+} from 'digital-fuesim-manv-shared';
+import { StrictObject, UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
+import type { HotkeyLayer } from 'src/app/shared/services/hotkeys.service';
+import {
+    Hotkey,
+    HotkeysService,
+} from 'src/app/shared/services/hotkeys.service';
 import type { AppState } from 'src/app/state/app.state';
 import { createSelectBehaviorState } from 'src/app/state/application/selectors/exercise.selectors';
+import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
+
+type EnabledKey = Exclude<
+    keyof ReportBehaviorState,
+    keyof SimulationBehaviorState | 'activityIds'
+>;
+
+const eventBasedReportData = {
+    treatmentProgressChange: {
+        actionType: '[ReportBehavior] Update report treatment status changes',
+        enabledKey: 'reportTreatmentProgressChanges',
+        description: 'Wenn sich die Behandlungsphase ändert',
+        hotkeyKeys: '9',
+    },
+    transferOfCategoryInSingleRegionCompleted: {
+        actionType:
+            '[ReportBehavior] Update report transfer of category in single region completed',
+        enabledKey: 'reportTransferOfCategoryInSingleRegionCompleted',
+        description:
+            'Wenn in dieser Patientenablage alle Patienten einer SK abtransportiert wurden',
+        hotkeyKeys: '0',
+    },
+    transferOfCategoryInMultipleRegionsCompleted: {
+        actionType:
+            '[ReportBehavior] Update report transfer of category in multiple regions completed',
+        enabledKey: 'reportTransferOfCategoryInMultipleRegionsCompleted',
+        description:
+            'Wenn in allen Patientenablagen dieser Transportorganisation alle Patienten einer SK abtransportiert wurden',
+        hotkeyKeys: '?',
+    },
+} as const;
+
+type EventId = keyof typeof eventBasedReportData;
+
+interface EventBasedReport {
+    eventId: EventId;
+    description: string;
+    enabledKey: EnabledKey;
+    changeCallback: (isEnabled: boolean) => void;
+    hotkey: Hotkey;
+}
 
 @Component({
     selector: 'app-simulation-event-based-report-editor',
     templateUrl: './simulation-event-based-report-editor.component.html',
     styleUrls: ['./simulation-event-based-report-editor.component.scss'],
 })
-export class SimulationEventBasedReportEditorComponent implements OnInit {
+export class SimulationEventBasedReportEditorComponent implements OnChanges {
     @Input() simulatedRegionId!: UUID;
     @Input() reportBehaviorId!: UUID;
+    @Input() useHotkeys = false;
+
+    private hotkeyLayer: HotkeyLayer | null = null;
+
+    eventBasedReports: EventBasedReport[];
 
     reportBehaviorState$!: Observable<ReportBehaviorState>;
 
     constructor(
         private readonly exerciseService: ExerciseService,
-        private readonly store: Store<AppState>
-    ) {}
-
-    ngOnInit() {
-        this.reportBehaviorState$ = this.store.select(
-            createSelectBehaviorState<ReportBehaviorState>(
-                this.simulatedRegionId,
-                this.reportBehaviorId
-            )
+        private readonly store: Store<AppState>,
+        private readonly hotkeysService: HotkeysService
+    ) {
+        this.eventBasedReports = StrictObject.entries(eventBasedReportData).map(
+            ([eventId, eventDetails]) => ({
+                eventId,
+                enabledKey: eventDetails.enabledKey,
+                description: eventDetails.description,
+                changeCallback: (isEnabled) =>
+                    this.updateEventBasedReport(eventId, isEnabled),
+                hotkey: new Hotkey(eventDetails.hotkeyKeys, false, () =>
+                    this.toggleEventBasedReport(eventId)
+                ),
+            })
         );
     }
 
-    updateReportTreatmentProgressChanges(reportsEnabled: boolean) {
-        this.exerciseService.proposeAction({
-            type: '[ReportBehavior] Update report treatment status changes',
-            simulatedRegionId: this.simulatedRegionId,
-            behaviorId: this.reportBehaviorId,
-            reportTreatmentProgressChanges: reportsEnabled,
+    ngOnChanges(changes: SimpleChanges): void {
+        if ('useHotkeys' in changes) {
+            if (this.useHotkeys && !this.hotkeyLayer) {
+                this.hotkeyLayer = this.hotkeysService.createLayer();
+                this.registerHotkeys();
+            } else if (!this.useHotkeys && this.hotkeyLayer) {
+                this.hotkeysService.removeLayer(this.hotkeyLayer);
+                this.hotkeyLayer = null;
+            }
+        }
+
+        if ('simulatedRegionId' in changes || 'reportBehaviorId' in changes) {
+            this.reportBehaviorState$ = this.store.select(
+                createSelectBehaviorState<ReportBehaviorState>(
+                    this.simulatedRegionId,
+                    this.reportBehaviorId
+                )
+            );
+        }
+    }
+
+    registerHotkeys() {
+        if (!this.hotkeyLayer) return;
+
+        this.eventBasedReports.forEach((eventBasedReport) => {
+            this.hotkeyLayer?.addHotkey(eventBasedReport.hotkey);
         });
     }
 
-    updateReportTransferOfCategoryInSingleRegionCompleted(
-        reportsEnabled: boolean
-    ) {
+    updateEventBasedReport(type: EventId, isEnabled: boolean) {
         this.exerciseService.proposeAction({
-            type: '[ReportBehavior] Update report transfer of category in single region completed',
+            type: eventBasedReportData[type]!.actionType,
             simulatedRegionId: this.simulatedRegionId,
             behaviorId: this.reportBehaviorId,
-            reportChanges: reportsEnabled,
+            reportChanges: isEnabled,
         });
     }
 
-    updateReportTransferOfCategoryInMultipleRegionsCompleted(
-        reportsEnabled: boolean
-    ) {
+    toggleEventBasedReport(eventId: EventId) {
+        // ESLint seems to be wrong here. Without the type assertion, we receive an ExerciseSimulationBehaviorState
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+        const reportBehavior = selectStateSnapshot(
+            createSelectBehaviorState(
+                this.simulatedRegionId,
+                this.reportBehaviorId
+            ),
+            this.store
+        ) as ReportBehaviorState;
+
         this.exerciseService.proposeAction({
-            type: '[ReportBehavior] Update report transfer of category in multiple regions completed',
+            type: eventBasedReportData[eventId].actionType,
             simulatedRegionId: this.simulatedRegionId,
             behaviorId: this.reportBehaviorId,
-            reportChanges: reportsEnabled,
+            reportChanges:
+                !reportBehavior[eventBasedReportData[eventId].enabledKey],
         });
     }
 }

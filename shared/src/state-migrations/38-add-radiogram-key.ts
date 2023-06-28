@@ -5,4 +5,6 @@ TODO:
 - Add `interfaceSignallerKey` (with value `null`) to all start collecting information events
 
 - Changes in the resource request radiogram (promised resource, can be accepted, ...)
+
+- Rename `reportTreatmentProgressChanges` in `UpdateReportTreatmentStatusChangesAction` to `reportChanges`
 */

@@ -1,54 +1,23 @@
-<div class="row align-items-center m-3">
+<div
+    *ngFor="let eventBasedReport of eventBasedReports"
+    class="row align-items-center m-3"
+>
     <div class="col-auto">
         <input
+            [id]="'eventBasedReportEditor_' + eventBasedReport.eventId"
             #timeInput="ngModel"
             [ngModel]="
-                (reportBehaviorState$ | async)?.reportTreatmentProgressChanges
+                (reportBehaviorState$ | async)?.[eventBasedReport.enabledKey]
             "
-            (appSaveOnTyping)="updateReportTreatmentProgressChanges($event)"
-            type="checkbox"
-            class="form-check-input no-validation"
-        />
-    </div>
-    <div class="col-sm">Wenn sich die Behandlungsphase ändert</div>
-</div>
-<div class="row align-items-center m-3">
-    <div class="col-auto">
-        <input
-            #timeInput="ngModel"
-            [ngModel]="
-                (reportBehaviorState$ | async)
-                    ?.reportTransferOfCategoryInSingleRegionCompleted
-            "
-            (appSaveOnTyping)="
-                updateReportTransferOfCategoryInSingleRegionCompleted($event)
-            "
+            (appSaveOnTyping)="eventBasedReport.changeCallback($event)"
             type="checkbox"
             class="form-check-input no-validation"
         />
     </div>
     <div class="col-sm">
-        Wenn in dieser Patientenablage alle Patienten einer SK abtransportiert
-        wurden
-    </div>
-</div>
-<div class="row align-items-center m-3">
-    <div class="col-auto">
-        <input
-            #timeInput="ngModel"
-            [ngModel]="
-                (reportBehaviorState$ | async)
-                    ?.reportTransferOfCategoryInMultipleRegionsCompleted
-            "
-            (appSaveOnTyping)="
-                updateReportTransferOfCategoryInMultipleRegionsCompleted($event)
-            "
-            type="checkbox"
-            class="form-check-input no-validation"
-        />
-    </div>
-    <div class="col-sm">
-        Wenn in allen Patientenablagen dieser Transportorganisation alle
-        Patienten einer SK abtransportiert wurden
+        <label [for]="'eventBasedReportEditor_' + eventBasedReport.eventId">
+            {{ eventBasedReport.description }}
+            <app-hotkey-indicator [hotkey]="eventBasedReport.hotkey" />
+        </label>
     </div>
 </div>
