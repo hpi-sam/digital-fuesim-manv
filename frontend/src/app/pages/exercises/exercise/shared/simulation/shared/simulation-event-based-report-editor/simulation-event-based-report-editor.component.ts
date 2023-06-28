@@ -1,4 +1,4 @@
-import type { OnChanges, SimpleChanges } from '@angular/core';
+import type { OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
 import { Component, Input } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type {
@@ -62,7 +62,9 @@ interface EventBasedReport {
     templateUrl: './simulation-event-based-report-editor.component.html',
     styleUrls: ['./simulation-event-based-report-editor.component.scss'],
 })
-export class SimulationEventBasedReportEditorComponent implements OnChanges {
+export class SimulationEventBasedReportEditorComponent
+    implements OnChanges, OnDestroy
+{
     @Input() simulatedRegionId!: UUID;
     @Input() reportBehaviorId!: UUID;
     @Input() useHotkeys = false;
@@ -110,6 +112,13 @@ export class SimulationEventBasedReportEditorComponent implements OnChanges {
                     this.reportBehaviorId
                 )
             );
+        }
+    }
+
+    ngOnDestroy() {
+        if (this.hotkeyLayer) {
+            this.hotkeysService.removeLayer(this.hotkeyLayer);
+            this.hotkeyLayer = null;
         }
     }
 
