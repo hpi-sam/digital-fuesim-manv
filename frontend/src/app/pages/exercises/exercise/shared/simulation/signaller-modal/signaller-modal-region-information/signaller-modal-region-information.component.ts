@@ -54,6 +54,11 @@ export class SignallerModalRegionInformationComponent
             hotkey: new Hotkey('2', false, () =>
                 this.requestFullTransportProgress()
             ),
+            secondaryHotkey: new Hotkey('Shift + 2', true, () =>
+                this.openRecurringReportModal(
+                    'transportManagementTransferCounts'
+                )
+            ),
             requiredBehaviors: ['managePatientTransportToHospitalBehavior'],
             errorMessage: 'Dieser Bereich verwaltet keine Transporte',
             loading$: new BehaviorSubject<boolean>(false),
@@ -77,6 +82,9 @@ export class SignallerModalRegionInformationComponent
             title: 'Anzahl Fahrzeuge',
             details: 'nach Typ',
             hotkey: new Hotkey('4', false, () => this.requestVehicleCount()),
+            secondaryHotkey: new Hotkey('Shift + 4', true, () =>
+                this.openRecurringReportModal('vehicleCount')
+            ),
             requiredBehaviors: [],
             loading$: new BehaviorSubject<boolean>(false),
         },
@@ -87,6 +95,9 @@ export class SignallerModalRegionInformationComponent
                 'um alle Patienten zu behandeln (PA) oder Anfragen zu erfüllen (B-Raum)',
             hotkey: new Hotkey('5', false, () =>
                 this.requestRequiredResources()
+            ),
+            secondaryHotkey: new Hotkey('Shift + 5', true, () =>
+                this.openRecurringReportModal('requiredResources')
             ),
             requiredBehaviors: ['requestBehavior'],
             errorMessage:
@@ -99,6 +110,9 @@ export class SignallerModalRegionInformationComponent
             title: 'Behandlungsstatus',
             details: '(Erstversorgung sichergestellt?)',
             hotkey: new Hotkey('6', false, () => this.requestTreatmentStatus()),
+            secondaryHotkey: new Hotkey('Shift + 6', true, () =>
+                this.openRecurringReportModal('treatmentStatus')
+            ),
             requiredBehaviors: ['treatPatientsBehavior'],
             errorMessage: 'Dieser Bereich behandelt keine Patienten',
             loading$: new BehaviorSubject<boolean>(false),
@@ -112,6 +126,9 @@ export class SignallerModalRegionInformationComponent
             hotkey: new Hotkey('7', false, () =>
                 this.requestTransferConnections()
             ),
+            secondaryHotkey: new Hotkey('Shift + 7', true, () =>
+                this.openRecurringReportModal('transferConnections')
+            ),
             requiredBehaviors: [],
             loading$: new BehaviorSubject<boolean>(false),
         },
@@ -121,6 +138,9 @@ export class SignallerModalRegionInformationComponent
             title: 'Anzahl Personal',
             details: 'nach Typ',
             hotkey: new Hotkey('8', false, () => this.requestPersonnelCount()),
+            secondaryHotkey: new Hotkey('Shift + 8', true, () =>
+                this.openRecurringReportModal('personnelCount')
+            ),
             requiredBehaviors: [],
             loading$: new BehaviorSubject<boolean>(false),
         },
