@@ -71,10 +71,10 @@ import { SignallerModalRegionCommandsComponent } from './signaller-modal/signall
 import { SignallerModalNoLeaderOverlayComponent } from './signaller-modal/signaller-modal-no-leader-overlay/signaller-modal-no-leader-overlay.component';
 import { RadiogramCardContentTransferConnectionsComponent } from './trainer-modal/radiogram-list/radiogram-card/radiogram-card-content-transfer-connections/radiogram-card-content-transfer-connections.component';
 import { SignallerModalInteractionsComponent } from './signaller-modal/signaller-modal-interactions/signaller-modal-interactions.component';
-import { SignallerModalRecurringReportModalComponent } from './signaller-modal/signaller-modal-recurring-report-modal/signaller-modal-recurring-report-modal.component';
+import { SignallerModalRecurringReportModalComponent } from './signaller-modal/details-modal/signaller-modal-recurring-report-modal/signaller-modal-recurring-report-modal.component';
 import { SimulationEventBasedReportEditorComponent } from './shared/simulation-event-based-report-editor/simulation-event-based-report-editor.component';
-import { SignallerModalDetailsModalComponent } from './signaller-modal/signaller-modal-details-modal/signaller-modal-details-modal.component';
-import { SignallerModalDetailsService } from './signaller-modal/signaller-modal-details.service';
+import { SignallerModalDetailsModalComponent } from './signaller-modal/details-modal/signaller-modal-details-modal/signaller-modal-details-modal.component';
+import { SignallerModalDetailsService } from './signaller-modal/details-modal/signaller-modal-details.service';
 import { SignallerModalEocComponent } from './signaller-modal/signaller-modal-eoc/signaller-modal-eoc.component';
 
 @NgModule({

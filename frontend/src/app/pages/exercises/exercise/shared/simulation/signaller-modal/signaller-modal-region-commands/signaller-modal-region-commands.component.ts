@@ -6,7 +6,7 @@ import { Store, createSelector } from '@ngrx/store';
 import type { AppState } from 'src/app/state/app.state';
 import type { Observable } from 'rxjs';
 import { selectTransferPoints } from 'src/app/state/application/selectors/exercise.selectors';
-import { SignallerModalDetailsService } from '../signaller-modal-details.service';
+import { SignallerModalDetailsService } from '../details-modal/signaller-modal-details.service';
 import type { InterfaceSignallerInteraction } from '../signaller-modal-interactions/signaller-modal-interactions.component';
 
 @Component({
@@ -36,9 +36,10 @@ export class SignallerModalRegionCommandsComponent implements OnChanges {
             title: 'Patienten abtransportieren',
             details: '(nur eine Sichtungskategorie)',
             hotkey: new Hotkey('B', false, () =>
-                this.editTransferConnections()
+                this.startTransportOfCategory()
             ),
-            requiredBehaviors: [],
+            requiredBehaviors: ['managePatientTransportToHospitalBehavior'],
+            errorMessage: 'Dieser Bereich verwaltet keine Transporte',
         },
         {
             key: 'provideVehicles',
@@ -82,10 +83,14 @@ export class SignallerModalRegionCommandsComponent implements OnChanges {
         );
     }
 
-    public editTransferConnections() {
+    editTransferConnections() {
         this.detailsModal.open(
             'Transferverbindungen bearbeiten',
             this.transferConnectionsEditor
         );
+    }
+
+    startTransportOfCategory() {
+        //
     }
 }

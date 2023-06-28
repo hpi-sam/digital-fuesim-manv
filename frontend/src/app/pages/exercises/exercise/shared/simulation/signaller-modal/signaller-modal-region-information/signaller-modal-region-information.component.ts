@@ -14,7 +14,7 @@ import {
     setLoadingState,
     type InterfaceSignallerInteraction,
 } from '../signaller-modal-interactions/signaller-modal-interactions.component';
-import { SignallerModalDetailsService } from '../signaller-modal-details.service';
+import { SignallerModalDetailsService } from '../details-modal/signaller-modal-details.service';
 
 @Component({
     selector: 'app-signaller-modal-region-information',
