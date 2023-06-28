@@ -1,6 +1,5 @@
 import type { OnInit } from '@angular/core';
 import { Component, Input } from '@angular/core';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
 import {
     ReportableInformation,
@@ -14,6 +13,7 @@ import {
     createSelectBehaviorStatesByType,
 } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
+import { SignallerModalDetailsService } from '../signaller-modal-details.service';
 
 @Component({
     selector: 'app-signaller-modal-recurring-report-modal',
@@ -41,7 +41,7 @@ export class SignallerModalRecurringReportModalComponent implements OnInit {
     constructor(
         private readonly exerciseService: ExerciseService,
         private readonly store: Store<AppState>,
-        private readonly activeModal: NgbActiveModal
+        private readonly detailsModal: SignallerModalDetailsService
     ) {}
 
     ngOnInit() {
@@ -120,6 +120,6 @@ export class SignallerModalRecurringReportModalComponent implements OnInit {
     }
 
     public close() {
-        this.activeModal.close();
+        this.detailsModal.close();
     }
 }

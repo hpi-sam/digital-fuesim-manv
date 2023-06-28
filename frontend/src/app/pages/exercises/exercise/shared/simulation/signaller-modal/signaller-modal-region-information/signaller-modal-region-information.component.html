@@ -12,6 +12,14 @@
     primaryActionLabel="Anfragen"
 />
 
+<ng-template #recurringReportEditor>
+    <app-signaller-modal-recurring-report-modal
+        *ngIf="informationTypeToEdit !== null"
+        [simulatedRegionId]="simulatedRegionId"
+        [informationType]="informationTypeToEdit"
+    />
+</ng-template>
+
 <h5>Automatische Berichte bei Ereignissen</h5>
 
 <app-simulation-event-based-report-editor

@@ -1,5 +1,5 @@
 import type { OnChanges, OnInit } from '@angular/core';
-import { Component, Input } from '@angular/core';
+import { Component, Input, TemplateRef, ViewChild } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type { ReportableInformation } from 'digital-fuesim-manv-shared';
 import { UUID, makeInterfaceSignallerKey } from 'digital-fuesim-manv-shared';
@@ -10,12 +10,11 @@ import type { AppState } from 'src/app/state/app.state';
 import { selectOwnClientId } from 'src/app/state/application/selectors/application.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { createSelectBehaviorStates } from 'src/app/state/application/selectors/exercise.selectors';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import {
     setLoadingState,
     type InterfaceSignallerInteraction,
 } from '../signaller-modal-interactions/signaller-modal-interactions.component';
-import { openSimulationSignallerModalRecurringReportModal } from '../open-simulation-signaller-modal-recurring-report-modal';
+import { SignallerModalDetailsService } from '../signaller-modal-details.service';
 
 @Component({
     selector: 'app-signaller-modal-region-information',
@@ -28,6 +27,11 @@ export class SignallerModalRegionInformationComponent
     @Input()
     simulatedRegionId!: UUID;
 
+    @ViewChild('recurringReportEditor')
+    recurringReportEditor!: TemplateRef<any>;
+
+    informationTypeToEdit: ReportableInformation | null = null;
+
     private clientId!: UUID;
 
     informationInteractions: InterfaceSignallerInteraction[] = [
@@ -37,11 +41,7 @@ export class SignallerModalRegionInformationComponent
             details: 'nach Sichtungskategorie',
             hotkey: new Hotkey('1', false, () => this.requestPatientCount()),
             secondaryHotkey: new Hotkey('Shift + 1', true, () =>
-                openSimulationSignallerModalRecurringReportModal(
-                    this.modalService,
-                    this.simulatedRegionId,
-                    'patientCount'
-                )
+                this.openRecurringReportModal('patientCount')
             ),
             requiredBehaviors: ['treatPatientsBehavior'],
             errorMessage: 'Dieser Bereich behandelt keine Patienten',
@@ -64,6 +64,9 @@ export class SignallerModalRegionInformationComponent
             details: 'für diesen Bereich',
             hotkey: new Hotkey('3', false, () =>
                 this.requestRegionTransportProgress()
+            ),
+            secondaryHotkey: new Hotkey('Shift + 3', true, () =>
+                this.openRecurringReportModal('singleRegionTransferCounts')
             ),
             requiredBehaviors: ['transferToHospitalBehavior'],
             errorMessage: 'Dieser Bereich verwaltet keine Transporte',
@@ -128,7 +131,7 @@ export class SignallerModalRegionInformationComponent
     constructor(
         private readonly exerciseService: ExerciseService,
         private readonly store: Store<AppState>,
-        private readonly modalService: NgbModal
+        private readonly detailsModal: SignallerModalDetailsService
     ) {}
 
     ngOnInit() {
@@ -147,6 +150,15 @@ export class SignallerModalRegionInformationComponent
                         (behavior) => behavior.type === 'reportBehavior'
                     )?.id ?? null
             )
+        );
+    }
+
+    public openRecurringReportModal(informationType: ReportableInformation) {
+        this.informationTypeToEdit = informationType;
+
+        this.detailsModal.open(
+            'Automatischen Bericht bearbeiten',
+            this.recurringReportEditor
         );
     }
 

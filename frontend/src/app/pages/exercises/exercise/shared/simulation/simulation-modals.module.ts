@@ -73,6 +73,8 @@ import { RadiogramCardContentTransferConnectionsComponent } from './trainer-moda
 import { SignallerModalInteractionsComponent } from './signaller-modal/signaller-modal-interactions/signaller-modal-interactions.component';
 import { SignallerModalRecurringReportModalComponent } from './signaller-modal/signaller-modal-recurring-report-modal/signaller-modal-recurring-report-modal.component';
 import { SimulationEventBasedReportEditorComponent } from './shared/simulation-event-based-report-editor/simulation-event-based-report-editor.component';
+import { SignallerModalDetailsModalComponent } from './signaller-modal/signaller-modal-details-modal/signaller-modal-details-modal.component';
+import { SignallerModalDetailsService } from './signaller-modal/signaller-modal-details.service';
 
 @NgModule({
     declarations: [
@@ -134,12 +136,14 @@ import { SimulationEventBasedReportEditorComponent } from './shared/simulation-e
         SignallerModalInteractionsComponent,
         SignallerModalRecurringReportModalComponent,
         SimulationEventBasedReportEditorComponent,
+        SignallerModalDetailsModalComponent,
     ],
     exports: [SimulatedRegionOverviewGeneralComponent],
     providers: [
         SelectPatientService,
         StartTransferService,
         SelectSignallerRegionService,
+        SignallerModalDetailsService,
     ],
     imports: [
         FormsModule,
