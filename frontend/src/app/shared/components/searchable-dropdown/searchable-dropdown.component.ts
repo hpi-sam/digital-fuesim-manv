@@ -10,7 +10,7 @@ import {
 import type { HotkeyLayer } from '../../services/hotkeys.service';
 import { Hotkey, HotkeysService } from '../../services/hotkeys.service';
 
-interface Option {
+export interface SearchableDropdownOption {
     name: string;
     identifier: string;
     color?: string;
@@ -27,7 +27,7 @@ export class SearchableDropdownComponent
     implements OnInit, AfterViewInit, OnDestroy
 {
     @Input()
-    public options: Option[] = [];
+    public options: SearchableDropdownOption[] = [];
 
     public filter = '';
     public selectedIndex = -1;

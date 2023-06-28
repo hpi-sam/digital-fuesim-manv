@@ -27,7 +27,9 @@
                     "
                     [disabled]="!enabled || loading"
                     class="btn btn-primary"
-                    (click)="interaction.hotkey.callback()"
+                    (click)="
+                        interaction.hotkey.callback(undefined!, undefined!)
+                    "
                 >
                     {{ primaryActionLabel }}
                     <app-hotkey-indicator
@@ -48,7 +50,12 @@
                         !enabled || interaction.secondaryHotkey === undefined
                     "
                     class="btn btn-secondary ms-1"
-                    (click)="interaction.secondaryHotkey?.callback()"
+                    (click)="
+                        interaction.secondaryHotkey?.callback(
+                            undefined!,
+                            undefined!
+                        )
+                    "
                 >
                     <i class="bi bi-clock-history"></i>
                     <app-hotkey-indicator
