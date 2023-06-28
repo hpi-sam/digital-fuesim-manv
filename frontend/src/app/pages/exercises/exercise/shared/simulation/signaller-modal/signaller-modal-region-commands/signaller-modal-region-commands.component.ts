@@ -1,6 +1,12 @@
-import { Component, Input } from '@angular/core';
-import { UUID } from 'digital-fuesim-manv-shared';
+import type { OnChanges } from '@angular/core';
+import { Component, Input, TemplateRef, ViewChild } from '@angular/core';
+import { UUID, isInSpecificSimulatedRegion } from 'digital-fuesim-manv-shared';
 import { Hotkey } from 'src/app/shared/services/hotkeys.service';
+import { Store, createSelector } from '@ngrx/store';
+import type { AppState } from 'src/app/state/app.state';
+import type { Observable } from 'rxjs';
+import { selectTransferPoints } from 'src/app/state/application/selectors/exercise.selectors';
+import { SignallerModalDetailsService } from '../signaller-modal-details.service';
 import type { InterfaceSignallerInteraction } from '../signaller-modal-interactions/signaller-modal-interactions.component';
 
 @Component({
@@ -8,19 +14,21 @@ import type { InterfaceSignallerInteraction } from '../signaller-modal-interacti
     templateUrl: './signaller-modal-region-commands.component.html',
     styleUrls: ['./signaller-modal-region-commands.component.scss'],
 })
-export class SignallerModalRegionCommandsComponent {
+export class SignallerModalRegionCommandsComponent implements OnChanges {
     @Input()
     simulatedRegionId!: UUID;
+
+    @ViewChild('transferConnectionsEditor')
+    transferConnectionsEditor!: TemplateRef<any>;
+
+    ownTransferPointId$!: Observable<UUID>;
 
     commandInteractions: InterfaceSignallerInteraction[] = [
         {
             key: 'editTransferConnections',
             title: 'Lage eines Bereichs',
             details: '(stellt eine Transferverbindung her)',
-            hotkey: new Hotkey('A', true, () =>
-                // this.editTransferConnections()
-                console.log('YYY')
-            ),
+            hotkey: new Hotkey('A', true, () => this.editTransferConnections()),
             requiredBehaviors: [],
         },
         {
@@ -54,7 +62,30 @@ export class SignallerModalRegionCommandsComponent {
         },
     ];
 
+    constructor(
+        private readonly store: Store<AppState>,
+        private readonly detailsModal: SignallerModalDetailsService
+    ) {}
+
+    ngOnChanges() {
+        this.ownTransferPointId$ = this.store.select(
+            createSelector(
+                selectTransferPoints,
+                (transferPoints) =>
+                    Object.values(transferPoints).find((transferPoint) =>
+                        isInSpecificSimulatedRegion(
+                            transferPoint,
+                            this.simulatedRegionId
+                        )
+                    )!.id
+            )
+        );
+    }
+
     public editTransferConnections() {
-        //
+        this.detailsModal.open(
+            'Transferverbindungen bearbeiten',
+            this.transferConnectionsEditor
+        );
     }
 }

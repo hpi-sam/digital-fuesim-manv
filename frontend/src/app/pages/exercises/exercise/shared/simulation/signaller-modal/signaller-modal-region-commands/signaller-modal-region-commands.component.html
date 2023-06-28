@@ -6,3 +6,10 @@
     primaryActionLabel="Anordnen"
     [showSecondaryButton]="false"
 />
+
+<ng-template #transferConnectionsEditor>
+    <app-other-transfer-point-tab
+        *ngIf="ownTransferPointId$ | async as transferPointId"
+        [transferPointId]="transferPointId"
+    />
+</ng-template>
