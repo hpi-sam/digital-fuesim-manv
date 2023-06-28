@@ -75,6 +75,7 @@ import { SignallerModalRecurringReportModalComponent } from './signaller-modal/s
 import { SimulationEventBasedReportEditorComponent } from './shared/simulation-event-based-report-editor/simulation-event-based-report-editor.component';
 import { SignallerModalDetailsModalComponent } from './signaller-modal/signaller-modal-details-modal/signaller-modal-details-modal.component';
 import { SignallerModalDetailsService } from './signaller-modal/signaller-modal-details.service';
+import { SignallerModalEocComponent } from './signaller-modal/signaller-modal-eoc/signaller-modal-eoc.component';
 
 @NgModule({
     declarations: [
@@ -137,6 +138,7 @@ import { SignallerModalDetailsService } from './signaller-modal/signaller-modal-
         SignallerModalRecurringReportModalComponent,
         SimulationEventBasedReportEditorComponent,
         SignallerModalDetailsModalComponent,
+        SignallerModalEocComponent,
     ],
     exports: [SimulatedRegionOverviewGeneralComponent],
     providers: [

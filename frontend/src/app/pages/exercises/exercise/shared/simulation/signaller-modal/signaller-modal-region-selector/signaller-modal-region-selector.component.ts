@@ -7,12 +7,16 @@ import {
 } from 'src/app/shared/services/hotkeys.service';
 import type { Observable } from 'rxjs';
 import { map, Subject, takeUntil } from 'rxjs';
-import type { UUID } from 'digital-fuesim-manv-shared';
 import { Store } from '@ngrx/store';
 import type { AppState } from 'src/app/state/app.state';
 import { selectSimulatedRegions } from 'src/app/state/application/selectors/exercise.selectors';
 import { NgbPopover } from '@ng-bootstrap/ng-bootstrap';
-import { SelectSignallerRegionService } from '../select-signaller-region.service';
+import type { SearchableDropdownOption } from 'src/app/shared/components/searchable-dropdown/searchable-dropdown.component';
+import type { SignallerRegionID } from '../select-signaller-region.service';
+import {
+    EOC_ID,
+    SelectSignallerRegionService,
+} from '../select-signaller-region.service';
 
 @Component({
     selector: 'app-signaller-modal-region-selector',
@@ -22,12 +26,7 @@ import { SelectSignallerRegionService } from '../select-signaller-region.service
 export class SignallerModalRegionSelectorComponent
     implements OnInit, OnDestroy
 {
-    public simulatedRegionNames$!: Observable<
-        {
-            name: string;
-            identifier: UUID;
-        }[]
-    >;
+    public simulatedRegionNames$!: Observable<SearchableDropdownOption[]>;
 
     private baseLayer!: HotkeyLayer;
 
@@ -53,16 +52,17 @@ export class SignallerModalRegionSelectorComponent
         this.simulatedRegionNames$ = this.store
             .select(selectSimulatedRegions)
             .pipe(
-                map((simulatedRegions) =>
-                    Object.entries(simulatedRegions)
+                map((simulatedRegions) => [
+                    { identifier: EOC_ID, name: 'Leitstelle' },
+                    ...Object.entries(simulatedRegions)
                         .sort(([, regionA], [, regionB]) =>
                             regionA.name.localeCompare(regionB.name)
                         )
                         .map(([id, region]) => ({
                             identifier: id,
                             name: region.name,
-                        }))
-                )
+                        })),
+                ])
             );
 
         this.baseLayer = this.hotkeys.createLayer();
@@ -86,7 +86,7 @@ export class SignallerModalRegionSelectorComponent
         this.destroy$.next();
     }
 
-    public selectRegion(id: UUID) {
+    public selectRegion(id: SignallerRegionID) {
         this.selectRegionService.selectSimulatedRegion(id);
     }
 }

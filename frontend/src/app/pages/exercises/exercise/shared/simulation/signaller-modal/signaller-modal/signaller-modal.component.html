@@ -19,21 +19,21 @@
         </div>
 
         <hr class="my-2" />
-        <div class="flex-grow-1 flex-shrink-1 overflow-auto">
+        <div
+            [ngSwitch]="selectRegionService.selectedSimulatedRegion$ | async"
+            class="flex-grow-1 flex-shrink-1 overflow-auto"
+        >
+            <p *ngSwitchCase="null" class="text-muted">
+                Bitte wählen Sie einen Bereich aus der oberen Liste aus, um in
+                dessen Namen zu funken.
+            </p>
+            <app-signaller-modal-eoc *ngSwitchCase="eocId" />
             <app-signaller-modal-region-overview
-                *ngIf="
-                    selectRegionService.selectedSimulatedRegion$
-                        | async as simulatedRegionId;
-                    else noSelectedRegion
+                *ngSwitchDefault
+                [simulatedRegionId]="
+                    (selectRegionService.selectedSimulatedRegion$ | async)!
                 "
-                [simulatedRegionId]="simulatedRegionId"
             />
-            <ng-template #noSelectedRegion>
-                <p class="text-muted">
-                    Bitte wählen Sie einen Bereich aus der oberen Liste aus, um
-                    in dessen Namen zu funken.
-                </p>
-            </ng-template>
         </div>
     </div>
 </div>
