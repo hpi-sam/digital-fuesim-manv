@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import type { UUID } from 'digital-fuesim-manv-shared';
 import { uuid } from 'digital-fuesim-manv-shared';
 import { ReplaySubject } from 'rxjs';
+import type { HotkeysEvent } from 'hotkeys-js';
 import hotkeys from 'hotkeys-js';
 
 export class Hotkey {
@@ -10,7 +11,10 @@ export class Hotkey {
     constructor(
         public readonly keys: string,
         public readonly isCombo: boolean,
-        public readonly callback: () => void
+        public readonly callback: (
+            keyboardEvent: KeyboardEvent,
+            hotkeysEvent: HotkeysEvent
+        ) => void
     ) {}
 
     public enable() {
@@ -81,8 +85,8 @@ export class HotkeysService {
 
     public recomputeHandlers() {
         Object.entries(this.registeredHotkeys).forEach(([hotkey, isCombo]) => {
-            if (isCombo) {
-                hotkeys.unbind(hotkey);
+            if (hotkey === '+') {
+                hotkeys.unbind('«');
             } else {
                 hotkeys.unbind(hotkey);
             }
@@ -95,8 +99,8 @@ export class HotkeysService {
             layer.hotkeys.forEach((hotkey) => {
                 const lowerCaseKeys = hotkey.keys.toLowerCase();
                 if (!(lowerCaseKeys in this.registeredHotkeys) && !disableAll) {
-                    if (hotkey.isCombo) {
-                        hotkeys(hotkey.keys, hotkey.callback);
+                    if (hotkey.keys === '+') {
+                        hotkeys('«', hotkey.callback);
                     } else {
                         hotkeys(hotkey.keys, hotkey.callback);
                     }
