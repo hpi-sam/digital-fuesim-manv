@@ -474,9 +474,7 @@ describe('A trainer on the exercise page', () => {
         cy.get(
             '[data-cy=transferPointPopupAddOtherTransferPointButton]'
         ).click();
-        cy.get(
-            '[data-cy=transferPointPopupAddOtherTransferPointDropdownButton]'
-        )
+        cy.get('[data-cy=searchableDropdownOptionButton]')
             .first()
             .click({ force: true });
 
@@ -519,9 +517,7 @@ describe('A trainer on the exercise page', () => {
         cy.get(
             '[data-cy=transferPointPopupAddOtherTransferPointButton]'
         ).click();
-        cy.get(
-            '[data-cy=transferPointPopupAddOtherTransferPointDropdownButton]'
-        )
+        cy.get('[data-cy=searchableDropdownOptionButton]')
             .first()
             .click({ force: true });
         cy.get('[data-cy=transferPointPopupDurationInput]')

@@ -19,6 +19,7 @@
         type="button"
         class="list-group-item list-group-item-action"
         [class.active]="selectedIndex === i"
+        data-cy="searchableDropdownOptionButton"
     >
         <span
             (mousedown)="selected.emit(option.identifier)"
