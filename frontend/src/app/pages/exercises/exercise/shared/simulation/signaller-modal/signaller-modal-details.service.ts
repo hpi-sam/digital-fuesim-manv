@@ -15,6 +15,7 @@ export class SignallerModalDetailsService {
             SignallerModalDetailsModalComponent,
             {
                 size: 'm',
+                keyboard: false,
             }
         );
         const component =
