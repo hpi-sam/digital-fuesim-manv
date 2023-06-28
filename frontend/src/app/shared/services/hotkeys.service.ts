@@ -99,11 +99,15 @@ export class HotkeysService {
             layer.hotkeys.forEach((hotkey) => {
                 const lowerCaseKeys = hotkey.keys.toLowerCase();
                 if (!(lowerCaseKeys in this.registeredHotkeys) && !disableAll) {
-                    if (hotkey.keys === '+') {
-                        hotkeys('«', hotkey.callback);
-                    } else {
-                        hotkeys(hotkey.keys, hotkey.callback);
+                    let keysToRegister = hotkey.keys;
+                    if (keysToRegister === '+') {
+                        keysToRegister = '«';
                     }
+
+                    hotkeys(keysToRegister, (keyboardEvent, hotkeysEvent) => {
+                        keyboardEvent.preventDefault();
+                        hotkey.callback(keyboardEvent, hotkeysEvent);
+                    });
 
                     this.registeredHotkeys[lowerCaseKeys] = hotkey.isCombo;
                     hotkey.enable();
