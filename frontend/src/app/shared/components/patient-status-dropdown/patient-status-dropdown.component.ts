@@ -14,6 +14,7 @@ export class PatientStatusDropdownComponent {
         'red',
     ];
     @Input() placement: 'end' | 'start' = 'start';
+    @Input() tabIndex = -1;
 
     @Output() readonly statusChanged = new EventEmitter<PatientStatus>();
 }
