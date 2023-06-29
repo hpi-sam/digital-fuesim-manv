@@ -25,6 +25,8 @@ export class SignallerModalRegionCommandsComponent implements OnChanges {
     transferConnectionsEditor!: TemplateRef<any>;
     @ViewChild('transferTraysEditor')
     transferTraysEditor!: TemplateRef<any>;
+    @ViewChild('transportOfCategoryEditor')
+    transportOfCategoryEditor!: TemplateRef<any>;
 
     ownTransferPointId$!: Observable<UUID>;
     manageTransportBehaviorId$!: Observable<UUID | null>;
@@ -124,6 +126,9 @@ export class SignallerModalRegionCommandsComponent implements OnChanges {
     }
 
     startTransportOfCategory() {
-        //
+        this.detailsModal.open(
+            'Abtransport einer bestimmten Sichtungskategorie',
+            this.transportOfCategoryEditor
+        );
     }
 }

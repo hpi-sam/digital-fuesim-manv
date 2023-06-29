@@ -76,6 +76,7 @@ import { SimulationEventBasedReportEditorComponent } from './shared/simulation-e
 import { SignallerModalDetailsModalComponent } from './signaller-modal/details-modal/signaller-modal-details-modal/signaller-modal-details-modal.component';
 import { SignallerModalDetailsService } from './signaller-modal/details-modal/signaller-modal-details.service';
 import { SignallerModalEocComponent } from './signaller-modal/signaller-modal-eoc/signaller-modal-eoc.component';
+import { SignallerModalStartTransferOfCategoryModalComponent } from './signaller-modal/details-modal/signaller-modal-start-transfer-of-category-modal/signaller-modal-start-transfer-of-category-modal.component';
 import { SignallerModalTransportTraysEditorComponent } from './signaller-modal/details-modal/signaller-modal-transport-trays-editor/signaller-modal-transport-trays-editor.component';
 
 @NgModule({
@@ -140,6 +141,7 @@ import { SignallerModalTransportTraysEditorComponent } from './signaller-modal/d
         SimulationEventBasedReportEditorComponent,
         SignallerModalDetailsModalComponent,
         SignallerModalEocComponent,
+        SignallerModalStartTransferOfCategoryModalComponent,
         SignallerModalTransportTraysEditorComponent,
     ],
     exports: [SimulatedRegionOverviewGeneralComponent],
