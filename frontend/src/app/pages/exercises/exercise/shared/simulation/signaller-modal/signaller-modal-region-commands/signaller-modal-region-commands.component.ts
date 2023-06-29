@@ -4,8 +4,11 @@ import { UUID, isInSpecificSimulatedRegion } from 'digital-fuesim-manv-shared';
 import { Hotkey } from 'src/app/shared/services/hotkeys.service';
 import { Store, createSelector } from '@ngrx/store';
 import type { AppState } from 'src/app/state/app.state';
-import type { Observable } from 'rxjs';
-import { selectTransferPoints } from 'src/app/state/application/selectors/exercise.selectors';
+import { map, type Observable } from 'rxjs';
+import {
+    createSelectBehaviorStatesByType,
+    selectTransferPoints,
+} from 'src/app/state/application/selectors/exercise.selectors';
 import { SignallerModalDetailsService } from '../details-modal/signaller-modal-details.service';
 import type { InterfaceSignallerInteraction } from '../signaller-modal-interactions/signaller-modal-interactions.component';
 
@@ -20,8 +23,11 @@ export class SignallerModalRegionCommandsComponent implements OnChanges {
 
     @ViewChild('transferConnectionsEditor')
     transferConnectionsEditor!: TemplateRef<any>;
+    @ViewChild('transferTraysEditor')
+    transferTraysEditor!: TemplateRef<any>;
 
     ownTransferPointId$!: Observable<UUID>;
+    manageTransportBehaviorId$!: Observable<UUID | null>;
 
     commandInteractions: InterfaceSignallerInteraction[] = [
         {
@@ -32,10 +38,21 @@ export class SignallerModalRegionCommandsComponent implements OnChanges {
             requiredBehaviors: [],
         },
         {
+            key: 'editTransferPatientTrays',
+            title: 'PAs für Abtransport festlegen',
+            details:
+                '(aus welchen Patientenablagen sollen Patienten ins Krankenhaus gebracht werden)',
+            hotkey: new Hotkey('B', true, () =>
+                this.editTransferPatientTrays()
+            ),
+            requiredBehaviors: ['managePatientTransportToHospitalBehavior'],
+            errorMessage: 'Dieser Bereich verwaltet keine Transporte',
+        },
+        {
             key: 'startTransportOfCategory',
             title: 'Patienten abtransportieren',
             details: '(nur eine Sichtungskategorie)',
-            hotkey: new Hotkey('B', false, () =>
+            hotkey: new Hotkey('C', false, () =>
                 this.startTransportOfCategory()
             ),
             requiredBehaviors: ['managePatientTransportToHospitalBehavior'],
@@ -45,7 +62,7 @@ export class SignallerModalRegionCommandsComponent implements OnChanges {
             key: 'provideVehicles',
             title: 'Fahrzeuge bereitstellen',
             details: '(entsendet Fahrzeuge in einen anderen Bereich)',
-            hotkey: new Hotkey('C', false, () =>
+            hotkey: new Hotkey('D', false, () =>
                 this.editTransferConnections()
             ),
             requiredBehaviors: [],
@@ -56,7 +73,7 @@ export class SignallerModalRegionCommandsComponent implements OnChanges {
             key: 'provideVehicles',
             title: 'Fahrzeuge bereitstellen',
             details: '(entsendet Fahrzeuge in einen anderen Bereich)',
-            hotkey: new Hotkey('C', false, () =>
+            hotkey: new Hotkey('E', false, () =>
                 this.editTransferConnections()
             ),
             requiredBehaviors: [],
@@ -81,12 +98,28 @@ export class SignallerModalRegionCommandsComponent implements OnChanges {
                     )!.id
             )
         );
+
+        this.manageTransportBehaviorId$ = this.store
+            .select(
+                createSelectBehaviorStatesByType(
+                    this.simulatedRegionId,
+                    'managePatientTransportToHospitalBehavior'
+                )
+            )
+            .pipe(map((behaviorStates) => behaviorStates[0]?.id ?? null));
     }
 
     editTransferConnections() {
         this.detailsModal.open(
             'Transferverbindungen bearbeiten',
             this.transferConnectionsEditor
+        );
+    }
+
+    editTransferPatientTrays() {
+        this.detailsModal.open(
+            'PAs für Abtransport festlegen',
+            this.transferTraysEditor
         );
     }
 

@@ -76,6 +76,7 @@ import { SimulationEventBasedReportEditorComponent } from './shared/simulation-e
 import { SignallerModalDetailsModalComponent } from './signaller-modal/details-modal/signaller-modal-details-modal/signaller-modal-details-modal.component';
 import { SignallerModalDetailsService } from './signaller-modal/details-modal/signaller-modal-details.service';
 import { SignallerModalEocComponent } from './signaller-modal/signaller-modal-eoc/signaller-modal-eoc.component';
+import { SignallerModalTransportTraysEditorComponent } from './signaller-modal/details-modal/signaller-modal-transport-trays-editor/signaller-modal-transport-trays-editor.component';
 
 @NgModule({
     declarations: [
@@ -139,6 +140,7 @@ import { SignallerModalEocComponent } from './signaller-modal/signaller-modal-eo
         SimulationEventBasedReportEditorComponent,
         SignallerModalDetailsModalComponent,
         SignallerModalEocComponent,
+        SignallerModalTransportTraysEditorComponent,
     ],
     exports: [SimulatedRegionOverviewGeneralComponent],
     providers: [
