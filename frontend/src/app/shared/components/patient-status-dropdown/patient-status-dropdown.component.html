@@ -16,6 +16,7 @@
     <div ngbDropdownMenu class="position-absolute" style="min-width: 100px">
         <button
             *ngFor="let status of allowedStatuses"
+            type="button"
             ngbDropdownItem
             (click)="statusChanged.emit(status)"
             class="btn-outline-secondary"
