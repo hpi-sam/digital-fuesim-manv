@@ -12,6 +12,7 @@ import { ExerciseService } from 'src/app/core/exercise.service';
 import { MessageService } from 'src/app/core/messages/message.service';
 import type {
     ColorCode,
+    PatientStatus,
     UUID,
     VehicleTemplate,
 } from 'digital-fuesim-manv-shared';
@@ -41,7 +42,12 @@ import { openEditVehicleTemplateModal } from '../editor-panel/edit-vehicle-templ
  */
 export class TrainerMapEditorComponent {
     public currentCategory: ColorCode = 'X';
-    public readonly categories = ['X', 'Y', 'Z'] as const;
+    public readonly categories = ['green', 'yellow', 'red'] as const;
+    public readonly colorCodeOfCategories = {
+        green: 'X',
+        yellow: 'Y',
+        red: 'Z',
+    } as const;
 
     public readonly vehicleTemplates$ = this.store.select(
         selectVehicleTemplates
@@ -95,8 +101,12 @@ export class TrainerMapEditorComponent {
     }
 
     public setCurrentCategory(category: ColorCode) {
-        this.currentCategory = category;
+        this.currentCategory =
+            this.colorCodeOfCategories[
+                category as Exclude<PatientStatus, 'black' | 'blue' | 'white'>
+            ];
     }
+
     public async vehicleOnMouseDown(
         event: MouseEvent,
         vehicleTemplate: VehicleTemplate
