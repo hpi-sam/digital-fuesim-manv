@@ -49,6 +49,7 @@ import { SearchableDropdownComponent } from './components/searchable-dropdown/se
 import { PatientIdentifierComponent } from './components/patient-identifier/patient-identifier.component';
 import { HotkeysService } from './services/hotkeys.service';
 import { HotkeyIndicatorComponent } from './components/hotkey-indicator/hotkey-indicator.component';
+import { PatientStatusDropdownComponent } from './components/patient-status-dropdown/patient-status-dropdown.component';
 
 @NgModule({
     declarations: [
@@ -93,6 +94,7 @@ import { HotkeyIndicatorComponent } from './components/hotkey-indicator/hotkey-i
         SearchableDropdownComponent,
         PatientIdentifierComponent,
         HotkeyIndicatorComponent,
+        PatientStatusDropdownComponent,
     ],
     imports: [
         CommonModule,
@@ -140,6 +142,7 @@ import { HotkeyIndicatorComponent } from './components/hotkey-indicator/hotkey-i
         SearchableDropdownComponent,
         PatientIdentifierComponent,
         HotkeyIndicatorComponent,
+        PatientStatusDropdownComponent,
     ],
     providers: [HotkeysService],
 })
