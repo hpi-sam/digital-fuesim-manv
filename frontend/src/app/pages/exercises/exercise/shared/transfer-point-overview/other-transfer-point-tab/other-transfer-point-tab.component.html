@@ -67,6 +67,9 @@
         autoClose="outside"
         #selectTargetPopover="ngbPopover"
         [disabled]="((transferPointsToBeAdded$ | async)?.length ?? 0) === 0"
+        [tabIndex]="
+            (transferPoint.reachableTransferPoints | values).length * 2 + 1
+        "
         data-cy="transferPointPopupAddOtherTransferPointButton"
     >
         <span class="bi-plus me-1"></span>
