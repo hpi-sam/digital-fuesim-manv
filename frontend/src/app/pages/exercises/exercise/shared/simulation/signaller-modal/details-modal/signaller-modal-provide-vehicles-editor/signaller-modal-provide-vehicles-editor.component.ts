@@ -14,7 +14,7 @@ import {
     HotkeysService,
 } from 'src/app/shared/services/hotkeys.service';
 import type { AppState } from 'src/app/state/app.state';
-import { combineLatest, map, type Observable } from 'rxjs';
+import { combineLatest, map, tap, type Observable } from 'rxjs';
 import type { SearchableDropdownOption } from 'src/app/shared/components/searchable-dropdown/searchable-dropdown.component';
 import {
     selectCurrentTime,
@@ -51,6 +51,7 @@ export class SignallerModalProvideVehiclesEditorComponent
     selectTargetHotkey = new Hotkey('Z', false, () =>
         this.selectTargetPopover.open()
     );
+    submitHotkey = new Hotkey('Enter', false, () => this.startTransfer());
 
     availableVehicles$!: Observable<SearchableDropdownOption[]>;
     selectedVehicle: SearchableDropdownOption | null = null;
@@ -69,6 +70,7 @@ export class SignallerModalProvideVehiclesEditorComponent
         this.hotkeyLayer = this.hotkeysService.createLayer();
         this.hotkeyLayer.addHotkey(this.selectVehicleHotkey);
         this.hotkeyLayer.addHotkey(this.selectTargetHotkey);
+        this.hotkeyLayer.addHotkey(this.submitHotkey);
     }
 
     ngOnChanges() {
@@ -91,7 +93,18 @@ export class SignallerModalProvideVehiclesEditorComponent
                     name: vehicle.name,
                 }))
             ),
-            map((options) => this.sortOptions(options))
+            map((options) => this.sortOptions(options)),
+            tap((options) => {
+                if (
+                    !options.some(
+                        (option) =>
+                            option.identifier ===
+                            this.selectedVehicle?.identifier
+                    )
+                ) {
+                    this.selectedVehicle = null;
+                }
+            })
         );
 
         this.availableTargets$ = this.store.select(selectTransferPoints).pipe(
@@ -110,7 +123,18 @@ export class SignallerModalProvideVehiclesEditorComponent
                     name: TransferPoint.getFullName(transferPoint),
                 }))
             ),
-            map((options) => this.sortOptions(options))
+            map((options) => this.sortOptions(options)),
+            tap((options) => {
+                if (
+                    !options.some(
+                        (option) =>
+                            option.identifier ===
+                            this.selectedTarget?.identifier
+                    )
+                ) {
+                    this.selectedTarget = null;
+                }
+            })
         );
     }
 

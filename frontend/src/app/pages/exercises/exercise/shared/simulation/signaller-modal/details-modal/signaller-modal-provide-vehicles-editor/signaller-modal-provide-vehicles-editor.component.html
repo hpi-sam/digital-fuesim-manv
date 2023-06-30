@@ -74,7 +74,7 @@
         [tabIndex]="canSend ? 3 : -1"
     >
         Sende Fahrzeug
-        <app-hotkey-indicator keys="Enter" class="ms-1" />
+        <app-hotkey-indicator [hotkey]="submitHotkey" class="ms-1" />
     </button>
     <span class="row g-0 mt-2 text-muted">
         Mehrere Fahrzeuge bitte getrennt nacheinander senden.
