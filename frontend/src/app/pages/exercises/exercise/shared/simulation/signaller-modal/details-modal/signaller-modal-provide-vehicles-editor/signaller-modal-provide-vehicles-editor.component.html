@@ -1,0 +1,82 @@
+<form (ngSubmit)="startTransfer()">
+    <div class="d-flex flex-row align-items-center">
+        <label class="flex-shrink-1 text-nowrap">Sende Fahrzeug</label>
+        <button
+            [ngbPopover]="selectVehicleTemplate"
+            #selectVehiclePopover="ngbPopover"
+            placement="bottom"
+            [disabled]="((availableVehicles$ | async)?.length ?? 0) === 0"
+            [appAutofocus]="true"
+            tabindex="1"
+            class="btn btn-outline-primary flex-grow-1 flex-shrink-1 ms-2 d-flex flex-row"
+            style="width: 1px"
+            type="button"
+        >
+            <span
+                class="flex-grow-1 flex-shrink-1 text-nowrap overflow-hidden"
+                style="text-overflow: ellipsis; width: 1px"
+            >
+                {{
+                    selectedVehicle
+                        ? selectedVehicle.name
+                        : 'Fahrzeug auswählen'
+                }}
+            </span>
+            <app-hotkey-indicator
+                [hotkey]="selectVehicleHotkey"
+                class="flex-shrink-1 ms-1"
+            />
+            <i class="bi bi-caret-down-fill flex-shrink-1 ms-1"></i>
+        </button>
+        <ng-template #selectVehicleTemplate>
+            <app-searchable-dropdown
+                *ngIf="((availableVehicles$ | async)?.length ?? 0) !== 0"
+                [options]="(availableVehicles$ | async)!"
+                (selected)="selectVehicle($event); selectVehiclePopover.close()"
+            />
+        </ng-template>
+    </div>
+    <div class="mt-2 d-flex flex-row align-items-center">
+        <label class="flex-shrink-1 text-nowrap">nach</label>
+        <button
+            [ngbPopover]="selectTargetTemplate"
+            #selectTargetPopover="ngbPopover"
+            placement="bottom"
+            [disabled]="((availableTargets$ | async)?.length ?? 0) === 0"
+            tabindex="2"
+            class="btn btn-outline-primary flex-grow-1 flex-shrink-1 ms-2 d-flex flex-row"
+            style="width: 1px"
+            type="button"
+        >
+            <span
+                class="flex-grow-1 flex-shrink-1 text-nowrap overflow-hidden"
+                style="text-overflow: ellipsis; width: 1px"
+            >
+                {{ selectedTarget ? selectedTarget.name : 'Ziel auswählen' }}
+            </span>
+            <app-hotkey-indicator
+                [hotkey]="selectTargetHotkey"
+                class="flex-shrink-1 ms-1"
+            />
+            <i class="bi bi-caret-down-fill flex-shrink-1 ms-1"></i>
+        </button>
+        <ng-template #selectTargetTemplate>
+            <app-searchable-dropdown
+                *ngIf="((availableTargets$ | async)?.length ?? 0) !== 0"
+                [options]="(availableTargets$ | async)!"
+                (selected)="selectTarget($event); selectTargetPopover.close()"
+            />
+        </ng-template>
+    </div>
+    <button
+        [disabled]="!canSend"
+        class="btn btn-primary mt-2 row g-0 w-100"
+        [tabIndex]="canSend ? 3 : -1"
+    >
+        Sende Fahrzeug
+        <app-hotkey-indicator keys="Enter" class="ms-1" />
+    </button>
+    <span class="row g-0 mt-2 text-muted">
+        Mehrere Fahrzeuge bitte getrennt nacheinander senden.
+    </span>
+</form>

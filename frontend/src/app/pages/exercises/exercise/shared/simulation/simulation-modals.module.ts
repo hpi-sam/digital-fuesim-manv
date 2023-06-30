@@ -78,6 +78,7 @@ import { SignallerModalDetailsService } from './signaller-modal/details-modal/si
 import { SignallerModalEocComponent } from './signaller-modal/signaller-modal-eoc/signaller-modal-eoc.component';
 import { SignallerModalStartTransferOfCategoryModalComponent } from './signaller-modal/details-modal/signaller-modal-start-transfer-of-category-modal/signaller-modal-start-transfer-of-category-modal.component';
 import { SignallerModalTransportTraysEditorComponent } from './signaller-modal/details-modal/signaller-modal-transport-trays-editor/signaller-modal-transport-trays-editor.component';
+import { SignallerModalProvideVehiclesEditorComponent } from './signaller-modal/details-modal/signaller-modal-provide-vehicles-editor/signaller-modal-provide-vehicles-editor.component';
 
 @NgModule({
     declarations: [
@@ -143,6 +144,7 @@ import { SignallerModalTransportTraysEditorComponent } from './signaller-modal/d
         SignallerModalEocComponent,
         SignallerModalStartTransferOfCategoryModalComponent,
         SignallerModalTransportTraysEditorComponent,
+        SignallerModalProvideVehiclesEditorComponent,
     ],
     exports: [SimulatedRegionOverviewGeneralComponent],
     providers: [

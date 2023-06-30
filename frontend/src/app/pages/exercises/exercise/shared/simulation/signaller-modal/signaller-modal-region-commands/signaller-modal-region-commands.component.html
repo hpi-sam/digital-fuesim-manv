@@ -35,3 +35,19 @@
         [simulatedRegionId]="simulatedRegionId"
     />
 </ng-template>
+
+<ng-template #provideVehiclesEditor>
+    <app-signaller-modal-provide-vehicles-editor
+        *ngIf="
+            transferVehiclesBehaviorId$ | async as transferVehiclesBehaviorId;
+            else noTransferBehavior
+        "
+        [simulatedRegionId]="simulatedRegionId"
+        [transferBehaviorId]="transferVehiclesBehaviorId"
+    />
+    <ng-template #noTransferBehavior>
+        <span class="text-danger"
+            >Dieser Bereich kann keine Fahrzeuge bereitstellen</span
+        >
+    </ng-template>
+</ng-template>

@@ -27,9 +27,12 @@ export class SignallerModalRegionCommandsComponent implements OnChanges {
     transferTraysEditor!: TemplateRef<any>;
     @ViewChild('transportOfCategoryEditor')
     transportOfCategoryEditor!: TemplateRef<any>;
+    @ViewChild('provideVehiclesEditor')
+    provideVehiclesEditor!: TemplateRef<any>;
 
     ownTransferPointId$!: Observable<UUID>;
     manageTransportBehaviorId$!: Observable<UUID | null>;
+    transferVehiclesBehaviorId$!: Observable<UUID | null>;
 
     commandInteractions: InterfaceSignallerInteraction[] = [
         {
@@ -64,10 +67,9 @@ export class SignallerModalRegionCommandsComponent implements OnChanges {
             key: 'provideVehicles',
             title: 'Fahrzeuge bereitstellen',
             details: '(entsendet Fahrzeuge in einen anderen Bereich)',
-            hotkey: new Hotkey('D', false, () =>
-                this.editTransferConnections()
-            ),
-            requiredBehaviors: [],
+            hotkey: new Hotkey('D', false, () => this.provideVehicles()),
+            requiredBehaviors: ['transferBehavior'],
+            errorMessage: 'Dieser Bereich kann keine Fahrzeuge bereitstellen',
         },
         // TODO: Radio channels
         // TODO: Recurring reports
@@ -109,6 +111,15 @@ export class SignallerModalRegionCommandsComponent implements OnChanges {
                 )
             )
             .pipe(map((behaviorStates) => behaviorStates[0]?.id ?? null));
+
+        this.transferVehiclesBehaviorId$ = this.store
+            .select(
+                createSelectBehaviorStatesByType(
+                    this.simulatedRegionId,
+                    'transferBehavior'
+                )
+            )
+            .pipe(map((behaviorStates) => behaviorStates[0]?.id ?? null));
     }
 
     editTransferConnections() {
@@ -129,6 +140,13 @@ export class SignallerModalRegionCommandsComponent implements OnChanges {
         this.detailsModal.open(
             'Abtransport einer bestimmten Sichtungskategorie',
             this.transportOfCategoryEditor
+        );
+    }
+
+    provideVehicles() {
+        this.detailsModal.open(
+            'Fahrzeuge bereitstellen',
+            this.provideVehiclesEditor
         );
     }
 }
