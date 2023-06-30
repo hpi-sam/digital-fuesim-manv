@@ -1,5 +1,6 @@
 import type { OnChanges } from '@angular/core';
 import { Component, Input, TemplateRef, ViewChild } from '@angular/core';
+import type { ExerciseSimulationBehaviorType } from 'digital-fuesim-manv-shared';
 import { UUID, isInSpecificSimulatedRegion } from 'digital-fuesim-manv-shared';
 import { Hotkey } from 'src/app/shared/services/hotkeys.service';
 import { Store, createSelector } from '@ngrx/store';
@@ -29,10 +30,13 @@ export class SignallerModalRegionCommandsComponent implements OnChanges {
     transportOfCategoryEditor!: TemplateRef<any>;
     @ViewChild('provideVehiclesEditor')
     provideVehiclesEditor!: TemplateRef<any>;
+    @ViewChild('requestTargetEditor')
+    requestTargetEditor!: TemplateRef<any>;
 
     ownTransferPointId$!: Observable<UUID>;
     manageTransportBehaviorId$!: Observable<UUID | null>;
     transferVehiclesBehaviorId$!: Observable<UUID | null>;
+    requestBehaviorId$!: Observable<UUID | null>;
 
     commandInteractions: InterfaceSignallerInteraction[] = [
         {
@@ -73,13 +77,13 @@ export class SignallerModalRegionCommandsComponent implements OnChanges {
         },
         // TODO: Radio channels
         {
-            key: 'provideVehicles',
-            title: 'Fahrzeuge bereitstellen',
-            details: '(entsendet Fahrzeuge in einen anderen Bereich)',
-            hotkey: new Hotkey('E', false, () =>
-                this.editTransferConnections()
-            ),
-            requiredBehaviors: [],
+            key: 'setRequestTarget',
+            title: 'Ziel für Fahrzeuganfragen festlegen',
+            details:
+                '(ob Fahrzeuge bei Einsatzleitung oder B-Raum angefragt werden sollen)',
+            hotkey: new Hotkey('E', false, () => this.setRequestTarget()),
+            requiredBehaviors: ['requestBehavior'],
+            errorMessage: 'Dieser Bereich fragt keine Fahrzeuge an',
         },
     ];
 
@@ -102,21 +106,20 @@ export class SignallerModalRegionCommandsComponent implements OnChanges {
             )
         );
 
-        this.manageTransportBehaviorId$ = this.store
-            .select(
-                createSelectBehaviorStatesByType(
-                    this.simulatedRegionId,
-                    'managePatientTransportToHospitalBehavior'
-                )
-            )
-            .pipe(map((behaviorStates) => behaviorStates[0]?.id ?? null));
+        this.manageTransportBehaviorId$ = this.selectBehaviorId(
+            'managePatientTransportToHospitalBehavior'
+        );
 
-        this.transferVehiclesBehaviorId$ = this.store
+        this.transferVehiclesBehaviorId$ =
+            this.selectBehaviorId('transferBehavior');
+
+        this.requestBehaviorId$ = this.selectBehaviorId('requestBehavior');
+    }
+
+    selectBehaviorId(type: ExerciseSimulationBehaviorType) {
+        return this.store
             .select(
-                createSelectBehaviorStatesByType(
-                    this.simulatedRegionId,
-                    'transferBehavior'
-                )
+                createSelectBehaviorStatesByType(this.simulatedRegionId, type)
             )
             .pipe(map((behaviorStates) => behaviorStates[0]?.id ?? null));
     }
@@ -146,6 +149,13 @@ export class SignallerModalRegionCommandsComponent implements OnChanges {
         this.detailsModal.open(
             'Fahrzeuge bereitstellen',
             this.provideVehiclesEditor
+        );
+    }
+
+    setRequestTarget() {
+        this.detailsModal.open(
+            'Ziel für Fahrzeuganfragen',
+            this.requestTargetEditor
         );
     }
 }
