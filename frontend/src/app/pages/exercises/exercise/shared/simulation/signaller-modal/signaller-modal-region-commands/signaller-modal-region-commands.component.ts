@@ -72,7 +72,6 @@ export class SignallerModalRegionCommandsComponent implements OnChanges {
             errorMessage: 'Dieser Bereich kann keine Fahrzeuge bereitstellen',
         },
         // TODO: Radio channels
-        // TODO: Recurring reports
         {
             key: 'provideVehicles',
             title: 'Fahrzeuge bereitstellen',
