@@ -12,7 +12,6 @@ import type { AppState } from 'src/app/state/app.state';
 import { selectSimulatedRegions } from 'src/app/state/application/selectors/exercise.selectors';
 import { NgbPopover } from '@ng-bootstrap/ng-bootstrap';
 import type { SearchableDropdownOption } from 'src/app/shared/components/searchable-dropdown/searchable-dropdown.component';
-import type { SignallerRegionID } from '../select-signaller-region.service';
 import {
     EOC_ID,
     SelectSignallerRegionService,
@@ -86,7 +85,9 @@ export class SignallerModalRegionSelectorComponent
         this.destroy$.next();
     }
 
-    public selectRegion(id: SignallerRegionID) {
-        this.selectRegionService.selectSimulatedRegion(id);
+    public selectRegion(selectedRegion: SearchableDropdownOption) {
+        this.selectRegionService.selectSimulatedRegion(
+            selectedRegion.identifier
+        );
     }
 }

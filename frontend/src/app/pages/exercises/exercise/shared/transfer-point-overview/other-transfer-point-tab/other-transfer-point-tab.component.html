@@ -80,7 +80,8 @@
         <app-searchable-dropdown
             [options]="(transferPointsToBeAdded$ | async)!"
             (selected)="
-                connectTransferPoint($event); selectTargetPopover.close()
+                connectTransferPoint($event.identifier);
+                selectTargetPopover.close()
             "
         />
     </ng-template>

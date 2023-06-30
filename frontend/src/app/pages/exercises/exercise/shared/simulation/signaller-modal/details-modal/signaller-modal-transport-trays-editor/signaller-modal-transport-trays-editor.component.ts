@@ -110,21 +110,21 @@ export class SignallerModalTransportTraysEditorComponent
         this.hotkeysService.removeLayer(this.hotkeyLayer);
     }
 
-    public addManagedRegion(id: UUID) {
+    public addManagedRegion(selectedRegion: SearchableDropdownOption) {
         this.exerciseService.proposeAction({
             type: '[ManagePatientsTransportToHospitalBehavior] Add Simulated Region To Manage For Transport',
             simulatedRegionId: this.simulatedRegionId,
             behaviorId: this.transportBehaviorId,
-            managedSimulatedRegionId: id,
+            managedSimulatedRegionId: selectedRegion.identifier,
         });
     }
 
-    public removeManagedRegion(id: UUID) {
+    public removeManagedRegion(selectedRegion: SearchableDropdownOption) {
         this.exerciseService.proposeAction({
             type: '[ManagePatientsTransportToHospitalBehavior] Remove Simulated Region To Manage From Transport',
             simulatedRegionId: this.simulatedRegionId,
             behaviorId: this.transportBehaviorId,
-            managedSimulatedRegionId: id,
+            managedSimulatedRegionId: selectedRegion.identifier,
         });
     }
 }

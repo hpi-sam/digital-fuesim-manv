@@ -9,6 +9,7 @@ import type { LogEntry, Tag } from 'digital-fuesim-manv-shared';
 import { StrictObject } from 'digital-fuesim-manv-shared';
 import { difference } from 'lodash-es';
 import { Subject, takeUntil } from 'rxjs';
+import type { SearchableDropdownOption } from 'src/app/shared/components/searchable-dropdown/searchable-dropdown.component';
 import { StatisticsTimeSelectionService } from '../statistics-time-selection.service';
 
 type KnownSpecifier = Omit<Tag, 'category'>;
@@ -150,9 +151,16 @@ export class LogTableComponent implements OnChanges, OnDestroy, AfterViewInit {
         });
     }
 
-    addCategory(category: string) {
-        if (!this.filters.some((filter) => filter.category === category)) {
-            this.filters.push({ category, specifiers: [] });
+    addCategory(selectedCategory: SearchableDropdownOption) {
+        if (
+            !this.filters.some(
+                (filter) => filter.category === selectedCategory.identifier
+            )
+        ) {
+            this.filters.push({
+                category: selectedCategory.identifier,
+                specifiers: [],
+            });
         }
     }
 
@@ -170,7 +178,10 @@ export class LogTableComponent implements OnChanges, OnDestroy, AfterViewInit {
         this.filters = [];
     }
 
-    addSpecifierToCategory(specifier: string, category: string) {
+    addSpecifierToCategory(
+        selectedSpecifier: SearchableDropdownOption,
+        category: string
+    ) {
         const categoryFilter = this.filters.find(
             (filter) => filter.category === category
         );
@@ -178,12 +189,12 @@ export class LogTableComponent implements OnChanges, OnDestroy, AfterViewInit {
         if (!categoryFilter) return;
 
         const specifierPresent = categoryFilter.specifiers.some(
-            (filter) => filter.specifier === specifier
+            (filter) => filter.specifier === selectedSpecifier.identifier
         );
 
         if (!specifierPresent) {
             categoryFilter.specifiers.push(
-                this.knownCategories[category]![specifier]!
+                this.knownCategories[category]![selectedSpecifier.identifier]!
             );
         }
     }
