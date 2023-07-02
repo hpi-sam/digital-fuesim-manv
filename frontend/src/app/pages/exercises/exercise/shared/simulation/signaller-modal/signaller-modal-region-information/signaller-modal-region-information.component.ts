@@ -37,7 +37,7 @@ export class SignallerModalRegionInformationComponent
     informationInteractions: InterfaceSignallerInteraction[] = [
         {
             key: 'patientCount',
-            title: 'Anzahl Patienten',
+            name: 'Anzahl Patienten',
             details: 'nach Sichtungskategorie',
             hotkey: new Hotkey('A', false, () => this.requestPatientCount()),
             secondaryHotkey: new Hotkey('⇧ + A', true, () =>
@@ -49,7 +49,7 @@ export class SignallerModalRegionInformationComponent
         },
         {
             key: 'transportProgressFull',
-            title: 'Transportfortschritt',
+            name: 'Transportfortschritt',
             details: 'für alle Bereiche',
             hotkey: new Hotkey('B', false, () =>
                 this.requestFullTransportProgress()
@@ -65,7 +65,7 @@ export class SignallerModalRegionInformationComponent
         },
         {
             key: 'transportProgressRegion',
-            title: 'Transportfortschritt',
+            name: 'Transportfortschritt',
             details: 'für diesen Bereich',
             hotkey: new Hotkey('C', false, () =>
                 this.requestRegionTransportProgress()
@@ -79,7 +79,7 @@ export class SignallerModalRegionInformationComponent
         },
         {
             key: 'vehicleCount',
-            title: 'Anzahl Fahrzeuge',
+            name: 'Anzahl Fahrzeuge',
             details: 'nach Typ',
             hotkey: new Hotkey('D', false, () => this.requestVehicleCount()),
             secondaryHotkey: new Hotkey('⇧ + D', true, () =>
@@ -90,7 +90,7 @@ export class SignallerModalRegionInformationComponent
         },
         {
             key: 'requiredResources',
-            title: 'Benötigte Fahrzeuge',
+            name: 'Benötigte Fahrzeuge',
             details:
                 'um alle Patienten zu behandeln (PA) oder Anfragen zu erfüllen (B-Raum)',
             hotkey: new Hotkey('E', false, () =>
@@ -107,7 +107,7 @@ export class SignallerModalRegionInformationComponent
         // TODO: Arriving vehicles (number, ETA)
         {
             key: 'treatmentStatus',
-            title: 'Behandlungsstatus',
+            name: 'Behandlungsstatus',
             details: '(Erstversorgung sichergestellt?)',
             hotkey: new Hotkey('F', false, () => this.requestTreatmentStatus()),
             secondaryHotkey: new Hotkey('⇧ + F', true, () =>
@@ -121,7 +121,7 @@ export class SignallerModalRegionInformationComponent
         // TODO: Vehicle occupation
         {
             key: 'transferConnections',
-            title: 'Transferverbindungen',
+            name: 'Transferverbindungen',
             details: 'zu anderen Bereichen',
             hotkey: new Hotkey('G', false, () =>
                 this.requestTransferConnections()
@@ -135,7 +135,7 @@ export class SignallerModalRegionInformationComponent
         // TODO: Patient treatments
         {
             key: 'personnelCount',
-            title: 'Anzahl Personal',
+            name: 'Anzahl Personal',
             details: 'nach Typ',
             hotkey: new Hotkey('H', false, () => this.requestPersonnelCount()),
             secondaryHotkey: new Hotkey('⇧ + H', true, () =>

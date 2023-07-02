@@ -6,7 +6,7 @@
         >
             <div class="flex-grow-1">
                 <span [class.text-muted]="!enabled">
-                    <strong>{{ interaction.title }}</strong>
+                    <strong>{{ interaction.name }}</strong>
                     <span *ngIf="interaction.details as details">
                         {{ details }}
                     </span>

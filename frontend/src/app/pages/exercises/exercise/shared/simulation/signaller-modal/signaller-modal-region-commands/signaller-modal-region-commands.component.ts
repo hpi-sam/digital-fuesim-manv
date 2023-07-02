@@ -41,14 +41,14 @@ export class SignallerModalRegionCommandsComponent implements OnChanges {
     commandInteractions: InterfaceSignallerInteraction[] = [
         {
             key: 'editTransferConnections',
-            title: 'Lage eines Bereichs',
+            name: 'Lage eines Bereichs',
             details: '(stellt eine Transferverbindung her)',
             hotkey: new Hotkey('1', true, () => this.editTransferConnections()),
             requiredBehaviors: [],
         },
         {
             key: 'editTransferPatientTrays',
-            title: 'PAs für Abtransport festlegen',
+            name: 'PAs für Abtransport festlegen',
             details:
                 '(aus welchen Patientenablagen sollen Patienten ins Krankenhaus gebracht werden)',
             hotkey: new Hotkey('2', true, () =>
@@ -59,7 +59,7 @@ export class SignallerModalRegionCommandsComponent implements OnChanges {
         },
         {
             key: 'startTransportOfCategory',
-            title: 'Patienten abtransportieren',
+            name: 'Patienten abtransportieren',
             details: '(nur eine Sichtungskategorie)',
             hotkey: new Hotkey('3', false, () =>
                 this.startTransportOfCategory()
@@ -69,7 +69,7 @@ export class SignallerModalRegionCommandsComponent implements OnChanges {
         },
         {
             key: 'provideVehicles',
-            title: 'Fahrzeuge bereitstellen',
+            name: 'Fahrzeuge bereitstellen',
             details: '(entsendet Fahrzeuge in einen anderen Bereich)',
             hotkey: new Hotkey('4', false, () => this.provideVehicles()),
             requiredBehaviors: ['transferBehavior'],
@@ -78,7 +78,7 @@ export class SignallerModalRegionCommandsComponent implements OnChanges {
         // TODO: Radio channels
         {
             key: 'setRequestTarget',
-            title: 'Ziel für Fahrzeuganfragen festlegen',
+            name: 'Ziel für Fahrzeuganfragen festlegen',
             details:
                 '(ob Fahrzeuge bei Einsatzleitung oder B-Raum angefragt werden sollen)',
             hotkey: new Hotkey('5', false, () => this.setRequestTarget()),

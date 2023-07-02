@@ -17,6 +17,7 @@ import { groupBy } from 'lodash-es';
 import type { BehaviorSubject, Observable } from 'rxjs';
 import { Subject, map, takeUntil } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
+import type { SearchableDropdownOption } from 'src/app/shared/components/searchable-dropdown/searchable-dropdown.component';
 import type {
     Hotkey,
     HotkeyLayer,
@@ -30,16 +31,17 @@ import {
 } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 
-export interface InterfaceSignallerInteraction {
-    key: string;
-    title: string;
+export type InterfaceSignallerInteraction = Omit<
+    SearchableDropdownOption,
+    'backgroundColor' | 'color'
+> & {
     details?: string;
     hotkey: Hotkey;
     secondaryHotkey?: Hotkey;
     requiredBehaviors: ExerciseSimulationBehaviorType[];
     errorMessage?: string;
     loading$?: BehaviorSubject<boolean>;
-}
+};
 
 export function setLoadingState(
     interactions: InterfaceSignallerInteraction[],
