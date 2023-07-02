@@ -27,7 +27,7 @@ const eventBasedReportData = {
         actionType: '[ReportBehavior] Update report treatment status changes',
         enabledKey: 'reportTreatmentProgressChanges',
         description: 'Wenn sich die Behandlungsphase ändert',
-        hotkeyKeys: '9',
+        hotkeyKeys: 'I',
     },
     transferOfCategoryInSingleRegionCompleted: {
         actionType:
@@ -35,7 +35,7 @@ const eventBasedReportData = {
         enabledKey: 'reportTransferOfCategoryInSingleRegionCompleted',
         description:
             'Wenn in dieser Patientenablage alle Patienten einer SK abtransportiert wurden',
-        hotkeyKeys: '0',
+        hotkeyKeys: 'J',
     },
     transferOfCategoryInMultipleRegionsCompleted: {
         actionType:
@@ -43,7 +43,7 @@ const eventBasedReportData = {
         enabledKey: 'reportTransferOfCategoryInMultipleRegionsCompleted',
         description:
             'Wenn in allen Patientenablagen dieser Transportorganisation alle Patienten einer SK abtransportiert wurden',
-        hotkeyKeys: '?',
+        hotkeyKeys: 'K',
     },
 } as const;
 

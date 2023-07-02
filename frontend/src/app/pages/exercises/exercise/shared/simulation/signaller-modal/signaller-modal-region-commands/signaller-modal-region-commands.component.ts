@@ -43,7 +43,7 @@ export class SignallerModalRegionCommandsComponent implements OnChanges {
             key: 'editTransferConnections',
             title: 'Lage eines Bereichs',
             details: '(stellt eine Transferverbindung her)',
-            hotkey: new Hotkey('A', true, () => this.editTransferConnections()),
+            hotkey: new Hotkey('1', true, () => this.editTransferConnections()),
             requiredBehaviors: [],
         },
         {
@@ -51,7 +51,7 @@ export class SignallerModalRegionCommandsComponent implements OnChanges {
             title: 'PAs für Abtransport festlegen',
             details:
                 '(aus welchen Patientenablagen sollen Patienten ins Krankenhaus gebracht werden)',
-            hotkey: new Hotkey('B', true, () =>
+            hotkey: new Hotkey('2', true, () =>
                 this.editTransferPatientTrays()
             ),
             requiredBehaviors: ['managePatientTransportToHospitalBehavior'],
@@ -61,7 +61,7 @@ export class SignallerModalRegionCommandsComponent implements OnChanges {
             key: 'startTransportOfCategory',
             title: 'Patienten abtransportieren',
             details: '(nur eine Sichtungskategorie)',
-            hotkey: new Hotkey('C', false, () =>
+            hotkey: new Hotkey('3', false, () =>
                 this.startTransportOfCategory()
             ),
             requiredBehaviors: ['managePatientTransportToHospitalBehavior'],
@@ -71,7 +71,7 @@ export class SignallerModalRegionCommandsComponent implements OnChanges {
             key: 'provideVehicles',
             title: 'Fahrzeuge bereitstellen',
             details: '(entsendet Fahrzeuge in einen anderen Bereich)',
-            hotkey: new Hotkey('D', false, () => this.provideVehicles()),
+            hotkey: new Hotkey('4', false, () => this.provideVehicles()),
             requiredBehaviors: ['transferBehavior'],
             errorMessage: 'Dieser Bereich kann keine Fahrzeuge bereitstellen',
         },
@@ -81,7 +81,7 @@ export class SignallerModalRegionCommandsComponent implements OnChanges {
             title: 'Ziel für Fahrzeuganfragen festlegen',
             details:
                 '(ob Fahrzeuge bei Einsatzleitung oder B-Raum angefragt werden sollen)',
-            hotkey: new Hotkey('E', false, () => this.setRequestTarget()),
+            hotkey: new Hotkey('5', false, () => this.setRequestTarget()),
             requiredBehaviors: ['requestBehavior'],
             errorMessage: 'Dieser Bereich fragt keine Fahrzeuge an',
         },

@@ -39,8 +39,8 @@ export class SignallerModalRegionInformationComponent
             key: 'patientCount',
             title: 'Anzahl Patienten',
             details: 'nach Sichtungskategorie',
-            hotkey: new Hotkey('1', false, () => this.requestPatientCount()),
-            secondaryHotkey: new Hotkey('⇧ + 1', true, () =>
+            hotkey: new Hotkey('A', false, () => this.requestPatientCount()),
+            secondaryHotkey: new Hotkey('⇧ + A', true, () =>
                 this.openRecurringReportModal('patientCount')
             ),
             requiredBehaviors: ['treatPatientsBehavior'],
@@ -51,10 +51,10 @@ export class SignallerModalRegionInformationComponent
             key: 'transportProgressFull',
             title: 'Transportfortschritt',
             details: 'für alle Bereiche',
-            hotkey: new Hotkey('2', false, () =>
+            hotkey: new Hotkey('B', false, () =>
                 this.requestFullTransportProgress()
             ),
-            secondaryHotkey: new Hotkey('⇧ + 2', true, () =>
+            secondaryHotkey: new Hotkey('⇧ + B', true, () =>
                 this.openRecurringReportModal(
                     'transportManagementTransferCounts'
                 )
@@ -67,10 +67,10 @@ export class SignallerModalRegionInformationComponent
             key: 'transportProgressRegion',
             title: 'Transportfortschritt',
             details: 'für diesen Bereich',
-            hotkey: new Hotkey('3', false, () =>
+            hotkey: new Hotkey('C', false, () =>
                 this.requestRegionTransportProgress()
             ),
-            secondaryHotkey: new Hotkey('⇧ + 3', true, () =>
+            secondaryHotkey: new Hotkey('⇧ + C', true, () =>
                 this.openRecurringReportModal('singleRegionTransferCounts')
             ),
             requiredBehaviors: ['transferToHospitalBehavior'],
@@ -81,8 +81,8 @@ export class SignallerModalRegionInformationComponent
             key: 'vehicleCount',
             title: 'Anzahl Fahrzeuge',
             details: 'nach Typ',
-            hotkey: new Hotkey('4', false, () => this.requestVehicleCount()),
-            secondaryHotkey: new Hotkey('⇧ + 4', true, () =>
+            hotkey: new Hotkey('D', false, () => this.requestVehicleCount()),
+            secondaryHotkey: new Hotkey('⇧ + D', true, () =>
                 this.openRecurringReportModal('vehicleCount')
             ),
             requiredBehaviors: [],
@@ -93,10 +93,10 @@ export class SignallerModalRegionInformationComponent
             title: 'Benötigte Fahrzeuge',
             details:
                 'um alle Patienten zu behandeln (PA) oder Anfragen zu erfüllen (B-Raum)',
-            hotkey: new Hotkey('5', false, () =>
+            hotkey: new Hotkey('E', false, () =>
                 this.requestRequiredResources()
             ),
-            secondaryHotkey: new Hotkey('⇧ + 5', true, () =>
+            secondaryHotkey: new Hotkey('⇧ + E', true, () =>
                 this.openRecurringReportModal('requiredResources')
             ),
             requiredBehaviors: ['requestBehavior'],
@@ -109,8 +109,8 @@ export class SignallerModalRegionInformationComponent
             key: 'treatmentStatus',
             title: 'Behandlungsstatus',
             details: '(Erstversorgung sichergestellt?)',
-            hotkey: new Hotkey('6', false, () => this.requestTreatmentStatus()),
-            secondaryHotkey: new Hotkey('⇧ + 6', true, () =>
+            hotkey: new Hotkey('F', false, () => this.requestTreatmentStatus()),
+            secondaryHotkey: new Hotkey('⇧ + F', true, () =>
                 this.openRecurringReportModal('treatmentStatus')
             ),
             requiredBehaviors: ['treatPatientsBehavior'],
@@ -123,10 +123,10 @@ export class SignallerModalRegionInformationComponent
             key: 'transferConnections',
             title: 'Transferverbindungen',
             details: 'zu anderen Bereichen',
-            hotkey: new Hotkey('7', false, () =>
+            hotkey: new Hotkey('G', false, () =>
                 this.requestTransferConnections()
             ),
-            secondaryHotkey: new Hotkey('⇧ + 7', true, () =>
+            secondaryHotkey: new Hotkey('⇧ + G', true, () =>
                 this.openRecurringReportModal('transferConnections')
             ),
             requiredBehaviors: [],
@@ -137,8 +137,8 @@ export class SignallerModalRegionInformationComponent
             key: 'personnelCount',
             title: 'Anzahl Personal',
             details: 'nach Typ',
-            hotkey: new Hotkey('8', false, () => this.requestPersonnelCount()),
-            secondaryHotkey: new Hotkey('⇧ + 8', true, () =>
+            hotkey: new Hotkey('H', false, () => this.requestPersonnelCount()),
+            secondaryHotkey: new Hotkey('⇧ + H', true, () =>
                 this.openRecurringReportModal('personnelCount')
             ),
             requiredBehaviors: [],
