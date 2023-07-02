@@ -11,8 +11,8 @@ import type { HotkeyLayer } from '../../services/hotkeys.service';
 import { Hotkey, HotkeysService } from '../../services/hotkeys.service';
 
 export interface SearchableDropdownOption {
+    key: string;
     name: string;
-    identifier: string;
     color?: string;
     backgroundColor?: string;
 }

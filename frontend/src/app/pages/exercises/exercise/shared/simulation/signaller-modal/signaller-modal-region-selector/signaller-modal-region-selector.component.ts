@@ -52,13 +52,13 @@ export class SignallerModalRegionSelectorComponent
             .select(selectSimulatedRegions)
             .pipe(
                 map((simulatedRegions) => [
-                    { identifier: EOC_ID, name: 'Leitstelle' },
+                    { key: EOC_ID, name: 'Leitstelle' },
                     ...Object.entries(simulatedRegions)
                         .sort(([, regionA], [, regionB]) =>
                             regionA.name.localeCompare(regionB.name)
                         )
                         .map(([id, region]) => ({
-                            identifier: id,
+                            key: id,
                             name: region.name,
                         })),
                 ])
@@ -86,8 +86,6 @@ export class SignallerModalRegionSelectorComponent
     }
 
     public selectRegion(selectedRegion: SearchableDropdownOption) {
-        this.selectRegionService.selectSimulatedRegion(
-            selectedRegion.identifier
-        );
+        this.selectRegionService.selectSimulatedRegion(selectedRegion.key);
     }
 }

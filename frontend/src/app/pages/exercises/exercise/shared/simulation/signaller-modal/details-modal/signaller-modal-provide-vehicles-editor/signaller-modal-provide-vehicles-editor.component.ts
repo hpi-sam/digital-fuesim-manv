@@ -89,7 +89,7 @@ export class SignallerModalProvideVehiclesEditorComponent
             ),
             map((vehicles) =>
                 vehicles.map((vehicle) => ({
-                    identifier: vehicle.id,
+                    key: vehicle.id,
                     name: vehicle.name,
                 }))
             ),
@@ -97,9 +97,7 @@ export class SignallerModalProvideVehiclesEditorComponent
             tap((options) => {
                 if (
                     !options.some(
-                        (option) =>
-                            option.identifier ===
-                            this.selectedVehicle?.identifier
+                        (option) => option.key === this.selectedVehicle?.key
                     )
                 ) {
                     this.selectedVehicle = null;
@@ -119,7 +117,7 @@ export class SignallerModalProvideVehiclesEditorComponent
             ),
             map((transferPoints) =>
                 transferPoints.map((transferPoint) => ({
-                    identifier: transferPoint.id,
+                    key: transferPoint.id,
                     name: TransferPoint.getFullName(transferPoint),
                 }))
             ),
@@ -127,9 +125,7 @@ export class SignallerModalProvideVehiclesEditorComponent
             tap((options) => {
                 if (
                     !options.some(
-                        (option) =>
-                            option.identifier ===
-                            this.selectedTarget?.identifier
+                        (option) => option.key === this.selectedTarget?.key
                     )
                 ) {
                     this.selectedTarget = null;
@@ -161,9 +157,9 @@ export class SignallerModalProvideVehiclesEditorComponent
             type: '[TransferBehavior] Send Transfer Request Event',
             simulatedRegionId: this.simulatedRegionId,
             behaviorId: this.transferBehaviorId,
-            vehicleId: this.selectedVehicle!.identifier,
+            vehicleId: this.selectedVehicle!.key,
             destinationType: 'transferPoint',
-            destinationId: this.selectedTarget!.identifier,
+            destinationId: this.selectedTarget!.key,
             patients: {},
         });
 

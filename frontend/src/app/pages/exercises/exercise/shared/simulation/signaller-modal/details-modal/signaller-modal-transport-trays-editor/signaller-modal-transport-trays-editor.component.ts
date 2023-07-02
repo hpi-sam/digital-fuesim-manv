@@ -83,7 +83,7 @@ export class SignallerModalTransportTraysEditorComponent
         ]).pipe(
             map(([behavior, regions]) =>
                 Object.keys(behavior.simulatedRegionsToManage).map((id) => ({
-                    identifier: id,
+                    key: id,
                     name: regions[id]?.name ?? '',
                 }))
             )
@@ -95,11 +95,9 @@ export class SignallerModalTransportTraysEditorComponent
             map(([managedRegions, allRegions]) =>
                 difference(
                     Object.keys(allRegions),
-                    managedRegions.map(
-                        (managedRegion) => managedRegion.identifier
-                    )
+                    managedRegions.map((managedRegion) => managedRegion.key)
                 ).map((id) => ({
-                    identifier: id,
+                    key: id,
                     name: allRegions[id]?.name ?? '',
                 }))
             )
@@ -115,7 +113,7 @@ export class SignallerModalTransportTraysEditorComponent
             type: '[ManagePatientsTransportToHospitalBehavior] Add Simulated Region To Manage For Transport',
             simulatedRegionId: this.simulatedRegionId,
             behaviorId: this.transportBehaviorId,
-            managedSimulatedRegionId: selectedRegion.identifier,
+            managedSimulatedRegionId: selectedRegion.key,
         });
     }
 
@@ -124,7 +122,7 @@ export class SignallerModalTransportTraysEditorComponent
             type: '[ManagePatientsTransportToHospitalBehavior] Remove Simulated Region To Manage From Transport',
             simulatedRegionId: this.simulatedRegionId,
             behaviorId: this.transportBehaviorId,
-            managedSimulatedRegionId: selectedRegion.identifier,
+            managedSimulatedRegionId: selectedRegion.key,
         });
     }
 }

@@ -46,8 +46,8 @@ export class LogTableComponent implements OnChanges, OnDestroy, AfterViewInit {
         return difference(knownCategoryNames, categoriesInUse)
             .sort((a, b) => a.localeCompare(b))
             .map((categoryName) => ({
+                key: categoryName,
                 name: categoryName,
-                identifier: categoryName,
             }));
     }
 
@@ -71,8 +71,8 @@ export class LogTableComponent implements OnChanges, OnDestroy, AfterViewInit {
                                     ) ?? true
                         )
                         .map((availableSpecifier) => ({
+                            key: availableSpecifier.specifier,
                             name: availableSpecifier.name,
-                            identifier: availableSpecifier.specifier,
                             color: availableSpecifier.color,
                             backgroundColor: availableSpecifier.backgroundColor,
                         })),
@@ -154,11 +154,11 @@ export class LogTableComponent implements OnChanges, OnDestroy, AfterViewInit {
     addCategory(selectedCategory: SearchableDropdownOption) {
         if (
             !this.filters.some(
-                (filter) => filter.category === selectedCategory.identifier
+                (filter) => filter.category === selectedCategory.key
             )
         ) {
             this.filters.push({
-                category: selectedCategory.identifier,
+                category: selectedCategory.key,
                 specifiers: [],
             });
         }
@@ -189,12 +189,12 @@ export class LogTableComponent implements OnChanges, OnDestroy, AfterViewInit {
         if (!categoryFilter) return;
 
         const specifierPresent = categoryFilter.specifiers.some(
-            (filter) => filter.specifier === selectedSpecifier.identifier
+            (filter) => filter.specifier === selectedSpecifier.key
         );
 
         if (!specifierPresent) {
             categoryFilter.specifiers.push(
-                this.knownCategories[category]![selectedSpecifier.identifier]!
+                this.knownCategories[category]![selectedSpecifier.key]!
             );
         }
     }

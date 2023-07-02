@@ -96,7 +96,7 @@ export class SignallerModalRequestDestinationEditorComponent
             ),
             map((simulatedRegions) =>
                 simulatedRegions.map((simulatedRegion) => ({
-                    identifier: simulatedRegion.id,
+                    key: simulatedRegion.id,
                     name: `[Simuliert] ${simulatedRegion.name}`,
                 }))
             ),
@@ -105,7 +105,7 @@ export class SignallerModalRequestDestinationEditorComponent
             ),
             map((options) => [
                 {
-                    identifier: this.TRAINEES_ID,
+                    key: this.TRAINEES_ID,
                     name: this.TRAINEES_NAME,
                 },
                 ...options,
@@ -113,9 +113,7 @@ export class SignallerModalRequestDestinationEditorComponent
             tap((options) => {
                 if (
                     !options.some(
-                        (option) =>
-                            option.identifier ===
-                            this.selectedTarget?.identifier
+                        (option) => option.key === this.selectedTarget?.key
                     )
                 ) {
                     this.selectedTarget = null;
@@ -137,11 +135,11 @@ export class SignallerModalRequestDestinationEditorComponent
 
         let requestTarget: ExerciseRequestTargetConfiguration;
 
-        if (this.selectedTarget.identifier === this.TRAINEES_ID) {
+        if (this.selectedTarget.key === this.TRAINEES_ID) {
             requestTarget = TraineesRequestTargetConfiguration.create();
         } else {
             requestTarget = SimulatedRegionRequestTargetConfiguration.create(
-                this.selectedTarget.identifier
+                this.selectedTarget.key
             );
         }
 
