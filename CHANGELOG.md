@@ -14,6 +14,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
     -   The ID consists of a 4 digit number incremented for each patients
     -   Optionally, a prefix for the IDs can be set
     -   The ID is shown in the patient popup, the simulation overview, statistics log entries and for hospital patients
+-   permissions for multiple actions around simulated regions were changed from participant to trainer
 
 ## [0.7.0] - 2023-05-30
 
