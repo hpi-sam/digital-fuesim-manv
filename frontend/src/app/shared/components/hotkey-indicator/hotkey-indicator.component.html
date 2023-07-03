@@ -1,5 +1,8 @@
 <ng-container *ngIf="hotkey; else plainKeys">
-    <kbd *ngIf="hotkey.enabled | async" class="badge text-bg-dark">
+    <kbd
+        class="badge text-bg-dark"
+        [class.opacity-0]="(hotkey.enabled | async) === false"
+    >
         <small>{{ hotkey.keys }}</small>
     </kbd>
 </ng-container>
