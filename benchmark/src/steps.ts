@@ -90,7 +90,10 @@ export class StepState {
 export const steps: Step<StepState>[] = [
     new BenchmarkStep(
         'migrate',
-        ({ data }) => migrateStateExport(data) as StateExport
+        ({ data }) =>
+            migrateStateExport(data, {
+                historyImportStrategy: 'complete-history',
+            }) as StateExport
     ),
     new BenchmarkStep('validateExercise', ({ migrate: migratedValues }) =>
         validateExerciseExport(migratedValues!.value)

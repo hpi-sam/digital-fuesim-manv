@@ -1,7 +1,7 @@
 import type {
     ExerciseIds,
     ExerciseTimeline,
-    StateExport,
+    StateImportBody,
 } from 'digital-fuesim-manv-shared';
 import { ExerciseState } from 'digital-fuesim-manv-shared';
 import { isEmpty } from 'lodash-es';
@@ -14,12 +14,12 @@ import type { HttpResponse } from '../utils';
 
 export async function postExercise(
     databaseService: DatabaseService,
-    importObject: StateExport
+    { stateExport, historyImportStrategy }: StateImportBody
 ): Promise<HttpResponse<ExerciseIds>> {
     try {
         const participantId = UserReadableIdGenerator.generateId();
         const trainerId = UserReadableIdGenerator.generateId(8);
-        const newExerciseOrError = isEmpty(importObject)
+        const newExerciseOrError = isEmpty(stateExport)
             ? ExerciseWrapper.create(
                   participantId,
                   trainerId,
@@ -27,8 +27,9 @@ export async function postExercise(
                   ExerciseState.create(participantId)
               )
             : await importExercise(
-                  importObject,
+                  stateExport,
                   { participantId, trainerId },
+                  { historyImportStrategy },
                   databaseService
               );
         if (!(newExerciseOrError instanceof ExerciseWrapper)) {

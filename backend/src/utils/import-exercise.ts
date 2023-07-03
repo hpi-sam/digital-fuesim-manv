@@ -1,5 +1,8 @@
 import { plainToInstance } from 'class-transformer';
-import type { ExerciseIds } from 'digital-fuesim-manv-shared';
+import type {
+    ExerciseIds,
+    HistoryImportStrategy,
+} from 'digital-fuesim-manv-shared';
 import {
     migrateStateExport,
     ReducerError,
@@ -13,12 +16,10 @@ import type { HttpResponse } from '../exercise/http-handler/utils';
 export async function importExercise(
     importObject: StateExport,
     ids: ExerciseIds,
+    options: { historyImportStrategy: HistoryImportStrategy },
     databaseService: DatabaseService
 ): Promise<ExerciseWrapper | HttpResponse<ExerciseIds>> {
-    const migratedImportObject = migrateStateExport(importObject);
-    // console.log(
-    //     inspect(importObject.history, { depth: 2, colors: true })
-    // );
+    const migratedImportObject = migrateStateExport(importObject, options);
     const importInstance = plainToInstance(
         StateExport,
         migratedImportObject
@@ -26,9 +27,7 @@ export async function importExercise(
         // // Workaround for https://github.com/typestack/class-transformer/issues/876
         // { enableImplicitConversion: true }
     );
-    // console.log(
-    //     inspect(importInstance.history, { depth: 2, colors: true })
-    // );
+
     const validationErrors = validateExerciseExport(importInstance);
     if (validationErrors.length > 0) {
         return {

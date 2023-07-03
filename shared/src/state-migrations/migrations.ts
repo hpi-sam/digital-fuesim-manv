@@ -1,4 +1,5 @@
 import type { StateExport } from '../export-import/file-format';
+import type { HistoryImportStrategy } from '../export-import/history-import-strategy';
 import { ExerciseState } from '../state';
 import type { ExerciseAction } from '../store';
 import { ReducerError, applyAction } from '../store';
@@ -8,21 +9,26 @@ import type { Migration } from './migration-functions';
 import { migrations } from './migration-functions';
 
 export function migrateStateExport(
-    stateExportToMigrate: StateExport
+    stateExportToMigrate: StateExport,
+    options: { historyImportStrategy: HistoryImportStrategy }
 ): Mutable<StateExport> {
     const stateExport = cloneDeepMutable(stateExportToMigrate);
     const {
         newVersion,
         migratedProperties: { currentState, history },
-    } = applyMigrations(stateExport.dataVersion, {
-        currentState: stateExport.currentState,
-        history: stateExport.history
-            ? {
-                  initialState: stateExport.history.initialState,
-                  actions: stateExport.history.actionHistory,
-              }
-            : undefined,
-    });
+    } = applyMigrations(
+        stateExport.dataVersion,
+        {
+            currentState: stateExport.currentState,
+            history: stateExport.history
+                ? {
+                      initialState: stateExport.history.initialState,
+                      actions: stateExport.history.actionHistory,
+                  }
+                : undefined,
+        },
+        options.historyImportStrategy
+    );
 
     stateExport.dataVersion = newVersion;
     stateExport.currentState = currentState;
@@ -55,7 +61,8 @@ export function applyMigrations<
     propertiesToMigrate: {
         currentState: object;
         history: H;
-    }
+    },
+    historyStrategy: HistoryImportStrategy
 ): {
     newVersion: number;
     migratedProperties: {
@@ -78,60 +85,83 @@ export function applyMigrations<
     }
 
     const history = propertiesToMigrate.history;
-    if (history) {
-        migrateState(migrationsToApply, history.initialState);
-        const intermediaryState = cloneDeepMutable(
-            history.initialState
-        ) as Mutable<ExerciseState>;
+
+    if (history === undefined || historyStrategy === 'current') {
         try {
-            history.actions.forEach((action, index) => {
-                if (action !== null) {
-                    const deleteAction = !migrateAction(
-                        migrationsToApply,
-                        intermediaryState,
-                        action
-                    );
-                    if (!deleteAction) {
-                        try {
-                            applyAction(
-                                intermediaryState,
-                                action as ExerciseAction
-                            );
-                        } catch (e: unknown) {
-                            if (e instanceof ReducerError) {
-                                const json = JSON.stringify(action);
-                                console.warn(
-                                    `Error while applying action ${json}: ${e.message}`
-                                );
-                            }
-                            throw e;
-                        }
-                    } else {
-                        history.actions[index] = null;
-                    }
-                }
-            });
-            return {
-                newVersion,
-                migratedProperties: {
-                    currentState: intermediaryState,
-                    // history has been migrated in place
-                    history: history as any,
-                },
-            };
+            return migrateCurrentState<H>(
+                migrationsToApply,
+                propertiesToMigrate,
+                newVersion
+            );
         } catch (e: unknown) {
             if (e instanceof ReducerError) {
-                // Fall back to migrating currentState instead of recreating it from history
-                const exerciseId = (history.initialState as { id: UUID }).id;
+                const exerciseId = (
+                    propertiesToMigrate.currentState as { id: UUID }
+                ).id;
                 console.warn(
-                    `Discarding history of exercise ${exerciseId} due to error in applying actions: ${e.message}`,
+                    `Failed importing current state of exercise ${exerciseId}: ${e.message}`,
                     e.stack
                 );
-            } else {
+            }
+            throw e;
+        }
+    }
+
+    switch (historyStrategy) {
+        case 'complete-history': {
+            try {
+                return migrateFromInitial(
+                    migrationsToApply,
+                    history,
+                    newVersion
+                );
+            } catch (e: unknown) {
+                if (e instanceof ReducerError) {
+                    const exerciseId = (history.initialState as { id: UUID })
+                        .id;
+                    console.warn(
+                        `Failed importing complete history of exercise ${exerciseId}: ${e.message}`,
+                        e.stack
+                    );
+                }
+                throw e;
+            }
+        }
+        case 'up-to-start': {
+            try {
+                let seenStartAction = false;
+                return migrateFromInitial(
+                    migrationsToApply,
+                    history,
+                    newVersion,
+                    (_, action) => {
+                        if (action.type === '[Exercise] Start')
+                            seenStartAction = true;
+                        return seenStartAction;
+                    }
+                );
+            } catch (e: unknown) {
+                if (e instanceof ReducerError) {
+                    const exerciseId = (history.initialState as { id: UUID })
+                        .id;
+                    console.warn(
+                        `Failed importing exercise ${exerciseId} up to start: ${e.message}`,
+                        e.stack
+                    );
+                }
                 throw e;
             }
         }
     }
+}
+
+function migrateCurrentState<
+    H extends { initialState: object; actions: (object | null)[] } | undefined
+>(
+    migrationsToApply: Migration[],
+    propertiesToMigrate: { currentState: object; history: H },
+    newVersion: number
+) {
     migrateState(migrationsToApply, propertiesToMigrate.currentState);
     const currentState =
         propertiesToMigrate.currentState as Mutable<ExerciseState>;
@@ -140,6 +170,61 @@ export function applyMigrations<
         migratedProperties: {
             currentState,
             history: undefined as any,
+        },
+    };
+}
+
+function migrateFromInitial<
+    H extends { initialState: object; actions: (object | null)[] }
+>(
+    migrationsToApply: Migration[],
+    history: H,
+    newVersion: number,
+    postMigrateAction?: (
+        currentState: Mutable<ExerciseState>,
+        action: ExerciseAction
+    ) => boolean
+) {
+    migrateState(migrationsToApply, history.initialState);
+    const intermediaryState = cloneDeepMutable(
+        history.initialState
+    ) as Mutable<ExerciseState>;
+    history.actions.forEach((action, index) => {
+        if (action !== null) {
+            let deleteAction = !migrateAction(
+                migrationsToApply,
+                intermediaryState,
+                action
+            );
+            if (postMigrateAction) {
+                deleteAction = postMigrateAction(
+                    intermediaryState,
+                    action as ExerciseAction
+                );
+            }
+            if (!deleteAction) {
+                try {
+                    applyAction(intermediaryState, action as ExerciseAction);
+                } catch (e: unknown) {
+                    if (e instanceof ReducerError) {
+                        const json = JSON.stringify(action);
+                        console.warn(
+                            `Error while applying action ${json}: ${e.message}`
+                        );
+                    }
+                    throw e;
+                }
+            } else {
+                history.actions[index] = null;
+            }
+        }
+    });
+    return {
+        newVersion,
+        migratedProperties: {
+            currentState: intermediaryState,
+            // history has been migrated in place
+            history: history as any,
         },
     };
 }
