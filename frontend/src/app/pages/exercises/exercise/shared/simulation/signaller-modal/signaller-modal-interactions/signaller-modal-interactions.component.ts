@@ -1,5 +1,5 @@
 import type { OnChanges, OnDestroy, OnInit } from '@angular/core';
-import { Component, Input } from '@angular/core';
+import { Component, Input, ViewChild, ElementRef } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type {
     ExerciseRadiogram,
@@ -18,11 +18,11 @@ import type { BehaviorSubject, Observable } from 'rxjs';
 import { Subject, map, takeUntil } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import type { SearchableDropdownOption } from 'src/app/shared/components/searchable-dropdown/searchable-dropdown.component';
-import type {
+import type { HotkeyLayer } from 'src/app/shared/services/hotkeys.service';
+import {
     Hotkey,
-    HotkeyLayer,
+    HotkeysService,
 } from 'src/app/shared/services/hotkeys.service';
-import { HotkeysService } from 'src/app/shared/services/hotkeys.service';
 import type { AppState } from 'src/app/state/app.state';
 import { selectOwnClientId } from 'src/app/state/application/selectors/application.selectors';
 import {
@@ -36,6 +36,7 @@ export type InterfaceSignallerInteraction = Omit<
     'backgroundColor' | 'color'
 > & {
     details?: string;
+    keywords?: string[];
     hotkey: Hotkey;
     secondaryHotkey?: Hotkey;
     requiredBehaviors: ExerciseSimulationBehaviorType[];
@@ -69,9 +70,52 @@ export class SignallerModalInteractionsComponent
     primaryActionLabel = '';
     @Input()
     showSecondaryButton = true;
+    @Input()
+    filterHotkeyKeys!: string;
+
+    @ViewChild('filterInput')
+    filterInput!: ElementRef;
 
     private hotkeyLayer: HotkeyLayer | null = null;
+    private filterLayer: HotkeyLayer | null = null;
     private clientId!: UUID;
+
+    filter = '';
+    filterActive = false;
+    selectedIndex = -1;
+
+    get filteredInteractions() {
+        const lowerFilter = this.filter.toLowerCase();
+
+        return this.interactions.filter(
+            (interaction) =>
+                interaction.name.toLowerCase().includes(lowerFilter) ||
+                // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+                interaction.details?.toLowerCase().includes(lowerFilter) ||
+                interaction.keywords?.some((keyword) =>
+                    keyword.toLowerCase().includes(lowerFilter)
+                )
+        );
+    }
+
+    filterHotkey!: Hotkey;
+    readonly exitFilterHotkey = new Hotkey('Esc', false, () => {
+        this.filterInput.nativeElement.blur();
+    });
+    readonly upHotkey = new Hotkey('up', false, () =>
+        this.decreaseSelectedIndex()
+    );
+    readonly downHotkey = new Hotkey('down', false, () =>
+        this.increaseSelectedIndex()
+    );
+    readonly confirmHotkey = new Hotkey('Enter', false, () => {
+        this.selectionPrimaryAction();
+        this.filterInput.nativeElement.blur();
+    });
+    readonly confirmSecondaryHotkey = new Hotkey('⇧ + Enter', false, () => {
+        this.selectionSecondaryAction();
+        this.filterInput.nativeElement.blur();
+    });
 
     requestable$!: Observable<{ [key: string]: boolean }>;
     requestedRadiograms$!: Observable<{ [key: string]: ExerciseRadiogram[] }>;
@@ -100,6 +144,13 @@ export class SignallerModalInteractionsComponent
                 this.hotkeyLayer!.addHotkey(informationType.secondaryHotkey);
             }
         });
+
+        if (this.filterHotkeyKeys && this.filterHotkeyKeys !== '') {
+            this.filterHotkey = new Hotkey(this.filterHotkeyKeys, false, () => {
+                this.filterInput.nativeElement.focus();
+            });
+            this.hotkeyLayer.addHotkey(this.filterHotkey);
+        }
 
         const behaviors$ = this.store.select(
             createSelectBehaviorStates(this.simulatedRegionId)
@@ -184,5 +235,67 @@ export class SignallerModalInteractionsComponent
         }
 
         this.destroy$.next();
+    }
+
+    onFilterFocus() {
+        this.filterActive = true;
+
+        this.filterLayer = this.hotkeysService.createLayer(true);
+        this.filterLayer.addHotkey(this.exitFilterHotkey);
+        this.filterLayer.addHotkey(this.upHotkey);
+        this.filterLayer.addHotkey(this.downHotkey);
+        this.filterLayer.addHotkey(this.confirmHotkey);
+        this.filterLayer.addHotkey(this.confirmSecondaryHotkey);
+    }
+
+    onFilterBlur() {
+        this.filterActive = false;
+        this.filter = '';
+        this.selectedIndex = -1;
+
+        if (this.filterLayer) {
+            this.hotkeysService.removeLayer(this.filterLayer);
+            this.filterLayer = null;
+        }
+    }
+
+    increaseSelectedIndex() {
+        if (this.selectedIndex + 1 < this.filteredInteractions.length)
+            this.selectedIndex++;
+    }
+
+    decreaseSelectedIndex() {
+        if (this.selectedIndex - 1 >= -1) this.selectedIndex--;
+    }
+
+    resetSelectedIndex() {
+        if (this.filteredInteractions.length === 1) {
+            this.selectedIndex = 0;
+        } else {
+            this.selectedIndex = -1;
+        }
+    }
+
+    selectionPrimaryAction() {
+        if (
+            this.selectedIndex > -1 &&
+            this.selectedIndex < this.filteredInteractions.length
+        ) {
+            this.filteredInteractions[this.selectedIndex]?.hotkey.callback(
+                undefined!,
+                undefined!
+            );
+        }
+    }
+
+    selectionSecondaryAction() {
+        if (
+            this.selectedIndex > -1 &&
+            this.selectedIndex < this.filteredInteractions.length
+        ) {
+            this.filteredInteractions[
+                this.selectedIndex
+            ]?.secondaryHotkey?.callback(undefined!, undefined!);
+        }
     }
 }

@@ -1,5 +1,36 @@
-<ul class="list-group list-group-flush">
-    <li *ngFor="let interaction of interactions" class="list-group-item">
+<div class="input-group">
+    <label class="input-group-text"
+        >Filter
+        <app-hotkey-indicator
+            *ngIf="filterHotkey"
+            [hotkey]="filterHotkey"
+            class="ms-1"
+        />:
+    </label>
+    <input
+        type="search"
+        class="form-control no-validation"
+        #filterInput
+        [(ngModel)]="filter"
+        (focus)="onFilterFocus()"
+        (blur)="onFilterBlur()"
+    />
+</div>
+
+<small *ngIf="filterActive" class="text-muted">
+    <app-hotkey-indicator [hotkey]="exitFilterHotkey" />: Filter verlassen
+    <br />
+    <app-hotkey-indicator [hotkey]="upHotkey" />/<app-hotkey-indicator
+        [hotkey]="downHotkey"
+    />: Vorheriges/Nächstes Element auswählen
+</small>
+
+<ul class="list-group list-group-flush mt-2">
+    <li
+        *ngFor="let interaction of filteredInteractions; index as index"
+        class="list-group-item"
+        [class.active]="index === selectedIndex"
+    >
         <div
             *appLet="(requestable$ | async)?.[interaction.key] as enabled"
             class="d-flex flex-row mb-2"
@@ -27,21 +58,28 @@
                     "
                     [disabled]="!enabled || loading"
                     class="btn btn-primary"
+                    [class.btn-primary]="index !== selectedIndex"
+                    [class.btn-outline-light]="index === selectedIndex"
                     (click)="
                         interaction.hotkey.callback(undefined!, undefined!)
                     "
                 >
                     {{ primaryActionLabel }}
-                    <app-hotkey-indicator
-                        *ngIf="!loading; else loadingIndicator"
-                        [hotkey]="interaction.hotkey"
-                    />
-                    <ng-template #loadingIndicator>
-                        <span
-                            class="spinner-border spinner-border-sm"
-                            role="status"
-                            aria-hidden="true"
-                        ></span>
+                    <span
+                        *ngIf="loading; else hotkeys"
+                        class="spinner-border spinner-border-sm"
+                        role="status"
+                        aria-hidden="true"
+                    ></span>
+                    <ng-template #hotkeys>
+                        <app-hotkey-indicator
+                            *ngIf="index !== selectedIndex"
+                            [hotkey]="interaction.hotkey"
+                        />
+                        <app-hotkey-indicator
+                            *ngIf="index === selectedIndex"
+                            [hotkey]="confirmHotkey"
+                        />
                     </ng-template>
                 </button>
                 <button
@@ -58,11 +96,18 @@
                     "
                 >
                     <i class="bi bi-clock-history"></i>
-                    <app-hotkey-indicator
-                        *ngIf="interaction.secondaryHotkey"
-                        [hotkey]="interaction.secondaryHotkey"
-                        class="ms-1"
-                    />
+                    <ng-container *ngIf="interaction.secondaryHotkey">
+                        <app-hotkey-indicator
+                            *ngIf="index !== selectedIndex"
+                            [hotkey]="interaction.secondaryHotkey"
+                            class="ms-1"
+                        />
+                        <app-hotkey-indicator
+                            *ngIf="index === selectedIndex"
+                            [hotkey]="confirmSecondaryHotkey"
+                            class="ms-1"
+                        />
+                    </ng-container>
                 </button>
             </div>
         </div>
