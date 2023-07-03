@@ -344,7 +344,7 @@ export namespace SimulatedRegionActionReducers {
 
                 return draftState;
             },
-            rights: 'participant',
+            rights: 'trainer',
         };
 
     export const removeBehaviorFromSimulatedRegion: ActionReducer<RemoveBehaviorFromSimulatedRegionAction> =
@@ -380,6 +380,6 @@ export namespace SimulatedRegionActionReducers {
                 simulatedRegion.behaviors.splice(index, 1);
                 return draftState;
             },
-            rights: 'participant',
+            rights: 'trainer',
         };
 }
