@@ -39,6 +39,15 @@ export class SignallerModalRegionInformationComponent
             key: 'patientCount',
             name: 'Anzahl Patienten',
             details: 'nach Sichtungskategorie',
+            keywords: [
+                'patient',
+                'patienten',
+                'zahl',
+                'anzahl',
+                'zahlen',
+                'zählen',
+                'menge',
+            ],
             hotkey: new Hotkey('A', false, () => this.requestPatientCount()),
             secondaryHotkey: new Hotkey('⇧ + A', true, () =>
                 this.openRecurringReportModal('patientCount')
@@ -50,6 +59,13 @@ export class SignallerModalRegionInformationComponent
         {
             key: 'transportProgressFull',
             name: 'Transportfortschritt',
+            keywords: [
+                'transport',
+                'krankenhaus',
+                'fortschritt',
+                'status',
+                'abtransport',
+            ],
             details: 'für alle Bereiche',
             hotkey: new Hotkey('B', false, () =>
                 this.requestFullTransportProgress()
@@ -66,6 +82,13 @@ export class SignallerModalRegionInformationComponent
         {
             key: 'transportProgressRegion',
             name: 'Transportfortschritt',
+            keywords: [
+                'transport',
+                'krankenhaus',
+                'fortschritt',
+                'status',
+                'abtransport',
+            ],
             details: 'für diesen Bereich',
             hotkey: new Hotkey('C', false, () =>
                 this.requestRegionTransportProgress()
@@ -80,6 +103,15 @@ export class SignallerModalRegionInformationComponent
         {
             key: 'vehicleCount',
             name: 'Anzahl Fahrzeuge',
+            keywords: [
+                'fahrzeug',
+                'fahrzeuge',
+                'zahl',
+                'anzahl',
+                'zahlen',
+                'zählen',
+                'menge',
+            ],
             details: 'nach Typ',
             hotkey: new Hotkey('D', false, () => this.requestVehicleCount()),
             secondaryHotkey: new Hotkey('⇧ + D', true, () =>
@@ -91,6 +123,19 @@ export class SignallerModalRegionInformationComponent
         {
             key: 'requiredResources',
             name: 'Benötigte Fahrzeuge',
+            keywords: [
+                'patient',
+                'patienten',
+                'zahl',
+                'anzahl',
+                'zahlen',
+                'menge',
+                'benötigt',
+                'bedarf',
+                'notwendig',
+                'erfordert',
+                'erforderlich',
+            ],
             details:
                 'um alle Patienten zu behandeln (PA) oder Anfragen zu erfüllen (B-Raum)',
             hotkey: new Hotkey('E', false, () =>
@@ -108,6 +153,20 @@ export class SignallerModalRegionInformationComponent
         {
             key: 'treatmentStatus',
             name: 'Behandlungsstatus',
+            keywords: [
+                'behandlung',
+                'patient',
+                'patienten',
+                'sichten',
+                'zählen',
+                'versorgung',
+                'erstversorgung',
+                'sicher',
+                'sichergestellt',
+                'status',
+                'fortschritt',
+                'zustand',
+            ],
             details: '(Erstversorgung sichergestellt?)',
             hotkey: new Hotkey('F', false, () => this.requestTreatmentStatus()),
             secondaryHotkey: new Hotkey('⇧ + F', true, () =>
@@ -122,6 +181,22 @@ export class SignallerModalRegionInformationComponent
         {
             key: 'transferConnections',
             name: 'Transferverbindungen',
+            keywords: [
+                'transfer',
+                'transport',
+                'verbindung',
+                'verbinden',
+                'verbunden',
+                'bekannt',
+                'kennt',
+                'nachbar',
+                'erreichbar',
+                'erreichen',
+                'bereich',
+                'bereiche',
+                'abschnitt',
+                'abschnitte',
+            ],
             details: 'zu anderen Bereichen',
             hotkey: new Hotkey('G', false, () =>
                 this.requestTransferConnections()
@@ -136,6 +211,15 @@ export class SignallerModalRegionInformationComponent
         {
             key: 'personnelCount',
             name: 'Anzahl Personal',
+            keywords: [
+                'personal',
+                'personen',
+                'zahl',
+                'anzahl',
+                'zahlen',
+                'zählen',
+                'menge',
+            ],
             details: 'nach Typ',
             hotkey: new Hotkey('H', false, () => this.requestPersonnelCount()),
             secondaryHotkey: new Hotkey('⇧ + H', true, () =>
