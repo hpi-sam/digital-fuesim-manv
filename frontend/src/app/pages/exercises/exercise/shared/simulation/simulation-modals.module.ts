@@ -80,6 +80,7 @@ import { SignallerModalStartTransferOfCategoryModalComponent } from './signaller
 import { SignallerModalTransportTraysEditorComponent } from './signaller-modal/details-modal/signaller-modal-transport-trays-editor/signaller-modal-transport-trays-editor.component';
 import { SignallerModalProvideVehiclesEditorComponent } from './signaller-modal/details-modal/signaller-modal-provide-vehicles-editor/signaller-modal-provide-vehicles-editor.component';
 import { SignallerModalRequestDestinationEditorComponent } from './signaller-modal/details-modal/signaller-modal-request-target-editor/signaller-modal-request-target-editor.component';
+import { SignallerModalTransferConnectionsEditorComponent } from './signaller-modal/details-modal/signaller-modal-transfer-connections-editor/signaller-modal-transfer-connections-editor.component';
 
 @NgModule({
     declarations: [
@@ -147,6 +148,7 @@ import { SignallerModalRequestDestinationEditorComponent } from './signaller-mod
         SignallerModalTransportTraysEditorComponent,
         SignallerModalProvideVehiclesEditorComponent,
         SignallerModalRequestDestinationEditorComponent,
+        SignallerModalTransferConnectionsEditorComponent,
     ],
     exports: [SimulatedRegionOverviewGeneralComponent],
     providers: [

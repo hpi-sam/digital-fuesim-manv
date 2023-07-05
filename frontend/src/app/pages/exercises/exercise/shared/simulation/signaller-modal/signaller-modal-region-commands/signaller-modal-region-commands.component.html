@@ -9,7 +9,7 @@
 />
 
 <ng-template #transferConnectionsEditor>
-    <app-other-transfer-point-tab
+    <app-signaller-modal-transfer-connections-editor
         *ngIf="ownTransferPointId$ | async as transferPointId"
         [transferPointId]="transferPointId"
     />
