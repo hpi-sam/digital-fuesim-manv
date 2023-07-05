@@ -8,9 +8,9 @@ import type { AppState } from 'src/app/state/app.state';
 import { createSelectSimulatedRegion } from 'src/app/state/application/selectors/exercise.selectors';
 
 @Component({
-    selector: 'app-signaller-modal-region-overview',
-    templateUrl: './signaller-modal-region-overview.component.html',
-    styleUrls: ['./signaller-modal-region-overview.component.scss'],
+    selector: 'app-signaller-modal-region',
+    templateUrl: './signaller-modal-region.component.html',
+    styleUrls: ['./signaller-modal-region.component.scss'],
 })
 export class SignallerModalRegionOverviewComponent implements OnChanges {
     @Input() simulatedRegionId!: UUID;

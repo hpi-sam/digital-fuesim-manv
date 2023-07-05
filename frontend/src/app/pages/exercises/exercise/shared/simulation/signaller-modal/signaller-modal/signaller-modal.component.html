@@ -28,7 +28,8 @@
                 dessen Namen zu funken.
             </p>
             <app-signaller-modal-eoc *ngSwitchCase="eocId" />
-            <app-signaller-modal-region-overview
+            <app-signaller-modal-regions-overview *ngSwitchCase="overviewId" />
+            <app-signaller-modal-region
                 *ngSwitchDefault
                 [simulatedRegionId]="
                     (selectRegionService.selectedSimulatedRegion$ | async)!

@@ -14,6 +14,7 @@ import { NgbPopover } from '@ng-bootstrap/ng-bootstrap';
 import type { SearchableDropdownOption } from 'src/app/shared/components/searchable-dropdown/searchable-dropdown.component';
 import {
     EOC_ID,
+    OVERVIEW_ID,
     SelectSignallerRegionService,
 } from '../select-signaller-region.service';
 
@@ -38,6 +39,9 @@ export class SignallerModalRegionSelectorComponent
             this.popover.open();
         }
     );
+    public readonly openOverviewHotkey = new Hotkey('⇧ + F2', false, () => {
+        this.selectOverview();
+    });
 
     private readonly destroy$ = new Subject<void>();
 
@@ -66,6 +70,7 @@ export class SignallerModalRegionSelectorComponent
 
         this.baseLayer = this.hotkeys.createLayer();
         this.baseLayer.addHotkey(this.switchSimulatedRegionHotkey);
+        this.baseLayer.addHotkey(this.openOverviewHotkey);
 
         this.selectRegionService.selectedSimulatedRegion$
             .pipe(takeUntil(this.destroy$))
@@ -87,5 +92,9 @@ export class SignallerModalRegionSelectorComponent
 
     public selectRegion(selectedRegion: SearchableDropdownOption) {
         this.selectRegionService.selectSimulatedRegion(selectedRegion.key);
+    }
+
+    public selectOverview() {
+        this.selectRegionService.selectSimulatedRegion(OVERVIEW_ID);
     }
 }

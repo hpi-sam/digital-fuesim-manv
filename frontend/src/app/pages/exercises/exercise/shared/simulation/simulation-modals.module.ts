@@ -64,7 +64,7 @@ import { ManagePatientTransportToHospitalSettingsEditorComponent } from './train
 import { SignallerModalComponent } from './signaller-modal/signaller-modal/signaller-modal.component';
 import { SignallerModalRegionSelectorComponent } from './signaller-modal/signaller-modal-region-selector/signaller-modal-region-selector.component';
 import { SelectSignallerRegionService } from './signaller-modal/select-signaller-region.service';
-import { SignallerModalRegionOverviewComponent } from './signaller-modal/signaller-modal-region-overview/signaller-modal-region-overview.component';
+import { SignallerModalRegionOverviewComponent } from './signaller-modal/signaller-modal-region/signaller-modal-region.component';
 import { SignallerModalRegionLeaderComponent } from './signaller-modal/signaller-modal-region-leader/signaller-modal-region-leader.component';
 import { SignallerModalRegionInformationComponent } from './signaller-modal/signaller-modal-region-information/signaller-modal-region-information.component';
 import { SignallerModalRegionCommandsComponent } from './signaller-modal/signaller-modal-region-commands/signaller-modal-region-commands.component';
@@ -81,6 +81,7 @@ import { SignallerModalTransportTraysEditorComponent } from './signaller-modal/d
 import { SignallerModalProvideVehiclesEditorComponent } from './signaller-modal/details-modal/signaller-modal-provide-vehicles-editor/signaller-modal-provide-vehicles-editor.component';
 import { SignallerModalRequestDestinationEditorComponent } from './signaller-modal/details-modal/signaller-modal-request-target-editor/signaller-modal-request-target-editor.component';
 import { SignallerModalTransferConnectionsEditorComponent } from './signaller-modal/details-modal/signaller-modal-transfer-connections-editor/signaller-modal-transfer-connections-editor.component';
+import { SignallerModalRegionsOverviewComponent } from './signaller-modal/signaller-modal-regions-overview/signaller-modal-regions-overview.component';
 
 @NgModule({
     declarations: [
@@ -149,6 +150,7 @@ import { SignallerModalTransferConnectionsEditorComponent } from './signaller-mo
         SignallerModalProvideVehiclesEditorComponent,
         SignallerModalRequestDestinationEditorComponent,
         SignallerModalTransferConnectionsEditorComponent,
+        SignallerModalRegionsOverviewComponent,
     ],
     exports: [SimulatedRegionOverviewGeneralComponent],
     providers: [
