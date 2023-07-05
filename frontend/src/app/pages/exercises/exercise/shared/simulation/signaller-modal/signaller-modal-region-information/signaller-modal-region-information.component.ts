@@ -66,7 +66,7 @@ export class SignallerModalRegionInformationComponent
                 'status',
                 'abtransport',
             ],
-            details: 'für alle Bereiche',
+            details: 'für von hier verwaltete Bereiche',
             hotkey: new Hotkey('B', false, () =>
                 this.requestFullTransportProgress()
             ),
