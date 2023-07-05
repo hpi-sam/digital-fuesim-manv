@@ -26,7 +26,7 @@ const eventBasedReportData = {
     treatmentProgressChange: {
         actionType: '[ReportBehavior] Update report treatment status changes',
         enabledKey: 'reportTreatmentProgressChanges',
-        description: 'Wenn sich die Behandlungsphase ändert',
+        description: 'Wenn sich der Behandlungsstatus ändert',
         hotkeyKeys: 'I',
     },
     transferOfCategoryInSingleRegionCompleted: {
