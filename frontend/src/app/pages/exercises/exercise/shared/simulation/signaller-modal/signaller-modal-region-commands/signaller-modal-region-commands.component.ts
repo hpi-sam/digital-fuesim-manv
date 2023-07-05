@@ -103,13 +103,14 @@ export class SignallerModalRegionCommandsComponent implements OnChanges {
         },
         {
             key: 'provideVehicles',
-            name: 'Fahrzeuge bereitstellen',
+            name: 'Fahrzeuge entsenden',
             details: '(entsendet Fahrzeuge in einen anderen Bereich)',
             keywords: [
                 'fahrzeug',
                 'fahrzeuge',
                 'senden',
                 'versenden',
+                'entsenden',
                 'bereitstellen',
                 'bereitstellung',
                 'abrufen',
