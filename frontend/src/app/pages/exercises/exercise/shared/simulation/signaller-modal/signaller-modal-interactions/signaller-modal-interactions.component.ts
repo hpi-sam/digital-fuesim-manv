@@ -214,11 +214,13 @@ export class SignallerModalInteractionsComponent
                 radiograms.filter((radiogram) => isAccepted(radiogram))
             ),
             map((radiograms) =>
-                radiograms.filter((radiogram) =>
-                    isInterfaceSignallerKeyForClient(
-                        radiogram.key,
-                        this.clientId
-                    )
+                radiograms.filter(
+                    (radiogram) =>
+                        isInterfaceSignallerKeyForClient(
+                            radiogram.key,
+                            this.clientId
+                        ) &&
+                        radiogram.simulatedRegionId === this.simulatedRegionId
                 )
             ),
             map((radiograms) =>
