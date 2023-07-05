@@ -180,7 +180,7 @@ export class SignallerModalRegionInformationComponent
         // TODO: Vehicle occupation
         {
             key: 'transferConnections',
-            name: 'Transferverbindungen',
+            name: 'Bekannte Standorte anderer Bereiche',
             keywords: [
                 'transfer',
                 'transport',
@@ -197,7 +197,8 @@ export class SignallerModalRegionInformationComponent
                 'abschnitt',
                 'abschnitte',
             ],
-            details: 'zu anderen Bereichen',
+            details:
+                '(welche anderen Bereiche sind bekannt, sodass z.B. Fahrzeuge dorthin fahren können?)',
             hotkey: new Hotkey('G', false, () =>
                 this.requestTransferConnections()
             ),
