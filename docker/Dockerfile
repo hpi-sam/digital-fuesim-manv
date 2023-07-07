@@ -27,7 +27,7 @@ WORKDIR $PRODUCTION_PATH
 RUN npm run deployment
 
 # git archive the whole repository into a zip file, so users can easily download it
-# and update/include THIRD-PARTY-LICENSE-ACKNOWLEDGEMENTS.json
+# and update/include THIRD-PARTY-LICENSE-ACKNOWLEDGEMENTS.html (and json version of it)
 RUN npm run licensing:all
 
 ####  building done  ####

@@ -26,9 +26,11 @@
         "test": "cd shared && npm run test && cd ../frontend && npm run test && cd ../backend && npm run test",
         "migration:run:prod": "cd backend && npm run migration:run:prod",
         "merge-coverage": "mkdir coverage && cp backend/coverage/coverage-final.json coverage/backend.json && cp frontend/coverage/coverage-final.json coverage/frontend.json && cp shared/coverage/coverage-final.json coverage/shared.json && nyc merge coverage coverage/merged/coverage.json && nyc report -t coverage/merged --report-dir coverage/reports --reporter=html --reporter=cobertura --reporter=text --reporter=text-summary",
-        "licensing:third-party-licenses": "license-reporter --output frontend/src/assets/source-code/THIRD-PARTY-LICENSE-ACKNOWLEDGEMENTS.json",
+        "licensing:third-party-licenses": "npm-run-all -s -n -c licensing:third-party-licenses:json licensing:third-party-licenses:html",
+        "licensing:third-party-licenses:json": "license-reporter --output frontend/src/assets/source-code/THIRD-PARTY-LICENSE-ACKNOWLEDGEMENTS.json",
+        "licensing:third-party-licenses:html": "node third-party-license-json-to-html.cjs",
         "licensing:source-code-zip-file": "git archive --output=./frontend/src/assets/source-code/digital-fuesim-manv.zip --format=zip HEAD",
-        "licensing:all": "npm run licensing:third-party-licenses && npm run licensing:source-code-zip-file"
+        "licensing:all": "npm-run-all -s -n -c licensing:third-party-licenses licensing:source-code-zip-file"
     },
     "private": true,
     "engines": {
@@ -38,6 +40,7 @@
     "devDependencies": {
         "@weichwarenprojekt/license-reporter": "^0.4.1",
         "concurrently": "^7.6.0",
+        "node-json2html": "^2.2.3",
         "nyc": "^15.1.0",
         "prettier": "^2.8.3"
     }
