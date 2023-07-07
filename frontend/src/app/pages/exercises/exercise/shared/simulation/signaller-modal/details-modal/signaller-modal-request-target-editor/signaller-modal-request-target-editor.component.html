@@ -31,11 +31,19 @@
         />
     </ng-template>
     <button
-        [disabled]="selectedTarget === null"
+        [disabled]="selectedTarget === null || loading"
         class="btn btn-primary mt-2 row g-0 w-100"
         [tabIndex]="selectedTarget !== null ? 2 : -1"
     >
         Anfrageziel ändern
-        <app-hotkey-indicator [hotkey]="submitHotkey" class="ms-1" />
+        <span
+            *ngIf="loading; else hotkey"
+            class="spinner-border spinner-border-sm"
+            role="status"
+            aria-hidden="true"
+        ></span>
+        <ng-template #hotkey>
+            <app-hotkey-indicator [hotkey]="submitHotkey" class="ms-1" />
+        </ng-template>
     </button>
 </form>

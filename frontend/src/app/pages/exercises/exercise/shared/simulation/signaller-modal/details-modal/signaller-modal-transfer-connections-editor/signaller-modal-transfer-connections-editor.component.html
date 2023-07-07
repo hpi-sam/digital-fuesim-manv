@@ -54,11 +54,19 @@
         />
     </ng-template>
     <button
-        [disabled]="selectedTransferPoint === null"
+        [disabled]="selectedTransferPoint === null || loading"
         class="btn btn-primary mt-2 row g-0 w-100"
         [tabIndex]="selectedTransferPoint !== null ? 2 : -1"
     >
         Standort bekannt machen
-        <app-hotkey-indicator [hotkey]="submitHotkey" class="ms-1" />
+        <span
+            *ngIf="loading; else hotkey"
+            class="spinner-border spinner-border-sm"
+            role="status"
+            aria-hidden="true"
+        ></span>
+        <ng-template #hotkey>
+            <app-hotkey-indicator [hotkey]="submitHotkey" class="ms-1" />
+        </ng-template>
     </button>
 </form>

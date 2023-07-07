@@ -69,12 +69,20 @@
         </ng-template>
     </div>
     <button
-        [disabled]="!canSend"
+        [disabled]="!canSend || loading"
         class="btn btn-primary mt-2 row g-0 w-100"
         [tabIndex]="canSend ? 3 : -1"
     >
         Sende Fahrzeug
-        <app-hotkey-indicator [hotkey]="submitHotkey" class="ms-1" />
+        <span
+            *ngIf="loading; else hotkey"
+            class="spinner-border spinner-border-sm"
+            role="status"
+            aria-hidden="true"
+        ></span>
+        <ng-template #hotkey>
+            <app-hotkey-indicator [hotkey]="submitHotkey" class="ms-1" />
+        </ng-template>
     </button>
     <span class="row g-0 mt-2 text-muted">
         Mehrere Fahrzeuge bitte getrennt nacheinander senden.

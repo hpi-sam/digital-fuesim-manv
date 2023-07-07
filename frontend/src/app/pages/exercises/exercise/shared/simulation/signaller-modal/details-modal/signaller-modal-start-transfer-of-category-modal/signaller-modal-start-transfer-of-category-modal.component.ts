@@ -13,6 +13,7 @@ import { HotkeysService } from 'src/app/shared/services/hotkeys.service';
 import type { AppState } from 'src/app/state/app.state';
 import { createSelectBehaviorStatesByType } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
+import { MessageService } from 'src/app/core/messages/message.service';
 import { SignallerModalDetailsService } from '../signaller-modal-details.service';
 
 @Component({
@@ -34,13 +35,16 @@ export class SignallerModalStartTransferOfCategoryModalComponent
     transportStarted = false;
     maximumStatus: PatientStatusForTransport = 'red';
 
+    loadingCount = 0;
+
     allowedStatuses = ['red', 'yellow', 'green'] as const;
 
     constructor(
         private readonly exerciseService: ExerciseService,
         private readonly store: Store<AppState>,
         private readonly hotkeysService: HotkeysService,
-        private readonly detailsModal: SignallerModalDetailsService
+        private readonly detailsModal: SignallerModalDetailsService,
+        private readonly messageService: MessageService
     ) {}
 
     ngOnInit() {
@@ -81,29 +85,75 @@ export class SignallerModalStartTransferOfCategoryModalComponent
             return;
         }
 
+        // This counter must be increased prior to proposing the first action
+        // Otherwise, it might become 0 in between, if the first action is handled faster than the second one is proposed
         if (
             this.maximumStatus !==
             transportBehaviorState.maximumCategoryToTransport
         ) {
-            this.exerciseService.proposeAction({
-                type: '[ManagePatientsTransportToHospitalBehavior] Update Maximum Category To Transport',
-                simulatedRegionId: this.simulatedRegionId,
-                behaviorId: transportBehaviorState.id,
-                maximumCategoryToTransport: this.maximumStatus,
-            });
+            this.loadingCount++;
+        }
+        if (this.transportStarted !== transportBehaviorState.transportStarted) {
+            this.loadingCount++;
+        }
+
+        if (this.loadingCount === 0) {
+            // Even if there is nothing to do, we want to show a success message
+            this.loadingCount++;
+            this.handlePromise({ success: true });
+            return;
+        }
+
+        if (
+            this.maximumStatus !==
+            transportBehaviorState.maximumCategoryToTransport
+        ) {
+            this.exerciseService
+                .proposeAction({
+                    type: '[ManagePatientsTransportToHospitalBehavior] Update Maximum Category To Transport',
+                    simulatedRegionId: this.simulatedRegionId,
+                    behaviorId: transportBehaviorState.id,
+                    maximumCategoryToTransport: this.maximumStatus,
+                })
+                .then((result) => {
+                    this.handlePromise(result);
+                });
         }
 
         if (this.transportStarted !== transportBehaviorState.transportStarted) {
-            this.exerciseService.proposeAction({
-                type: this.transportStarted
-                    ? '[ManagePatientsTransportToHospitalBehavior] Start Transport'
-                    : '[ManagePatientsTransportToHospitalBehavior] Stop Transport',
-                simulatedRegionId: this.simulatedRegionId,
-                behaviorId: transportBehaviorState.id,
-            });
+            this.exerciseService
+                .proposeAction({
+                    type: this.transportStarted
+                        ? '[ManagePatientsTransportToHospitalBehavior] Start Transport'
+                        : '[ManagePatientsTransportToHospitalBehavior] Stop Transport',
+                    simulatedRegionId: this.simulatedRegionId,
+                    behaviorId: transportBehaviorState.id,
+                })
+                .then((result) => {
+                    this.handlePromise(result);
+                });
         }
+    }
 
-        this.close();
+    handlePromise(result: { success: boolean }) {
+        this.loadingCount--;
+
+        if (this.loadingCount === 0) {
+            if (result.success) {
+                this.messageService.postMessage({
+                    title: 'Befehl erteilt',
+                    body: 'Der Transport wird nun wie angegeben ausgeführt',
+                    color: 'success',
+                });
+            } else {
+                this.messageService.postError({
+                    title: 'Fehler beim Erteilen des Befehls',
+                    body: 'Die aktuellen Transporteinstellungen konnten nicht geändert werden',
+                });
+            }
+
+            this.close();
+        }
     }
 
     close() {

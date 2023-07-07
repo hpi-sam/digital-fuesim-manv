@@ -23,6 +23,7 @@ import {
     Hotkey,
     HotkeysService,
 } from 'src/app/shared/services/hotkeys.service';
+import { MessageService } from 'src/app/core/messages/message.service';
 import { SignallerModalDetailsService } from '../signaller-modal-details.service';
 
 @Component({
@@ -45,12 +46,14 @@ export class SignallerModalRequestDestinationEditorComponent
     availableTargets$!: Observable<SearchableDropdownOption[]>;
     currentTargetName$!: Observable<string>;
     selectedTarget: SearchableDropdownOption | null = null;
+    loading = false;
 
     constructor(
         private readonly exerciseService: ExerciseService,
         private readonly store: Store<AppState>,
         private readonly detailsModal: SignallerModalDetailsService,
-        private readonly hotkeysService: HotkeysService
+        private readonly hotkeysService: HotkeysService,
+        private readonly messageService: MessageService
     ) {}
 
     ngOnInit() {
@@ -143,14 +146,33 @@ export class SignallerModalRequestDestinationEditorComponent
             );
         }
 
-        this.exerciseService.proposeAction({
-            type: '[RequestBehavior] Update RequestTarget',
-            simulatedRegionId: this.simulatedRegionId,
-            behaviorId: this.requestBehaviorId,
-            requestTarget,
-        });
+        this.exerciseService
+            .proposeAction({
+                type: '[RequestBehavior] Update RequestTarget',
+                simulatedRegionId: this.simulatedRegionId,
+                behaviorId: this.requestBehaviorId,
+                requestTarget,
+            })
+            .then((result) => {
+                this.loading = false;
 
-        this.close();
+                if (result.success) {
+                    this.messageService.postMessage({
+                        title: 'Befehl erteilt',
+                        body: 'Fahrzeuge werden ab nun am eingestellten Zielort angefragt',
+                        color: 'success',
+                    });
+                } else {
+                    this.messageService.postError({
+                        title: 'Fehler beim Erteilen des Befehls',
+                        body: 'Das Ziel für Fahrzeuganfragen konnte nicht geändert werden',
+                    });
+                }
+
+                this.close();
+            });
+
+        this.loading = true;
     }
 
     close() {

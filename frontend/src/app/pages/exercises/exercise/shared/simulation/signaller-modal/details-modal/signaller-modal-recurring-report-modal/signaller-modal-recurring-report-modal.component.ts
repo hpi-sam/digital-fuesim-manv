@@ -13,6 +13,7 @@ import {
     createSelectBehaviorStatesByType,
 } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
+import { MessageService } from 'src/app/core/messages/message.service';
 import { SignallerModalDetailsService } from '../signaller-modal-details.service';
 
 @Component({
@@ -38,10 +39,13 @@ export class SignallerModalRecurringReportModalComponent implements OnInit {
     public reportsEnabled = false;
     public reportInterval = 15 * 60 * 1000;
 
+    public loading = false;
+
     constructor(
         private readonly exerciseService: ExerciseService,
         private readonly store: Store<AppState>,
-        private readonly detailsModal: SignallerModalDetailsService
+        private readonly detailsModal: SignallerModalDetailsService,
+        private readonly messageService: MessageService
     ) {}
 
     ngOnInit() {
@@ -85,9 +89,11 @@ export class SignallerModalRecurringReportModalComponent implements OnInit {
             return;
         }
 
+        let actionPromise: Promise<{ success: boolean }> | null = null;
+
         if (this.reportsEnabled && !this.recurringActivityId) {
             // Reports are currently not enabled but should be
-            this.exerciseService.proposeAction({
+            actionPromise = this.exerciseService.proposeAction({
                 type: '[ReportBehavior] Create Recurring Report',
                 simulatedRegionId: this.simulatedRegionId,
                 behaviorId: this.reportBehaviorId,
@@ -96,7 +102,7 @@ export class SignallerModalRecurringReportModalComponent implements OnInit {
             });
         } else if (this.reportsEnabled && this.recurringActivityId) {
             // Reports are currently enabled and should still be
-            this.exerciseService.proposeAction({
+            actionPromise = this.exerciseService.proposeAction({
                 type: '[ReportBehavior] Update Recurring Report',
                 simulatedRegionId: this.simulatedRegionId,
                 behaviorId: this.reportBehaviorId,
@@ -105,7 +111,7 @@ export class SignallerModalRecurringReportModalComponent implements OnInit {
             });
         } else if (!this.reportsEnabled && this.recurringActivityId) {
             // Reports are currently enabled but should not be
-            this.exerciseService.proposeAction({
+            actionPromise = this.exerciseService.proposeAction({
                 type: '[ReportBehavior] Remove Recurring Report',
                 simulatedRegionId: this.simulatedRegionId,
                 behaviorId: this.reportBehaviorId,
@@ -114,9 +120,31 @@ export class SignallerModalRecurringReportModalComponent implements OnInit {
         } else if (!this.reportsEnabled && !this.recurringActivityId) {
             // Reports are currently not enabled and should not be
             // Do nothing
+            actionPromise = Promise.resolve({ success: true });
         }
 
-        this.close();
+        this.loading = true;
+
+        if (actionPromise) {
+            actionPromise.then((result) => {
+                this.loading = false;
+
+                if (result.success) {
+                    this.messageService.postMessage({
+                        title: 'Befehl erteilt',
+                        body: 'Die Einstellungen für den regelmäßigen Bericht wurden angepasst',
+                        color: 'success',
+                    });
+                } else {
+                    this.messageService.postError({
+                        title: 'Fehler beim Erteilen des Befehls',
+                        body: 'Die Einstellungen für den regelmäßigen Bericht wurden angepasst',
+                    });
+                }
+
+                this.close();
+            });
+        }
     }
 
     public close() {

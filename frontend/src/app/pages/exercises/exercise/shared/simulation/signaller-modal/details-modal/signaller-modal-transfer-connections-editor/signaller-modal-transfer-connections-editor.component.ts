@@ -16,6 +16,7 @@ import {
     createSelectTransferPoint,
     selectTransferPoints,
 } from 'src/app/state/application/selectors/exercise.selectors';
+import { MessageService } from 'src/app/core/messages/message.service';
 import { SignallerModalDetailsService } from '../signaller-modal-details.service';
 
 @Component({
@@ -32,6 +33,7 @@ export class SignallerModalTransferConnectionsEditorComponent
     submitHotkey = new Hotkey('Enter', false, () => this.addConnection());
 
     selectedTransferPoint: SearchableDropdownOption | null = null;
+    loading = false;
 
     public connectedTransferPointNames$!: Observable<string[]>;
     public transferPointsToBeAdded$!: Observable<SearchableDropdownOption[]>;
@@ -40,7 +42,8 @@ export class SignallerModalTransferConnectionsEditorComponent
         private readonly store: Store<AppState>,
         private readonly exerciseService: ExerciseService,
         private readonly detailsModal: SignallerModalDetailsService,
-        private readonly hotkeysService: HotkeysService
+        private readonly hotkeysService: HotkeysService,
+        private readonly messageService: MessageService
     ) {}
 
     ngOnInit() {
@@ -99,13 +102,31 @@ export class SignallerModalTransferConnectionsEditorComponent
     public addConnection() {
         if (!this.selectedTransferPoint) return;
 
-        this.exerciseService.proposeAction({
-            type: '[TransferPoint] Connect TransferPoints',
-            transferPointId1: this.transferPointId,
-            transferPointId2: this.selectedTransferPoint.key,
-        });
+        this.exerciseService
+            .proposeAction({
+                type: '[TransferPoint] Connect TransferPoints',
+                transferPointId1: this.transferPointId,
+                transferPointId2: this.selectedTransferPoint.key,
+            })
+            .then((result) => {
+                this.loading = false;
 
-        this.close();
+                if (result.success) {
+                    this.close();
+                    this.messageService.postMessage({
+                        title: 'Befehl erteilt',
+                        body: 'Der Standort des anderen Bereichs wurde erfolgreich übermittelt',
+                        color: 'success',
+                    });
+                } else {
+                    this.messageService.postError({
+                        title: 'Fehler beim Erteilen des Befehls',
+                        body: 'Der Standort des anderen Bereichs konnte nicht mitgeteilt werden',
+                    });
+                }
+            });
+
+        this.loading = true;
     }
 
     close() {

@@ -18,6 +18,7 @@ import {
     createSelectBehaviorState,
     selectSimulatedRegions,
 } from 'src/app/state/application/selectors/exercise.selectors';
+import { SignallerModalDetailsService } from '../signaller-modal-details.service';
 
 @Component({
     selector: 'app-signaller-modal-transport-trays-editor',
@@ -44,11 +45,15 @@ export class SignallerModalTransportTraysEditorComponent
     removeRegionHotkey = new Hotkey('-', false, () => {
         this.removeRegionPopover.open();
     });
+    finishHotkey = new Hotkey('Enter', false, () => {
+        this.close();
+    });
 
     constructor(
         private readonly exerciseService: ExerciseService,
         private readonly store: Store<AppState>,
-        private readonly hotkeysService: HotkeysService
+        private readonly hotkeysService: HotkeysService,
+        private readonly detailsModal: SignallerModalDetailsService
     ) {}
 
     ngOnInit() {
@@ -124,5 +129,9 @@ export class SignallerModalTransportTraysEditorComponent
             behaviorId: this.transportBehaviorId,
             managedSimulatedRegionId: selectedRegion.key,
         });
+    }
+
+    close() {
+        this.detailsModal.close();
     }
 }

@@ -36,7 +36,7 @@
     <div class="row">
         <button
             type="button"
-            class="btn btn-outline-primary col me-1"
+            class="btn btn-outline-success col me-1"
             [ngbPopover]="addRegionTemplate"
             autoClose="outside"
             #addRegionPopover="ngbPopover"
@@ -75,4 +75,7 @@
             />
         </ng-template>
     </div>
+    <button class="btn btn-primary row mt-2" (click)="close()">
+        Fertig<app-hotkey-indicator [hotkey]="finishHotkey" />
+    </button>
 </div>

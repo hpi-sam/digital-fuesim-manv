@@ -22,6 +22,7 @@ import {
     selectVehicles,
 } from 'src/app/state/application/selectors/exercise.selectors';
 import { NgbPopover } from '@ng-bootstrap/ng-bootstrap';
+import { MessageService } from 'src/app/core/messages/message.service';
 import { SignallerModalDetailsService } from '../signaller-modal-details.service';
 
 @Component({
@@ -59,11 +60,14 @@ export class SignallerModalProvideVehiclesEditorComponent
     availableTargets$!: Observable<SearchableDropdownOption[]>;
     selectedTarget: SearchableDropdownOption | null = null;
 
+    loading = false;
+
     constructor(
         private readonly exerciseService: ExerciseService,
         private readonly store: Store<AppState>,
         private readonly detailsModal: SignallerModalDetailsService,
-        private readonly hotkeysService: HotkeysService
+        private readonly hotkeysService: HotkeysService,
+        private readonly messageService: MessageService
     ) {}
 
     ngOnInit() {
@@ -153,16 +157,34 @@ export class SignallerModalProvideVehiclesEditorComponent
     startTransfer() {
         if (!this.canSend) return;
 
-        this.exerciseService.proposeAction({
-            type: '[TransferBehavior] Send Transfer Request Event',
-            simulatedRegionId: this.simulatedRegionId,
-            behaviorId: this.transferBehaviorId,
-            vehicleId: this.selectedVehicle!.key,
-            destinationType: 'transferPoint',
-            destinationId: this.selectedTarget!.key,
-            patients: {},
-        });
+        this.exerciseService
+            .proposeAction({
+                type: '[TransferBehavior] Send Transfer Request Event',
+                simulatedRegionId: this.simulatedRegionId,
+                behaviorId: this.transferBehaviorId,
+                vehicleId: this.selectedVehicle!.key,
+                destinationType: 'transferPoint',
+                destinationId: this.selectedTarget!.key,
+                patients: {},
+            })
+            .then((result) => {
+                this.loading = false;
 
+                if (result.success) {
+                    this.messageService.postMessage({
+                        title: 'Befehl erteilt',
+                        body: 'Der Fahrzeug wurde erfolgreich entsendet',
+                        color: 'success',
+                    });
+                } else {
+                    this.messageService.postError({
+                        title: 'Fehler beim Erteilen des Befehls',
+                        body: 'Das Fahrzeug konnte nicht entsendet werden',
+                    });
+                }
+            });
+
+        this.loading = true;
         this.selectedVehicle = null;
         this.selectedTarget = null;
     }
