@@ -60,11 +60,11 @@ style = `<style>
                 border: 1px solid #dddddd;
             }
         </style>`;
-let html = header + style + body + '</html>';
+let html = header + style + body + '</html>\n';
 
 const fs = require('fs');
 fs.writeFileSync(
     './frontend/src/assets/source-code/THIRD-PARTY-LICENSE-ACKNOWLEDGEMENTS.html',
     html
 );
-console.log('THIRD-PARTY-LICENSE-ACKNOWLEDGEMENTS.html successfully created');
+console.log('THIRD-PARTY-LICENSE-ACKNOWLEDGEMENTS.html created');
