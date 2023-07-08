@@ -13,3 +13,6 @@ test-scenarios/
 
 # custom html files in about
 frontend/src/assets/about
+
+# custom files in source-code
+frontend/src/assets/source-code
