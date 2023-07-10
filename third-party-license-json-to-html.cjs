@@ -30,19 +30,7 @@ let data = require('./frontend/src/assets/source-code/THIRD-PARTY-LICENSE-ACKNOW
 let table_header = json2html.transform(data[0], template_table_header);
 let table_body = json2html.transform(data, template_table_body);
 
-let header =
-    '<!DOCTYPE html>' +
-    '<html lang="en">\n' +
-    '<head><title>Third Party Licenses</title></head>';
-let body =
-    '<input type="button" value="Zur&uuml;ck" onclick="history.back()">' +
-    '<h1>Third Party Licenses</h1><br><table id="my_table" style="width:100%">\n<thead>' +
-    table_header +
-    '\n</thead>\n<tbody>\n' +
-    table_body +
-    '\n</tbody>\n</table>';
-body = '<body>' + body + '</body>';
-style = `<style>
+let style = `<style>
             table {
                 border-collapse: collapse;
                 width: 100%;
@@ -60,7 +48,22 @@ style = `<style>
                 border: 1px solid #dddddd;
             }
         </style>`;
-let html = header + style + body + '</html>\n';
+
+let header =
+    '<!DOCTYPE html>' +
+    '<html lang="en">\n' +
+    '<head><title>Third Party Licenses</title>' +
+    style +
+    '</head>';
+let body =
+    '<input type="button" value="Zur&uuml;ck" onclick="history.back()">' +
+    '<h1>Third Party Licenses</h1><br><table>\n<thead>' +
+    table_header +
+    '\n</thead>\n<tbody>\n' +
+    table_body +
+    '\n</tbody>\n</table>';
+body = '<body>' + body + '</body>';
+let html = header + body + '</html>\n';
 
 const fs = require('fs');
 fs.writeFileSync(
