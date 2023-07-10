@@ -174,6 +174,7 @@ export class SendAlarmGroupInterfaceComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
+        this.hotkeysService.removeLayer(this.hotkeyLayer);
         this.destroy$.next();
     }
 
