@@ -36,13 +36,11 @@ Florian Greiz 23
 
 [material.svg](material.svg):  
 Benildur Nickel\
-License [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)\
-License in German [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.de)
+License: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)\
 
 [big-material.svg](big-material.svg):  
 Benildur Nickel\
-License [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)\
-License in German [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.de)
+License: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)\
 
 [patient.svg](patient.svg):  
 <https://commons.wikimedia.org/wiki/File:Person_(63361)_-_The_Noun_Project.svg> (edited)
