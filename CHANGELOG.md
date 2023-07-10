@@ -7,9 +7,13 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ## [Unreleased]
 
+### Added
+
+-   this software has now a license (with some exceptions), see LICENSE-README.md
+
 ## [0.7.1] - 2023-07-10
 
-## Added
+### Added
 
 -   Patients can be identified with an unique ID
     -   The ID is assigned to every patient automatically
@@ -117,7 +121,6 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 -   Changes of the treatment progress can now be reported automatically.
 -   The waiting times for vehicles that are getting loaded or are waiting for transfer are shown.
 -   There are now buttons in the patients and vehicles tabs that create and lead to a transfer behavior that is pre filled with the patient or vehicle.
--   this software has now a license (with some exceptions), see LICENSE-README.md
 
 ### Changed
 
