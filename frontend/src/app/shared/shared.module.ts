@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import {
     NgbDropdownModule,
     NgbNavModule,
+    NgbPopover,
     NgbTooltip,
 } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
@@ -50,6 +51,7 @@ import { PatientIdentifierComponent } from './components/patient-identifier/pati
 import { HotkeysService } from './services/hotkeys.service';
 import { HotkeyIndicatorComponent } from './components/hotkey-indicator/hotkey-indicator.component';
 import { PatientStatusDropdownComponent } from './components/patient-status-dropdown/patient-status-dropdown.component';
+import { SendAlarmGroupInterfaceComponent } from './components/send-alarm-group-interface/send-alarm-group-interface.component';
 
 @NgModule({
     declarations: [
@@ -95,6 +97,7 @@ import { PatientStatusDropdownComponent } from './components/patient-status-drop
         PatientIdentifierComponent,
         HotkeyIndicatorComponent,
         PatientStatusDropdownComponent,
+        SendAlarmGroupInterfaceComponent,
     ],
     imports: [
         CommonModule,
@@ -103,6 +106,7 @@ import { PatientStatusDropdownComponent } from './components/patient-status-drop
         NgbDropdownModule,
         NgbNavModule,
         NgbTooltip,
+        NgbPopover,
     ],
     exports: [
         AutofocusDirective,
@@ -143,6 +147,7 @@ import { PatientStatusDropdownComponent } from './components/patient-status-drop
         PatientIdentifierComponent,
         HotkeyIndicatorComponent,
         PatientStatusDropdownComponent,
+        SendAlarmGroupInterfaceComponent,
     ],
     providers: [HotkeysService],
 })
