@@ -31,8 +31,6 @@ jobs:
               uses: ./.github/actions/update-version
               with:
                   version: ${{ github.event.inputs.versionName }}
-            - name: Include THIRD-PARTY-LICENSE-ACKNOWLEDGEMENTS.html (and json version of it)
-              uses: ./.github/actions/include-third-party-license-acknowledgements
             - name: Update changelog
               uses: thomaseizinger/keep-a-changelog-new-release@v1
               with:

@@ -310,7 +310,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 Some files are excluded to the mentioned license, read [LICENSE-README.md](LICENSE-README.md) for further information to which files these applies.
 
-Keep in mind, that if you don't use docker you have to run `npm run licensing:all` before building the `frontend` to give users the option to download a copy of the source code of this software (and a list of third-party libraries) or use another way that lets users download the source code of this software for free. If you didn't modify the source code, a link to this github repository is enough, but you can do both.
+Keep in mind, that if you don't use docker you have to run `npm run licensing:all` before building the `frontend` to give users the option to download a copy of the source code of this software (and a list of third-party libraries) or use another way that lets users download the source code of this software for free. If you didn't modify the source code, a link to this github repository is enough, but you can do both. If you run `npm run deployment` this command is already included.
 
 ## Contributors
 
