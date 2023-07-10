@@ -13,7 +13,7 @@
             else noResourcesRequired
         "
     >
-        <table class="table card-text">
+        <table class="table card-text mb-1">
             <thead>
                 <tr>
                     <th class="w-50">Kategorie</th>
@@ -51,9 +51,9 @@
                 </tr>
             </tbody>
         </table>
-        <div *ngIf="radiogram.canBeAccepted" class="d-flex row my-1">
+        <ng-container *ngIf="radiogram.canBeAccepted">
             <ng-container *ngIf="showAnswer$ | async; else actionButtons">
-                <p class="card-text">
+                <p class="card-text mt-3">
                     <ng-container
                         *ngIf="
                             radiogram.resourcesPromised !== undefined;
@@ -72,14 +72,16 @@
                 </p>
             </ng-container>
             <ng-template #actionButtons>
-                <ng-container
-                    *ngIf="{
-                        value: enableActionButtons$ | async,
-                    } as enableActionButtons"
+                <div
+                    *ngIf="
+                        {
+                            value: enableActionButtons$ | async,
+                        }.value
+                    "
+                    class="d-flex row mt-3"
                 >
                     <button
                         type="button"
-                        [disabled]="!enableActionButtons.value"
                         (click)="denyRequest()"
                         class="btn btn-danger col-sm mx-1"
                     >
@@ -87,15 +89,14 @@
                     </button>
                     <button
                         type="button"
-                        [disabled]="!enableActionButtons.value"
                         (click)="acceptRequest()"
                         class="btn btn-success col-sm mx-1"
                     >
                         Akzeptieren
                     </button>
-                </ng-container>
+                </div>
             </ng-template>
-        </div>
+        </ng-container>
     </ng-container>
 
     <ng-template #noResourcesRequired>
