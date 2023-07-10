@@ -15,6 +15,10 @@ import type {
     UnloadArrivingVehiclesBehaviorState,
 } from '../../simulation';
 import {
+    reportableInformationTypeToGermanNameDictionary,
+    behaviorTypeToGermanNameDictionary,
+    updateRequestPatientCountsDelay,
+    updateRequestVehiclesDelay,
     TransferPatientsInSpecificVehicleRequestEvent,
     TransferSpecificVehicleRequestEvent,
     updateBehaviorsRequestTarget,
@@ -33,19 +37,32 @@ import {
     cloneDeepMutable,
     uuidArrayValidationOptions,
     UUIDSet,
+    formatDuration,
 } from '../../utils';
 import { IsLiteralUnion, IsUUIDSet, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ExpectedReducerError, ReducerError } from '../reducer-error';
 import {
+    PatientStatus,
     requestTargetTypeOptions,
     ExerciseRequestTargetConfiguration,
+    patientStatusForTransportAllowedValues,
+    PatientStatusForTransport,
+    patientStatusAllowedValues,
+    statusNames,
+    createSimulatedRegionTag,
+    createPatientStatusTag,
+    createVehicleTypeTag,
+    isInSimulatedRegion,
+    currentSimulatedRegionIdOf,
+    createTransferPointTag,
 } from '../../models';
 import {
     TransferDestination,
     transferDestinationTypeAllowedValues,
 } from '../../simulation/utils/transfer-destination';
 import { getActivityById, getBehaviorById, getElement } from './utils';
+import { logBehavior } from './utils/log';
 
 export class UpdateTreatPatientsIntervalsAction implements Action {
     @IsValue('[TreatPatientsBehavior] Update TreatPatientsIntervals' as const)
@@ -143,6 +160,44 @@ export class UpdateReportTreatmentStatusChangesAction implements Action {
 
     @IsBoolean()
     public readonly reportTreatmentProgressChanges!: boolean;
+}
+
+export class UpdateReportTransferOfCategoryInSingleRegionCompletedAction
+    implements Action
+{
+    @IsValue(
+        '[ReportBehavior] Update report transfer of category in single region completed'
+    )
+    public readonly type =
+        '[ReportBehavior] Update report transfer of category in single region completed';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @IsBoolean()
+    public readonly reportChanges!: boolean;
+}
+
+export class UpdateReportTransferOfCategoryInMultipleRegionsCompletedAction
+    implements Action
+{
+    @IsValue(
+        '[ReportBehavior] Update report transfer of category in multiple regions completed'
+    )
+    public readonly type =
+        '[ReportBehavior] Update report transfer of category in multiple regions completed';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @IsBoolean()
+    public readonly reportChanges!: boolean;
 }
 
 export class CreateRecurringReportsAction implements Action {
@@ -354,6 +409,227 @@ export class SendTransferRequestEventAction implements Action {
     public readonly patients!: UUIDSet;
 }
 
+export class ChangeTransportRequestTargetAction implements Action {
+    @IsValue(
+        '[ManagePatientsTransportToHospitalBehavior] Change Transport Request Target'
+    )
+    public readonly type =
+        '[ManagePatientsTransportToHospitalBehavior] Change Transport Request Target';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @IsOptional()
+    @IsUUID(4, uuidValidationOptions)
+    public readonly requestTargetId?: UUID;
+}
+
+export class AddSimulatedRegionToManageForTransportAction implements Action {
+    @IsValue(
+        '[ManagePatientsTransportToHospitalBehavior] Add Simulated Region To Manage For Transport'
+    )
+    public readonly type =
+        '[ManagePatientsTransportToHospitalBehavior] Add Simulated Region To Manage For Transport';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly managedSimulatedRegionId!: UUID;
+}
+
+export class RemoveSimulatedRegionToManageFromTransportAction
+    implements Action
+{
+    @IsValue(
+        '[ManagePatientsTransportToHospitalBehavior] Remove Simulated Region To Manage From Transport'
+    )
+    public readonly type =
+        '[ManagePatientsTransportToHospitalBehavior] Remove Simulated Region To Manage From Transport';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly managedSimulatedRegionId!: UUID;
+}
+
+export class UpdatePatientsExpectedInRegionForTransportAction
+    implements Action
+{
+    @IsValue(
+        '[ManagePatientsTransportToHospitalBehavior] Update Patients Expected In Region For Transport'
+    )
+    public readonly type =
+        '[ManagePatientsTransportToHospitalBehavior] Update Patients Expected In Region For Transport';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly managedSimulatedRegionId!: UUID;
+
+    @IsInt()
+    @Min(0)
+    public readonly patientsExpected!: number;
+
+    @IsLiteralUnion(patientStatusAllowedValues)
+    public readonly patientStatus!: PatientStatus;
+}
+
+export class AddVehicleTypeForPatientTransportAction implements Action {
+    @IsValue(
+        '[ManagePatientsTransportToHospitalBehavior] Add Vehicle Type For Patient Transport'
+    )
+    public readonly type =
+        '[ManagePatientsTransportToHospitalBehavior] Add Vehicle Type For Patient Transport';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @IsString()
+    public readonly vehicleTypeName!: string;
+
+    @IsLiteralUnion(patientStatusForTransportAllowedValues)
+    public readonly patientStatus!: PatientStatusForTransport;
+}
+
+export class RemoveVehicleTypeForPatientTransportAction implements Action {
+    @IsValue(
+        '[ManagePatientsTransportToHospitalBehavior] Remove Vehicle Type For Patient Transport'
+    )
+    public readonly type =
+        '[ManagePatientsTransportToHospitalBehavior] Remove Vehicle Type For Patient Transport';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @IsString()
+    public readonly vehicleTypeName!: string;
+
+    @IsLiteralUnion(patientStatusForTransportAllowedValues)
+    public readonly patientStatus!: PatientStatusForTransport;
+}
+
+export class UpdateRequestVehicleDelayForPatientTransportAction
+    implements Action
+{
+    @IsValue(
+        '[ManagePatientsTransportToHospitalBehavior] Update Request Vehicle Delay For Patient Transport'
+    )
+    public readonly type =
+        '[ManagePatientsTransportToHospitalBehavior] Update Request Vehicle Delay For Patient Transport';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @IsInt()
+    @Min(0)
+    public readonly requestVehicleDelay!: number;
+}
+
+export class UpdateRequestPatientCountDelayForPatientTransportAction
+    implements Action
+{
+    @IsValue(
+        '[ManagePatientsTransportToHospitalBehavior] Update Request Patient Count Delay For Patient Transport'
+    )
+    public readonly type =
+        '[ManagePatientsTransportToHospitalBehavior] Update Request Patient Count Delay For Patient Transport';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @IsInt()
+    @Min(0)
+    public readonly requestPatientCountDelay!: number;
+}
+
+export class UpdatePromiseInvalidationIntervalForPatientTransportAction
+    implements Action
+{
+    @IsValue(
+        '[ManagePatientsTransportToHospitalBehavior] Update Promise Invalidation Interval For Patient Transport'
+    )
+    public readonly type =
+        '[ManagePatientsTransportToHospitalBehavior] Update Promise Invalidation Interval For Patient Transport';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @IsInt()
+    @Min(0)
+    public readonly promiseInvalidationInterval!: number;
+}
+
+export class UpdateMaximumCategoryToTransportAction implements Action {
+    @IsValue(
+        '[ManagePatientsTransportToHospitalBehavior] Update Maximum Category To Transport'
+    )
+    public readonly type =
+        '[ManagePatientsTransportToHospitalBehavior] Update Maximum Category To Transport';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+
+    @IsLiteralUnion(patientStatusForTransportAllowedValues)
+    public readonly maximumCategoryToTransport!: PatientStatusForTransport;
+}
+
+export class StartTransportAction implements Action {
+    @IsValue('[ManagePatientsTransportToHospitalBehavior] Start Transport')
+    public readonly type =
+        '[ManagePatientsTransportToHospitalBehavior] Start Transport';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+}
+
+export class StopTransportAction implements Action {
+    @IsValue('[ManagePatientsTransportToHospitalBehavior] Stop Transport')
+    public readonly type =
+        '[ManagePatientsTransportToHospitalBehavior] Stop Transport';
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly simulatedRegionId!: UUID;
+
+    @IsUUID(4, uuidValidationOptions)
+    public readonly behaviorId!: UUID;
+}
+
 export namespace SimulationActionReducers {
     export const updateTreatPatientsIntervals: ActionReducer<UpdateTreatPatientsIntervalsAction> =
         {
@@ -382,21 +658,97 @@ export namespace SimulationActionReducers {
                 const treatPatientsBehaviorState = behaviorStates.find(
                     (behaviorState) => behaviorState.id === behaviorStateId
                 ) as Mutable<TreatPatientsBehaviorState>;
+
                 if (unknown !== undefined) {
                     treatPatientsBehaviorState.intervals.unknown = unknown;
+                    logBehavior(
+                        draftState,
+                        [],
+                        `Das ${
+                            behaviorTypeToGermanNameDictionary[
+                                treatPatientsBehaviorState.type
+                            ]
+                        } Verhalten im Bereich ${
+                            simulatedRegion.name
+                        } wird in der Phase Erkunden alle ${formatDuration(
+                            unknown
+                        )} die Zuteilung neu berechnen`,
+                        simulatedRegionId,
+                        behaviorStateId
+                    );
                 }
                 if (counted !== undefined) {
                     treatPatientsBehaviorState.intervals.counted = counted;
+                    logBehavior(
+                        draftState,
+                        [],
+                        `Das ${
+                            behaviorTypeToGermanNameDictionary[
+                                treatPatientsBehaviorState.type
+                            ]
+                        } Verhalten im Bereich ${
+                            simulatedRegion.name
+                        } wird in der Phase Vorsichtung alle ${formatDuration(
+                            counted
+                        )} die Zuteilung neu berechnen`,
+                        simulatedRegionId,
+                        behaviorStateId
+                    );
                 }
                 if (triaged !== undefined) {
                     treatPatientsBehaviorState.intervals.triaged = triaged;
+                    logBehavior(
+                        draftState,
+                        [],
+                        `Das ${
+                            behaviorTypeToGermanNameDictionary[
+                                treatPatientsBehaviorState.type
+                            ]
+                        } Verhalten im Bereich ${
+                            simulatedRegion.name
+                        } wird in der Phase Behandeln, Personal fehlt alle ${formatDuration(
+                            triaged
+                        )} die Zuteilung neu berechnen`,
+                        simulatedRegionId,
+                        behaviorStateId
+                    );
                 }
                 if (secured !== undefined) {
                     treatPatientsBehaviorState.intervals.secured = secured;
+                    logBehavior(
+                        draftState,
+                        [],
+                        `Das ${
+                            behaviorTypeToGermanNameDictionary[
+                                treatPatientsBehaviorState.type
+                            ]
+                        } Verhalten im Bereich ${
+                            simulatedRegion.name
+                        } wird in der Phase Erstversogung sichergestellt alle ${formatDuration(
+                            secured
+                        )} die Zuteilung neu berechnen`,
+                        simulatedRegionId,
+                        behaviorStateId
+                    );
                 }
                 if (countingTimePerPatient !== undefined) {
                     treatPatientsBehaviorState.intervals.countingTimePerPatient =
                         countingTimePerPatient;
+                    logBehavior(
+                        draftState,
+                        [],
+                        `Das ${
+                            behaviorTypeToGermanNameDictionary[
+                                treatPatientsBehaviorState.type
+                            ]
+                        } Verhalten im Bereich ${
+                            simulatedRegion.name
+                        } wird für das Zählen pro Patient ${formatDuration(
+                            countingTimePerPatient
+                        )} benötigen`,
+                        simulatedRegionId,
+                        behaviorStateId
+                    );
                 }
                 return draftState;
             },
@@ -417,9 +769,25 @@ export namespace SimulationActionReducers {
                 );
                 const behaviorState = simulatedRegion.behaviors.find(
                     (behavior) => behavior.id === behaviorId
-                ) as Mutable<UnloadArrivingVehiclesBehaviorState>;
+                ) as Mutable<UnloadArrivingVehiclesBehaviorState> | undefined;
+
                 if (behaviorState) {
                     behaviorState.unloadDelay = unloadDelay;
+                    logBehavior(
+                        draftState,
+                        [],
+                        `Das ${
+                            behaviorTypeToGermanNameDictionary[
+                                behaviorState.type
+                            ]
+                        } Verhalten im Bereich ${
+                            simulatedRegion.name
+                        } benötigt ${formatDuration(
+                            unloadDelay
+                        )}, um Fahrzeuge zu entladen.`,
+                        simulatedRegionId,
+                        behaviorId
+                    );
                 } else {
                     throw new ReducerError(
                         `The simulated region with id ${simulatedRegionId} has no behavior with id ${behaviorId}.`
@@ -459,6 +827,11 @@ export namespace SimulationActionReducers {
                     reportTreatmentProgressChanges,
                 }
             ) {
+                const simulatedRegion = getElement(
+                    draftState,
+                    'simulatedRegion',
+                    simulatedRegionId
+                );
                 const reportBehaviorState = getBehaviorById(
                     draftState,
                     simulatedRegionId,
@@ -466,8 +839,112 @@ export namespace SimulationActionReducers {
                     'reportBehavior'
                 );
 
+                logBehavior(
+                    draftState,
+                    [],
+                    `Das ${
+                        behaviorTypeToGermanNameDictionary[
+                            reportBehaviorState.type
+                        ]
+                    } Verhalten im Bereich ${
+                        simulatedRegion.name
+                    } wird Behandlungsfortschrittsänderungen ${
+                        reportTreatmentProgressChanges ? '' : 'nicht '
+                    }melden.`,
+                    simulatedRegionId,
+                    behaviorId
+                );
+
                 reportBehaviorState.reportTreatmentProgressChanges =
                     reportTreatmentProgressChanges;
+
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+
+    export const updateReportTransferOfCategoryInSingleRegionCompleted: ActionReducer<UpdateReportTransferOfCategoryInSingleRegionCompletedAction> =
+        {
+            action: UpdateReportTransferOfCategoryInSingleRegionCompletedAction,
+            reducer(
+                draftState,
+                { simulatedRegionId, behaviorId, reportChanges }
+            ) {
+                const simulatedRegion = getElement(
+                    draftState,
+                    'simulatedRegion',
+                    simulatedRegionId
+                );
+                const reportBehaviorState = getBehaviorById(
+                    draftState,
+                    simulatedRegionId,
+                    behaviorId,
+                    'reportBehavior'
+                );
+
+                logBehavior(
+                    draftState,
+                    [],
+                    `Das ${
+                        behaviorTypeToGermanNameDictionary[
+                            reportBehaviorState.type
+                        ]
+                    } Verhalten im Bereich ${
+                        simulatedRegion.name
+                    } wird den Abschluss des Transports aller Patienten einer Sichtungskategorie in der Region ${
+                        reportChanges ? '' : 'nicht '
+                    }melden.`,
+                    simulatedRegionId,
+                    behaviorId
+                );
+
+                reportBehaviorState.reportTransferOfCategoryInSingleRegionCompleted =
+                    reportChanges;
+
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+
+    export const updateReportTransferOfCategoryInMultipleRegionsCompleted: ActionReducer<UpdateReportTransferOfCategoryInMultipleRegionsCompletedAction> =
+        {
+            action: UpdateReportTransferOfCategoryInMultipleRegionsCompletedAction,
+            reducer(
+                draftState,
+                { simulatedRegionId, behaviorId, reportChanges }
+            ) {
+                const simulatedRegion = getElement(
+                    draftState,
+                    'simulatedRegion',
+                    simulatedRegionId
+                );
+                const reportBehaviorState = getBehaviorById(
+                    draftState,
+                    simulatedRegionId,
+                    behaviorId,
+                    'reportBehavior'
+                );
+
+                logBehavior(
+                    draftState,
+                    [],
+                    `Das ${
+                        behaviorTypeToGermanNameDictionary[
+                            reportBehaviorState.type
+                        ]
+                    } Verhalten im Bereich ${
+                        simulatedRegion.name
+                    } wird den Abschluss des Transports aller Patienten einer Sichtungskategorie der Regionen die von ${
+                        simulatedRegion.name
+                    } als TO bedient werden ${
+                        reportChanges ? '' : 'nicht '
+                    }melden.`,
+                    simulatedRegionId,
+                    behaviorId
+                );
+
+                reportBehaviorState.reportTransferOfCategoryInMultipleRegionsCompleted =
+                    reportChanges;
 
                 return draftState;
             },
@@ -495,9 +972,27 @@ export namespace SimulationActionReducers {
 
                 if (reportBehaviorState.activityIds[informationType]) {
                     throw new ExpectedReducerError(
-                        `The behavior with id ${behaviorId} already has a recurring report for information type ${informationType}.`
+                        `The behavior with id ${behaviorId} already has a recurring report for information type ${reportableInformationTypeToGermanNameDictionary[informationType]}.`
                     );
                 }
+
+                logBehavior(
+                    draftState,
+                    [],
+                    `Das ${
+                        behaviorTypeToGermanNameDictionary[
+                            reportBehaviorState.type
+                        ]
+                    } Verhalten im Bereich ${
+                        simulatedRegion.name
+                    } wird Informationen vom Typ ${
+                        reportableInformationTypeToGermanNameDictionary[
+                            informationType
+                        ]
+                    } alle ${formatDuration(interval)} melden.`,
+                    simulatedRegionId,
+                    behaviorId
+                );
 
                 const activityId = nextUUID(draftState);
                 reportBehaviorState.activityIds[informationType] = activityId;
@@ -522,6 +1017,11 @@ export namespace SimulationActionReducers {
                 draftState,
                 { simulatedRegionId, behaviorId, interval, informationType }
             ) {
+                const simulatedRegion = getElement(
+                    draftState,
+                    'simulatedRegion',
+                    simulatedRegionId
+                );
                 const reportBehaviorState = getBehaviorById(
                     draftState,
                     simulatedRegionId,
@@ -532,7 +1032,7 @@ export namespace SimulationActionReducers {
                     reportBehaviorState.activityIds[informationType];
                 if (!activityId) {
                     throw new ReducerError(
-                        `The behavior with id ${behaviorId} has no recurring report for information type ${informationType}.`
+                        `The behavior with id ${behaviorId} has no recurring report for information type ${reportableInformationTypeToGermanNameDictionary[informationType]}.`
                     );
                 }
                 const recurringActivityState = getActivityById(
@@ -540,6 +1040,24 @@ export namespace SimulationActionReducers {
                     simulatedRegionId,
                     activityId,
                     'recurringEventActivity'
+                );
+
+                logBehavior(
+                    draftState,
+                    [],
+                    `Das ${
+                        behaviorTypeToGermanNameDictionary[
+                            reportBehaviorState.type
+                        ]
+                    } Verhalten im Bereich ${
+                        simulatedRegion.name
+                    } wird Informationen vom Typ ${
+                        reportableInformationTypeToGermanNameDictionary[
+                            informationType
+                        ]
+                    } alle ${formatDuration(interval)} melden.`,
+                    simulatedRegionId,
+                    behaviorId
                 );
 
                 recurringActivityState.recurrenceIntervalTime = interval;
@@ -571,7 +1089,7 @@ export namespace SimulationActionReducers {
                     reportBehaviorState.activityIds[informationType];
                 if (!activityId) {
                     throw new ReducerError(
-                        `The behavior with id ${behaviorId} has no recurring report for information type ${informationType}.`
+                        `The behavior with id ${behaviorId} has no recurring report for information type ${reportableInformationTypeToGermanNameDictionary[informationType]}.`
                     );
                 }
                 getActivityById(
@@ -579,6 +1097,23 @@ export namespace SimulationActionReducers {
                     simulatedRegionId,
                     activityId,
                     'recurringEventActivity'
+                );
+                logBehavior(
+                    draftState,
+                    [],
+                    `Das ${
+                        behaviorTypeToGermanNameDictionary[
+                            reportBehaviorState.type
+                        ]
+                    } Verhalten im Bereich ${
+                        simulatedRegion.name
+                    } wird Informationen vom Typ ${
+                        reportableInformationTypeToGermanNameDictionary[
+                            informationType
+                        ]
+                    } nicht melden.`,
+                    simulatedRegionId,
+                    behaviorId
                 );
                 delete reportBehaviorState.activityIds[informationType];
                 delete simulatedRegion.activities[activityId];
@@ -595,11 +1130,36 @@ export namespace SimulationActionReducers {
                 draftState,
                 { simulatedRegionId, behaviorId, vehicleType, newLimit }
             ) {
+                const simulatedRegion = getElement(
+                    draftState,
+                    'simulatedRegion',
+                    simulatedRegionId
+                );
                 const automaticDistributionBehaviorState = getBehaviorById(
                     draftState,
                     simulatedRegionId,
                     behaviorId,
                     'automaticallyDistributeVehiclesBehavior'
+                );
+
+                logBehavior(
+                    draftState,
+                    [createVehicleTypeTag(draftState, vehicleType)],
+                    `Das ${
+                        behaviorTypeToGermanNameDictionary[
+                            automaticDistributionBehaviorState.type
+                        ]
+                    } Verhalten im Bereich ${
+                        simulatedRegion.name
+                    } wird Fahrzeuge vom Typ ${vehicleType} ${
+                        newLimit < Number.MAX_VALUE
+                            ? newLimit === 0
+                                ? 'nicht'
+                                : `bis zu einem Limit von ${newLimit}`
+                            : 'ohne Limit'
+                    } verteilen.`,
+                    simulatedRegionId,
+                    behaviorId
                 );
 
                 automaticDistributionBehaviorState.distributionLimits[
@@ -646,6 +1206,19 @@ export namespace SimulationActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
+                logBehavior(
+                    draftState,
+                    [],
+                    `Das ${
+                        behaviorTypeToGermanNameDictionary[behaviorState.type]
+                    } Verhalten im Bereich ${
+                        simulatedRegion.name
+                    } wird alle ${formatDuration(
+                        requestInterval
+                    )} Anfragen versenden.`,
+                    simulatedRegionId,
+                    behaviorId
+                );
                 updateBehaviorsRequestInterval(
                     draftState,
                     simulatedRegion,
@@ -657,18 +1230,28 @@ export namespace SimulationActionReducers {
             rights: 'trainer',
         };
 
-    export const addAutomaticDistributionLimit: ActionReducer<AddAutomaticDistributionDestinationAction> =
+    export const addAutomaticDistributionDestination: ActionReducer<AddAutomaticDistributionDestinationAction> =
         {
             action: AddAutomaticDistributionDestinationAction,
             reducer(
                 draftState,
                 { simulatedRegionId, behaviorId, destinationId }
             ) {
+                const simulatedRegion = getElement(
+                    draftState,
+                    'simulatedRegion',
+                    simulatedRegionId
+                );
                 const automaticDistributionBehaviorState = getBehaviorById(
                     draftState,
                     simulatedRegionId,
                     behaviorId,
                     'automaticallyDistributeVehiclesBehavior'
+                );
+                const destination = getElement(
+                    draftState,
+                    'transferPoint',
+                    destinationId
                 );
 
                 //  Do not re-add the destination if it was already added previously
@@ -682,6 +1265,29 @@ export namespace SimulationActionReducers {
                         `The destination with id: ${destinationId} was already added to the behavior with id: ${behaviorId} in simulated region with id:${simulatedRegionId}`
                     );
                 }
+
+                logBehavior(
+                    draftState,
+                    [
+                        isInSimulatedRegion(destination)
+                            ? createSimulatedRegionTag(
+                                  draftState,
+                                  currentSimulatedRegionIdOf(destination)
+                              )
+                            : createTransferPointTag(draftState, destinationId),
+                    ],
+                    `Das ${
+                        behaviorTypeToGermanNameDictionary[
+                            automaticDistributionBehaviorState.type
+                        ]
+                    } Verhalten im Bereich ${
+                        simulatedRegion.name
+                    } wird Fahrzeuge nach ${
+                        destination.externalName
+                    } schicken.`,
+                    simulatedRegionId,
+                    behaviorId
+                );
 
                 automaticDistributionBehaviorState.distributionDestinations[
                     destinationId
@@ -715,6 +1321,34 @@ export namespace SimulationActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
+
+                logBehavior(
+                    draftState,
+                    requestTarget.type === 'traineesRequestTarget'
+                        ? []
+                        : [
+                              createSimulatedRegionTag(
+                                  draftState,
+                                  requestTarget.targetSimulatedRegionId
+                              ),
+                          ],
+                    `Das ${
+                        behaviorTypeToGermanNameDictionary[behaviorState.type]
+                    } Verhalten im Bereich ${
+                        simulatedRegion.name
+                    } wird Fahrzeuge von ${
+                        requestTarget.type === 'traineesRequestTarget'
+                            ? 'den Übenden'
+                            : getElement(
+                                  draftState,
+                                  'simulatedRegion',
+                                  requestTarget.targetSimulatedRegionId
+                              ).name
+                    } anfragen.`,
+                    simulatedRegionId,
+                    behaviorId
+                );
+
                 updateBehaviorsRequestTarget(
                     draftState,
                     simulatedRegion,
@@ -726,18 +1360,44 @@ export namespace SimulationActionReducers {
             rights: 'trainer',
         };
 
-    export const removeAutomaticDistributionLimit: ActionReducer<RemoveAutomaticDistributionDestinationAction> =
+    export const removeAutomaticDistributionDestination: ActionReducer<RemoveAutomaticDistributionDestinationAction> =
         {
             action: RemoveAutomaticDistributionDestinationAction,
             reducer(
                 draftState,
                 { simulatedRegionId, behaviorId, destinationId }
             ) {
+                const simulatedRegion = getElement(
+                    draftState,
+                    'simulatedRegion',
+                    simulatedRegionId
+                );
                 const automaticDistributionBehaviorState = getBehaviorById(
                     draftState,
                     simulatedRegionId,
                     behaviorId,
                     'automaticallyDistributeVehiclesBehavior'
+                );
+                const destination = getElement(
+                    draftState,
+                    'transferPoint',
+                    destinationId
+                );
+
+                logBehavior(
+                    draftState,
+                    [],
+                    `Das ${
+                        behaviorTypeToGermanNameDictionary[
+                            automaticDistributionBehaviorState.type
+                        ]
+                    } Verhalten im Bereich ${
+                        simulatedRegion.name
+                    } wird keine Fahrzeuge nach ${
+                        destination.externalName
+                    } schicken.`,
+                    simulatedRegionId,
+                    behaviorId
                 );
 
                 delete automaticDistributionBehaviorState
@@ -759,11 +1419,29 @@ export namespace SimulationActionReducers {
                 draftState,
                 { simulatedRegionId, behaviorId, promiseInvalidationInterval }
             ) {
+                const simulatedRegion = getElement(
+                    draftState,
+                    'simulatedRegion',
+                    simulatedRegionId
+                );
                 const behaviorState = getBehaviorById(
                     draftState,
                     simulatedRegionId,
                     behaviorId,
                     'requestBehavior'
+                );
+                logBehavior(
+                    draftState,
+                    [],
+                    `Das ${
+                        behaviorTypeToGermanNameDictionary[behaviorState.type]
+                    } Verhalten im Bereich ${
+                        simulatedRegion.name
+                    } wird versprochene Fahrzeuge nach ${formatDuration(
+                        promiseInvalidationInterval
+                    )} ignorieren.`,
+                    simulatedRegionId,
+                    behaviorId
                 );
                 behaviorState.invalidatePromiseInterval =
                     promiseInvalidationInterval;
@@ -776,11 +1454,37 @@ export namespace SimulationActionReducers {
         {
             action: ProvidePersonnelBehaviorUpdateVehiclePrioritiesAction,
             reducer(draftState, { simulatedRegionId, behaviorId, priorities }) {
+                const simulatedRegion = getElement(
+                    draftState,
+                    'simulatedRegion',
+                    simulatedRegionId
+                );
                 const behaviorState = getBehaviorById(
                     draftState,
                     simulatedRegionId,
                     behaviorId,
                     'providePersonnelBehavior'
+                );
+
+                const prioritiesString = priorities
+                    .map((priority, i) => {
+                        const vehicleType = draftState.vehicleTemplates.find(
+                            (vehicleTemplate) => vehicleTemplate.id === priority
+                        )!.vehicleType;
+                        return `${i + 1}. ${vehicleType}`;
+                    })
+                    .join(' ');
+
+                logBehavior(
+                    draftState,
+                    [],
+                    `Das ${
+                        behaviorTypeToGermanNameDictionary[behaviorState.type]
+                    } Verhalten im Bereich ${
+                        simulatedRegion.name
+                    } wird Fahrzeuge nach der folgenden Priorisierung anfordern: ${prioritiesString}.`,
+                    simulatedRegionId,
+                    behaviorId
                 );
 
                 behaviorState.vehicleTemplatePriorities =
@@ -798,11 +1502,30 @@ export namespace SimulationActionReducers {
                 draftState,
                 { simulatedRegionId, behaviorId, loadTimePerPatient }
             ) {
+                const simulatedRegion = getElement(
+                    draftState,
+                    'simulatedRegion',
+                    simulatedRegionId
+                );
                 const behaviorState = getBehaviorById(
                     draftState,
                     simulatedRegionId,
                     behaviorId,
                     'transferBehavior'
+                );
+
+                logBehavior(
+                    draftState,
+                    [],
+                    `Das ${
+                        behaviorTypeToGermanNameDictionary[behaviorState.type]
+                    } Verhalten im Bereich ${
+                        simulatedRegion.name
+                    } benötigt ${formatDuration(
+                        loadTimePerPatient
+                    )} pro Patient, der eingeladen wird.`,
+                    simulatedRegionId,
+                    behaviorId
                 );
 
                 behaviorState.loadTimePerPatient = loadTimePerPatient;
@@ -819,11 +1542,30 @@ export namespace SimulationActionReducers {
                 draftState,
                 { simulatedRegionId, behaviorId, personnelLoadTime }
             ) {
+                const simulatedRegion = getElement(
+                    draftState,
+                    'simulatedRegion',
+                    simulatedRegionId
+                );
                 const behaviorState = getBehaviorById(
                     draftState,
                     simulatedRegionId,
                     behaviorId,
                     'transferBehavior'
+                );
+
+                logBehavior(
+                    draftState,
+                    [],
+                    `Das ${
+                        behaviorTypeToGermanNameDictionary[behaviorState.type]
+                    } Verhalten im Bereich ${
+                        simulatedRegion.name
+                    } benötigt ${formatDuration(
+                        personnelLoadTime
+                    )}, um das Personal einzuladen.`,
+                    simulatedRegionId,
+                    behaviorId
                 );
 
                 behaviorState.personnelLoadTime = personnelLoadTime;
@@ -840,11 +1582,30 @@ export namespace SimulationActionReducers {
                 draftState,
                 { simulatedRegionId, behaviorId, delayBetweenSends }
             ) {
+                const simulatedRegion = getElement(
+                    draftState,
+                    'simulatedRegion',
+                    simulatedRegionId
+                );
                 const behaviorState = getBehaviorById(
                     draftState,
                     simulatedRegionId,
                     behaviorId,
                     'transferBehavior'
+                );
+
+                logBehavior(
+                    draftState,
+                    [],
+                    `Das ${
+                        behaviorTypeToGermanNameDictionary[behaviorState.type]
+                    } Verhalten im Bereich ${
+                        simulatedRegion.name
+                    } kann alle ${formatDuration(
+                        delayBetweenSends
+                    )} ein Fahrzeug versenden.`,
+                    simulatedRegionId,
+                    behaviorId
                 );
 
                 behaviorState.delayBetweenSends = delayBetweenSends;
@@ -891,6 +1652,7 @@ export namespace SimulationActionReducers {
                     event = TransferSpecificVehicleRequestEvent.create(
                         vehicleId,
                         destinationType,
+                        destinationId,
                         destinationId
                     );
                 } else {
@@ -899,6 +1661,7 @@ export namespace SimulationActionReducers {
                             patients,
                             vehicleId,
                             destinationType,
+                            destinationId,
                             destinationId
                         );
                 }
@@ -908,4 +1671,606 @@ export namespace SimulationActionReducers {
             },
             rights: 'trainer',
         };
+
+    export const changeTransportRequestTarget: ActionReducer<ChangeTransportRequestTargetAction> =
+        {
+            action: ChangeTransportRequestTargetAction,
+            reducer(
+                draftState,
+                { simulatedRegionId, behaviorId, requestTargetId }
+            ) {
+                const simulatedRegion = getElement(
+                    draftState,
+                    'simulatedRegion',
+                    simulatedRegionId
+                );
+                const behaviorState = getBehaviorById(
+                    draftState,
+                    simulatedRegionId,
+                    behaviorId,
+                    'managePatientTransportToHospitalBehavior'
+                );
+
+                logBehavior(
+                    draftState,
+                    requestTargetId === undefined ||
+                        requestTargetId === simulatedRegionId
+                        ? []
+                        : [
+                              createSimulatedRegionTag(
+                                  draftState,
+                                  requestTargetId
+                              ),
+                          ],
+                    `Das ${
+                        behaviorTypeToGermanNameDictionary[behaviorState.type]
+                    } Verhalten im Bereich ${simulatedRegion.name} fordert ${
+                        requestTargetId === undefined
+                            ? 'keine Fahrzeuge'
+                            : `Fahrzeuge von ${
+                                  getElement(
+                                      draftState,
+                                      'simulatedRegion',
+                                      requestTargetId
+                                  ).name
+                              }`
+                    } an.`,
+                    simulatedRegionId,
+                    behaviorId
+                );
+
+                behaviorState.requestTargetId = requestTargetId;
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+
+    export const addSimulatedRegionToManageForTransport: ActionReducer<AddSimulatedRegionToManageForTransportAction> =
+        {
+            action: AddSimulatedRegionToManageForTransportAction,
+            reducer(
+                draftState,
+                { simulatedRegionId, behaviorId, managedSimulatedRegionId }
+            ) {
+                const simulatedRegion = getElement(
+                    draftState,
+                    'simulatedRegion',
+                    simulatedRegionId
+                );
+                const behaviorState = getBehaviorById(
+                    draftState,
+                    simulatedRegionId,
+                    behaviorId,
+                    'managePatientTransportToHospitalBehavior'
+                );
+                const managedSimulatedRegion = getElement(
+                    draftState,
+                    'simulatedRegion',
+                    managedSimulatedRegionId
+                );
+
+                logBehavior(
+                    draftState,
+                    managedSimulatedRegionId === simulatedRegionId
+                        ? []
+                        : [
+                              createSimulatedRegionTag(
+                                  draftState,
+                                  managedSimulatedRegionId
+                              ),
+                          ],
+                    `Das ${
+                        behaviorTypeToGermanNameDictionary[behaviorState.type]
+                    } Verhalten im Bereich ${
+                        simulatedRegion.name
+                    } verwaltet den Patientenabtransport im Bereich ${
+                        managedSimulatedRegion.name
+                    }.`,
+                    simulatedRegionId,
+                    behaviorId
+                );
+
+                behaviorState.simulatedRegionsToManage[
+                    managedSimulatedRegionId
+                ] = true;
+
+                if (
+                    !behaviorState.patientsExpectedInRegions[
+                        managedSimulatedRegionId
+                    ]
+                ) {
+                    behaviorState.patientsExpectedInRegions[
+                        managedSimulatedRegionId
+                    ] = {
+                        red: 0,
+                        yellow: 0,
+                        green: 0,
+                        blue: 0,
+                        black: 0,
+                        white: 0,
+                    };
+                }
+
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+
+    export const removeSimulatedRegionToManageForTransport: ActionReducer<RemoveSimulatedRegionToManageFromTransportAction> =
+        {
+            action: RemoveSimulatedRegionToManageFromTransportAction,
+            reducer(
+                draftState,
+                { simulatedRegionId, behaviorId, managedSimulatedRegionId }
+            ) {
+                const simulatedRegion = getElement(
+                    draftState,
+                    'simulatedRegion',
+                    simulatedRegionId
+                );
+                const behaviorState = getBehaviorById(
+                    draftState,
+                    simulatedRegionId,
+                    behaviorId,
+                    'managePatientTransportToHospitalBehavior'
+                );
+                const managedSimulatedRegion = getElement(
+                    draftState,
+                    'simulatedRegion',
+                    managedSimulatedRegionId
+                );
+                logBehavior(
+                    draftState,
+                    managedSimulatedRegionId === simulatedRegionId
+                        ? []
+                        : [
+                              createSimulatedRegionTag(
+                                  draftState,
+                                  managedSimulatedRegionId
+                              ),
+                          ],
+                    `Das ${
+                        behaviorTypeToGermanNameDictionary[behaviorState.type]
+                    } Verhalten im Bereich ${
+                        simulatedRegion.name
+                    } verwaltet den Patientenabtransport im Bereich ${
+                        managedSimulatedRegion.name
+                    } nicht.`,
+                    simulatedRegionId,
+                    behaviorId
+                );
+                delete behaviorState.simulatedRegionsToManage[
+                    managedSimulatedRegionId
+                ];
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+
+    export const updatePatientsExpectedInRegionForTransport: ActionReducer<UpdatePatientsExpectedInRegionForTransportAction> =
+        {
+            action: UpdatePatientsExpectedInRegionForTransportAction,
+            reducer(
+                draftState,
+                {
+                    simulatedRegionId,
+                    behaviorId,
+                    managedSimulatedRegionId,
+                    patientsExpected,
+                    patientStatus,
+                }
+            ) {
+                const simulatedRegion = getElement(
+                    draftState,
+                    'simulatedRegion',
+                    simulatedRegionId
+                );
+                const behaviorState = getBehaviorById(
+                    draftState,
+                    simulatedRegionId,
+                    behaviorId,
+                    'managePatientTransportToHospitalBehavior'
+                );
+                const managedSimulatedRegion = getElement(
+                    draftState,
+                    'simulatedRegion',
+                    managedSimulatedRegionId
+                );
+
+                if (
+                    !behaviorState.patientsExpectedInRegions[
+                        managedSimulatedRegionId
+                    ]
+                ) {
+                    throw new ReducerError(
+                        `Expected ManagePatientsTransportToHospitalBehaviorState to manage simulated region with id ${managedSimulatedRegionId}, but it did not`
+                    );
+                }
+
+                logBehavior(
+                    draftState,
+                    [
+                        createPatientStatusTag(draftState, patientStatus),
+                        ...(managedSimulatedRegionId === simulatedRegionId
+                            ? []
+                            : [
+                                  createSimulatedRegionTag(
+                                      draftState,
+                                      managedSimulatedRegionId
+                                  ),
+                              ]),
+                    ],
+                    `Das ${
+                        behaviorTypeToGermanNameDictionary[behaviorState.type]
+                    } Verhalten im Bereich ${
+                        simulatedRegion.name
+                    } erwartet ${patientsExpected} ${
+                        statusNames[patientStatus]
+                    } Patienten im Bereich ${managedSimulatedRegion.name}.`,
+                    simulatedRegionId,
+                    behaviorId
+                );
+
+                behaviorState.patientsExpectedInRegions[
+                    managedSimulatedRegionId
+                ]![patientStatus] = patientsExpected;
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+
+    export const addVehicleTypeForPatientTransport: ActionReducer<AddVehicleTypeForPatientTransportAction> =
+        {
+            action: AddVehicleTypeForPatientTransportAction,
+            reducer(
+                draftState,
+                {
+                    simulatedRegionId,
+                    behaviorId,
+                    vehicleTypeName,
+                    patientStatus,
+                }
+            ) {
+                const simulatedRegion = getElement(
+                    draftState,
+                    'simulatedRegion',
+                    simulatedRegionId
+                );
+                const behaviorState = getBehaviorById(
+                    draftState,
+                    simulatedRegionId,
+                    behaviorId,
+                    'managePatientTransportToHospitalBehavior'
+                );
+
+                if (
+                    behaviorState.vehiclesForPatients[patientStatus].includes(
+                        vehicleTypeName
+                    )
+                ) {
+                    throw new ReducerError(
+                        `Expected vehicle type ${vehicleTypeName} to not yet be assigned to patients with status ${patientStatus}, but it was`
+                    );
+                }
+
+                logBehavior(
+                    draftState,
+                    [
+                        createPatientStatusTag(draftState, patientStatus),
+                        createVehicleTypeTag(draftState, vehicleTypeName),
+                    ],
+                    `Das ${
+                        behaviorTypeToGermanNameDictionary[behaviorState.type]
+                    } Verhalten im Bereich ${
+                        simulatedRegion.name
+                    } verwendet Fahrzeuge vom Typ ${vehicleTypeName} um ${
+                        statusNames[patientStatus]
+                    } Patienten abzutransportieren.`,
+                    simulatedRegionId,
+                    behaviorId
+                );
+
+                behaviorState.vehiclesForPatients[patientStatus].push(
+                    vehicleTypeName
+                );
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+
+    export const removeVehicleTypeForPatientTransport: ActionReducer<RemoveVehicleTypeForPatientTransportAction> =
+        {
+            action: RemoveVehicleTypeForPatientTransportAction,
+            reducer(
+                draftState,
+                {
+                    simulatedRegionId,
+                    behaviorId,
+                    vehicleTypeName,
+                    patientStatus,
+                }
+            ) {
+                const simulatedRegion = getElement(
+                    draftState,
+                    'simulatedRegion',
+                    simulatedRegionId
+                );
+                const behaviorState = getBehaviorById(
+                    draftState,
+                    simulatedRegionId,
+                    behaviorId,
+                    'managePatientTransportToHospitalBehavior'
+                );
+
+                if (
+                    !behaviorState.vehiclesForPatients[patientStatus].includes(
+                        vehicleTypeName
+                    )
+                ) {
+                    throw new ReducerError(
+                        `Expected vehicle type ${vehicleTypeName} to be assigned to patients with status ${patientStatus}, but was not`
+                    );
+                }
+
+                logBehavior(
+                    draftState,
+                    [],
+                    `Das ${
+                        behaviorTypeToGermanNameDictionary[behaviorState.type]
+                    } Verhalten im Bereich ${
+                        simulatedRegion.name
+                    } verwendet keine Fahrzeuge vom Typ ${vehicleTypeName} um ${
+                        statusNames[patientStatus]
+                    } Patienten abzutransportieren.`,
+                    simulatedRegionId,
+                    behaviorId
+                );
+
+                behaviorState.vehiclesForPatients[patientStatus].splice(
+                    behaviorState.vehiclesForPatients[patientStatus].indexOf(
+                        vehicleTypeName
+                    ),
+                    1
+                );
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+
+    export const updateRequestVehicleDelayForPatientTransport: ActionReducer<UpdateRequestVehicleDelayForPatientTransportAction> =
+        {
+            action: UpdateRequestVehicleDelayForPatientTransportAction,
+            reducer(
+                draftState,
+                { simulatedRegionId, behaviorId, requestVehicleDelay }
+            ) {
+                const simulatedRegion = getElement(
+                    draftState,
+                    'simulatedRegion',
+                    simulatedRegionId
+                );
+                const behaviorState = getBehaviorById(
+                    draftState,
+                    simulatedRegionId,
+                    behaviorId,
+                    'managePatientTransportToHospitalBehavior'
+                );
+
+                logBehavior(
+                    draftState,
+                    [],
+                    `Das ${
+                        behaviorTypeToGermanNameDictionary[behaviorState.type]
+                    } Verhalten im Bereich ${
+                        simulatedRegion.name
+                    } fordet alle ${formatDuration(
+                        requestVehicleDelay
+                    )} Fahrzeuge an, um Patienten abzutransportieren.`,
+                    simulatedRegionId,
+                    behaviorId
+                );
+
+                updateRequestVehiclesDelay(
+                    draftState,
+                    simulatedRegionId,
+                    behaviorState,
+                    requestVehicleDelay
+                );
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+
+    export const updateRequestPatientCountDelayForPatientTransport: ActionReducer<UpdateRequestPatientCountDelayForPatientTransportAction> =
+        {
+            action: UpdateRequestPatientCountDelayForPatientTransportAction,
+            reducer(
+                draftState,
+                { simulatedRegionId, behaviorId, requestPatientCountDelay }
+            ) {
+                const simulatedRegion = getElement(
+                    draftState,
+                    'simulatedRegion',
+                    simulatedRegionId
+                );
+                const behaviorState = getBehaviorById(
+                    draftState,
+                    simulatedRegionId,
+                    behaviorId,
+                    'managePatientTransportToHospitalBehavior'
+                );
+
+                logBehavior(
+                    draftState,
+                    [],
+                    `Das ${
+                        behaviorTypeToGermanNameDictionary[behaviorState.type]
+                    } Verhalten im Bereich ${
+                        simulatedRegion.name
+                    } fordet alle ${formatDuration(
+                        requestPatientCountDelay
+                    )} Patientenzahlen an.`,
+                    simulatedRegionId,
+                    behaviorId
+                );
+
+                updateRequestPatientCountsDelay(
+                    draftState,
+                    simulatedRegionId,
+                    behaviorState,
+                    requestPatientCountDelay
+                );
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+
+    export const updatePromiseInvalidationIntervalForPatientTransport: ActionReducer<UpdatePromiseInvalidationIntervalForPatientTransportAction> =
+        {
+            action: UpdatePromiseInvalidationIntervalForPatientTransportAction,
+            reducer(
+                draftState,
+                { simulatedRegionId, behaviorId, promiseInvalidationInterval }
+            ) {
+                const simulatedRegion = getElement(
+                    draftState,
+                    'simulatedRegion',
+                    simulatedRegionId
+                );
+                const behaviorState = getBehaviorById(
+                    draftState,
+                    simulatedRegionId,
+                    behaviorId,
+                    'managePatientTransportToHospitalBehavior'
+                );
+                logBehavior(
+                    draftState,
+                    [],
+                    `Das ${
+                        behaviorTypeToGermanNameDictionary[behaviorState.type]
+                    } Verhalten im Bereich ${
+                        simulatedRegion.name
+                    } ignoriert zugesagte Fahrzeuge nach ${formatDuration(
+                        promiseInvalidationInterval
+                    )}.`,
+                    simulatedRegionId,
+                    behaviorId
+                );
+
+                behaviorState.promiseInvalidationInterval =
+                    promiseInvalidationInterval;
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+
+    export const updateMaximumCategoryToTransport: ActionReducer<UpdateMaximumCategoryToTransportAction> =
+        {
+            action: UpdateMaximumCategoryToTransportAction,
+            reducer(
+                draftState,
+                { simulatedRegionId, behaviorId, maximumCategoryToTransport }
+            ) {
+                const simulatedRegion = getElement(
+                    draftState,
+                    'simulatedRegion',
+                    simulatedRegionId
+                );
+                const behaviorState = getBehaviorById(
+                    draftState,
+                    simulatedRegionId,
+                    behaviorId,
+                    'managePatientTransportToHospitalBehavior'
+                );
+                logBehavior(
+                    draftState,
+                    [
+                        createPatientStatusTag(
+                            draftState,
+                            maximumCategoryToTransport
+                        ),
+                    ],
+                    `Das ${
+                        behaviorTypeToGermanNameDictionary[behaviorState.type]
+                    } Verhalten im Bereich ${
+                        simulatedRegion.name
+                    } transprortiert Patienten bis zu ${
+                        statusNames[maximumCategoryToTransport]
+                    } Patienten ab.`,
+                    simulatedRegionId,
+                    behaviorId
+                );
+
+                behaviorState.maximumCategoryToTransport =
+                    maximumCategoryToTransport;
+                return draftState;
+            },
+            rights: 'trainer',
+        };
+
+    export const startTransport: ActionReducer<StartTransportAction> = {
+        action: StartTransportAction,
+        reducer(draftState, { simulatedRegionId, behaviorId }) {
+            const simulatedRegion = getElement(
+                draftState,
+                'simulatedRegion',
+                simulatedRegionId
+            );
+            const behaviorState = getBehaviorById(
+                draftState,
+                simulatedRegionId,
+                behaviorId,
+                'managePatientTransportToHospitalBehavior'
+            );
+
+            logBehavior(
+                draftState,
+                [],
+                `Das ${
+                    behaviorTypeToGermanNameDictionary[behaviorState.type]
+                } Verhalten im Bereich ${
+                    simulatedRegion.name
+                } transprortiert Patienten ab.`,
+                simulatedRegionId,
+                behaviorId
+            );
+
+            behaviorState.transportStarted = true;
+            return draftState;
+        },
+        rights: 'trainer',
+    };
+
+    export const stopTransport: ActionReducer<StopTransportAction> = {
+        action: StopTransportAction,
+        reducer(draftState, { simulatedRegionId, behaviorId }) {
+            const simulatedRegion = getElement(
+                draftState,
+                'simulatedRegion',
+                simulatedRegionId
+            );
+            const behaviorState = getBehaviorById(
+                draftState,
+                simulatedRegionId,
+                behaviorId,
+                'managePatientTransportToHospitalBehavior'
+            );
+
+            logBehavior(
+                draftState,
+                [],
+                `Das ${
+                    behaviorTypeToGermanNameDictionary[behaviorState.type]
+                } Verhalten im Bereich ${
+                    simulatedRegion.name
+                } transprortiert keine Patienten ab.`,
+                simulatedRegionId,
+                behaviorId
+            );
+
+            behaviorState.transportStarted = false;
+            return draftState;
+        },
+        rights: 'trainer',
+    };
 }

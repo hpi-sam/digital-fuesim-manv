@@ -1,14 +1,11 @@
 import { IsInt, IsUUID, Min } from 'class-validator';
-import { getCreate } from '../../models/utils';
-import { isUnoccupied } from '../../models/utils/occupations/occupation-helpers-mutable';
-import { UnloadingOccupation } from '../../models/utils/occupations/unloading-occupation';
+import { getCreate } from '../../models/utils/get-create';
 import {
-    cloneDeepMutable,
-    StrictObject,
-    UUID,
-    uuid,
-    uuidValidationOptions,
-} from '../../utils';
+    changeOccupation,
+    isUnoccupied,
+} from '../../models/utils/occupations/occupation-helpers-mutable';
+import { UnloadingOccupation } from '../../models/utils/occupations/unloading-occupation';
+import { StrictObject, UUID, uuid, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import {
     IsUUIDSquaredMap,
@@ -17,6 +14,7 @@ import {
 import { UnloadVehicleActivityState } from '../activities/unload-vehicle';
 import { addActivity, terminateActivity } from '../activities/utils';
 import { nextUUID } from '../utils/randomness';
+import { tryGetElement } from '../../store/action-reducers/utils';
 import type {
     SimulationBehavior,
     SimulationBehaviorState,
@@ -68,15 +66,18 @@ export const unloadArrivingVehiclesBehavior: SimulationBehavior<UnloadArrivingVe
                     break;
                 }
                 case 'vehicleArrivedEvent': {
-                    const vehicle = draftState.vehicles[event.vehicleId];
-                    if (
-                        vehicle &&
-                        isUnoccupied(vehicle, draftState.currentTime)
-                    ) {
+                    const vehicle = tryGetElement(
+                        draftState,
+                        'vehicle',
+                        event.vehicleId
+                    );
+                    if (vehicle && isUnoccupied(draftState, vehicle)) {
                         const activityId = nextUUID(draftState);
                         behaviorState.vehicleActivityMap[event.vehicleId] =
                             activityId;
-                        vehicle.occupation = cloneDeepMutable(
+                        changeOccupation(
+                            draftState,
+                            vehicle,
                             UnloadingOccupation.create()
                         );
                         addActivity(

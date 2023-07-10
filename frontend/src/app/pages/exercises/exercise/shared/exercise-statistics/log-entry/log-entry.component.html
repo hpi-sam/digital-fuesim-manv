@@ -1,0 +1,12 @@
+<div
+    class="d-flex flex-row justify-content-between align-items-center cursor-pointer"
+    (click)="selectTime()"
+>
+    <div>
+        <span class="me-2">{{ logEntry.description }}</span>
+        <app-tag *ngFor="let tag of logEntry.tags" [tag]="tag" />
+    </div>
+    <div>
+        <span class="fw-bold">{{ logEntry.timestamp | formatDuration }}</span>
+    </div>
+</div>

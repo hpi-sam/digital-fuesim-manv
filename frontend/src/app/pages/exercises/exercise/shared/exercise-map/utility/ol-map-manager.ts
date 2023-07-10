@@ -15,8 +15,12 @@ import {
     selectSimulatedRegions,
     selectViewports,
 } from 'src/app/state/application/selectors/exercise.selectors';
-import { selectRestrictedViewport } from 'src/app/state/application/selectors/shared.selectors';
+import {
+    selectCurrentRole,
+    selectRestrictedViewport,
+} from 'src/app/state/application/selectors/shared.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
+import { fromLonLat } from 'ol/proj';
 import type { TransferLinesService } from '../../core/transfer-lines.service';
 import { startingPosition } from '../../starting-position';
 import { CateringLinesFeatureManager } from '../feature-managers/catering-lines-feature-manager';
@@ -56,6 +60,11 @@ export class OlMapManager {
      */
     public readonly layerFeatureManagerDictionary = new Map<
         VectorLayer<VectorSource>,
+        FeatureManager<any>
+    >();
+
+    public readonly featureNameFeatureManagerDictionary = new Map<
+        string,
         FeatureManager<any>
     >();
 
@@ -114,7 +123,8 @@ export class OlMapManager {
         popupManager.registerPopupTriggers(
             this.olMap,
             openLayersContainer,
-            this.layerFeatureManagerDictionary
+            this.layerFeatureManagerDictionary,
+            this.featureNameFeatureManagerDictionary
         );
     }
 
@@ -199,6 +209,26 @@ export class OlMapManager {
             padding: [padding, padding, padding, padding],
             duration: animate ? 1000 : undefined,
         });
+    }
+
+    public getCoordinates() {
+        return this.olMap.getView().getCenter();
+    }
+
+    public tryGoToCoordinates(latitude: number, longitude: number) {
+        if (
+            selectStateSnapshot(selectCurrentRole, this.store) ===
+                'participant' &&
+            selectStateSnapshot(selectRestrictedViewport, this.store) !==
+                undefined
+        ) {
+            // Participants or people restricted to viewports may not go to arbitrary coordinates
+            return;
+        }
+
+        const view = this.olMap.getView();
+        view.setCenter(fromLonLat([longitude, latitude]));
+        view.setZoom(OlMapManager.defaultZoom);
     }
 
     public changeZoom(mode: 'zoomIn' | 'zoomOut') {
@@ -310,5 +340,46 @@ export class OlMapManager {
             materialFeatureManager,
             viewportFeatureManager,
         ];
+
+        this.featureNameFeatureManagerDictionary.set(
+            'vehicle',
+            vehicleFeatureManager
+        );
+        this.featureNameFeatureManagerDictionary.set(
+            'patient',
+            patientFeatureManager
+        );
+        this.featureNameFeatureManagerDictionary.set(
+            'personnel',
+            personnelFeatureManager
+        );
+        this.featureNameFeatureManagerDictionary.set(
+            'material',
+            materialFeatureManager
+        );
+        this.featureNameFeatureManagerDictionary.set(
+            'transferLine',
+            transferLinesFeatureManager
+        );
+        this.featureNameFeatureManagerDictionary.set(
+            'transferPoint',
+            transferPointFeatureManager
+        );
+        this.featureNameFeatureManagerDictionary.set(
+            'mapImage',
+            mapImageFeatureManager
+        );
+        this.featureNameFeatureManagerDictionary.set(
+            'cateringLine',
+            cateringLinesFeatureManager
+        );
+        this.featureNameFeatureManagerDictionary.set(
+            'viewport',
+            viewportFeatureManager
+        );
+        this.featureNameFeatureManagerDictionary.set(
+            'delete',
+            deleteFeatureManager
+        );
     }
 }

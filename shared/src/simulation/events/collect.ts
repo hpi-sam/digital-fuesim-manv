@@ -1,5 +1,5 @@
 import { IsUUID } from 'class-validator';
-import { getCreate } from '../../models/utils';
+import { getCreate } from '../../models/utils/get-create';
 import { UUID, uuidValidationOptions } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import {

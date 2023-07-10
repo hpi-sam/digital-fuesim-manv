@@ -161,6 +161,9 @@ export class ViewportFeatureManager
             elementUUID: feature.getId()?.toString(),
             component: ViewportPopupComponent,
             closingUUIDs: [feature.getId() as UUID],
+            markedForParticipantUUIDs: [],
+            markedForTrainerUUIDs: [],
+            changedLayers: [],
             context: {
                 viewportId: feature.getId() as UUID,
             },

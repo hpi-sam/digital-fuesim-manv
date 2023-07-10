@@ -4,6 +4,7 @@ import { IsValue } from '../../utils/validators';
 import { IsResourceDescription } from '../../utils/validators/is-resource-description';
 import { getCreate } from './get-create';
 import type { PersonnelType } from './personnel-type';
+import { personnelTypeAllowedValues } from './personnel-type';
 import { ResourceDescription } from './resource-description';
 
 class RescueResource {
@@ -15,7 +16,7 @@ export class VehicleResource {
     public readonly type = 'vehicleResource';
 
     @IsResourceDescription()
-    public readonly vehicleCounts!: ResourceDescription;
+    public readonly vehicleCounts: ResourceDescription;
 
     /**
      * @deprecated Use {@link create} instead
@@ -31,8 +32,8 @@ export class PersonnelResource {
     @IsValue('personnelResource' as const)
     public readonly type = 'personnelResource';
 
-    @IsResourceDescription()
-    public readonly personnelCounts!: ResourceDescription<PersonnelType>;
+    @IsResourceDescription(personnelTypeAllowedValues)
+    public readonly personnelCounts: ResourceDescription<PersonnelType>;
 
     /**
      * @deprecated Use {@link create} instead

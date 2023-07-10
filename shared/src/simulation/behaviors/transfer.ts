@@ -23,14 +23,18 @@ import {
 import { IsValue } from '../../utils/validators';
 import { addActivity, terminateActivity } from '../activities/utils';
 import { nextUUID } from '../utils/randomness';
-import { getElement } from '../../store/action-reducers/utils';
+import { getElement, tryGetElement } from '../../store/action-reducers/utils';
 import {
     DelayEventActivityState,
     LoadVehicleActivityState,
     RecurringEventActivityState,
     SendRemoteEventActivityState,
 } from '../activities';
-import { isUnoccupied } from '../../models/utils/occupations/occupation-helpers-mutable';
+import {
+    changeOccupation,
+    isUnoccupied,
+    isUnoccupiedOrIntermediarilyOccupied,
+} from '../../models/utils/occupations/occupation-helpers-mutable';
 import { amountOfResourcesInVehicle } from '../../models/utils/amount-of-resources-in-vehicle';
 import type { ResourceDescription } from '../../models/utils/resource-description';
 import {
@@ -116,9 +120,7 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                     // sort the unoccupied vehicles by number of loaded resources descending and use the one with the most
 
                     const vehicleToLoad = vehiclesOfCorrectType
-                        .filter((vehicle) =>
-                            isUnoccupied(vehicle, draftState.currentTime)
-                        )
+                        .filter((vehicle) => isUnoccupied(draftState, vehicle))
                         .sort(
                             (vehicle1, vehicle2) =>
                                 amountOfResourcesInVehicle(
@@ -145,7 +147,9 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                                 behaviorState.personnelLoadTime
                             )
                         );
-                        vehicleToLoad.occupation = cloneDeepMutable(
+                        changeOccupation(
+                            draftState,
+                            vehicleToLoad,
                             LoadOccupation.create(activityId)
                         );
                     }
@@ -153,14 +157,20 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                 break;
             case 'transferPatientsInSpecificVehicleRequestEvent':
                 {
-                    const vehicle = getElement(
+                    const vehicle = tryGetElement(
                         draftState,
                         'vehicle',
                         event.vehicleId
                     );
                     // Don't do anything if vehicle is occupied
-                    if (!isUnoccupied(vehicle, draftState.currentTime)) {
-                        return;
+                    if (
+                        vehicle === undefined ||
+                        !isUnoccupiedOrIntermediarilyOccupied(
+                            draftState,
+                            vehicle
+                        )
+                    ) {
+                        break;
                     }
 
                     const activityId = nextUUID(draftState);
@@ -176,21 +186,26 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                             behaviorState.personnelLoadTime
                         )
                     );
-                    vehicle.occupation = cloneDeepMutable(
+                    changeOccupation(
+                        draftState,
+                        vehicle,
                         LoadOccupation.create(activityId)
                     );
                 }
                 break;
             case 'transferSpecificVehicleRequestEvent':
                 {
-                    const vehicle = getElement(
+                    const vehicle = tryGetElement(
                         draftState,
                         'vehicle',
                         event.vehicleId
                     );
                     // Don't do anything if vehicle is occupied
-                    if (!isUnoccupied(vehicle, draftState.currentTime)) {
-                        return;
+                    if (
+                        vehicle === undefined ||
+                        !isUnoccupied(draftState, vehicle)
+                    ) {
+                        break;
                     }
 
                     const activityId = nextUUID(draftState);
@@ -203,10 +218,14 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                             event.transferDestinationId,
                             {},
                             behaviorState.loadTimePerPatient,
-                            behaviorState.personnelLoadTime
+                            behaviorState.personnelLoadTime,
+                            undefined,
+                            event.successorOccupation
                         )
                     );
-                    vehicle.occupation = cloneDeepMutable(
+                    changeOccupation(
+                        draftState,
+                        vehicle,
                         LoadOccupation.create(activityId)
                     );
                 }
@@ -241,10 +260,7 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                                 vehicleType
                             ]
                                 ?.filter((vehicle) =>
-                                    isUnoccupied(
-                                        vehicle,
-                                        draftState.currentTime
-                                    )
+                                    isUnoccupied(draftState, vehicle)
                                 )
                                 .sort(
                                     (vehicle1, vehicle2) =>
@@ -279,13 +295,18 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                                         event.transferDestinationId,
                                         {},
                                         behaviorState.loadTimePerPatient,
-                                        behaviorState.personnelLoadTime
+                                        behaviorState.personnelLoadTime,
+                                        undefined,
+                                        cloneDeepMutable(
+                                            event.successorOccupation
+                                        )
                                     )
                                 );
-                                loadableVehicles![index]!.occupation =
-                                    cloneDeepMutable(
-                                        LoadOccupation.create(activityId)
-                                    );
+                                changeOccupation(
+                                    draftState,
+                                    loadableVehicles![index]!,
+                                    LoadOccupation.create(activityId)
+                                );
                                 sentVehicles[vehicleType]++;
                             }
                         }
@@ -307,22 +328,33 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                         )
                     );
 
-                    // Send event to destination if it is a simulated region
+                    // Send event to transfer initiating region
 
-                    if (
-                        event.transferDestinationType === 'transferPoint' &&
-                        isInSimulatedRegion(
-                            getElement(
-                                draftState,
-                                'transferPoint',
-                                event.transferDestinationId
-                            )
-                        )
-                    ) {
+                    if (event.transferInitiatingRegionId) {
                         addActivity(
                             simulatedRegion,
                             SendRemoteEventActivityState.create(
                                 nextUUID(draftState),
+                                event.transferInitiatingRegionId,
+                                VehiclesSentEvent.create(
+                                    VehicleResource.create(sentVehicles),
+                                    event.transferDestinationId,
+                                    event.key
+                                )
+                            )
+                        );
+                    }
+
+                    // Send event to destination if it is a simulated region and not the initiating region
+                    if (event.transferDestinationType === 'transferPoint') {
+                        const transferPoint = getElement(
+                            draftState,
+                            'transferPoint',
+                            event.transferDestinationId
+                        );
+
+                        if (isInSimulatedRegion(transferPoint)) {
+                            const targetSimulatedRegion =
                                 currentSimulatedRegionOf(
                                     draftState,
                                     getElement(
@@ -330,23 +362,43 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                                         'transferPoint',
                                         event.transferDestinationId
                                     )
-                                ).id,
-                                VehiclesSentEvent.create(
-                                    VehicleResource.create(sentVehicles)
-                                )
-                            )
-                        );
+                                );
+
+                            if (
+                                targetSimulatedRegion.id !==
+                                event.transferInitiatingRegionId
+                            ) {
+                                addActivity(
+                                    simulatedRegion,
+                                    SendRemoteEventActivityState.create(
+                                        nextUUID(draftState),
+                                        targetSimulatedRegion.id,
+                                        VehiclesSentEvent.create(
+                                            VehicleResource.create(
+                                                sentVehicles
+                                            ),
+                                            transferPoint.id
+                                        )
+                                    )
+                                );
+                            }
+                        }
                     }
                 }
                 break;
             case 'startTransferEvent':
                 {
-                    const vehicle = getElement(
+                    const vehicle = tryGetElement(
                         draftState,
                         'vehicle',
                         event.vehicleId
                     );
-                    vehicle.occupation = cloneDeepMutable(
+                    if (vehicle === undefined) {
+                        break;
+                    }
+                    changeOccupation(
+                        draftState,
+                        vehicle,
                         WaitForTransferOccupation.create()
                     );
 
@@ -375,38 +427,44 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                 break;
             case 'doTransferEvent':
                 {
-                    if (
-                        behaviorState.startTransferEventQueue.length === 0 &&
-                        behaviorState.recurringActivityId
-                    ) {
-                        terminateActivity(
-                            draftState,
-                            simulatedRegion,
-                            behaviorState.recurringActivityId
-                        );
-                        behaviorState.recurringActivityId = undefined;
-                        return;
-                    }
-
                     const transferEvent =
                         behaviorState.startTransferEventQueue.shift();
-                    const vehicle =
-                        draftState.vehicles[transferEvent!.vehicleId];
-                    if (
-                        vehicle?.occupation.type !== 'waitForTransferOccupation'
-                    ) {
-                        return;
+                    if (transferEvent === undefined) {
+                        if (behaviorState.recurringActivityId) {
+                            terminateActivity(
+                                draftState,
+                                simulatedRegion,
+                                behaviorState.recurringActivityId
+                            );
+                            behaviorState.recurringActivityId = undefined;
+                            break;
+                        }
+                    } else {
+                        const vehicle = tryGetElement(
+                            draftState,
+                            'vehicle',
+                            transferEvent.vehicleId
+                        );
+                        if (
+                            vehicle?.occupation.type !==
+                            'waitForTransferOccupation'
+                        ) {
+                            break;
+                        }
+                        addActivity(
+                            simulatedRegion,
+                            TransferVehicleActivityState.create(
+                                nextUUID(draftState),
+                                vehicle.id,
+                                transferEvent.transferDestinationType,
+                                transferEvent.transferDestinationId,
+                                transferEvent.key,
+                                cloneDeepMutable(
+                                    transferEvent.successorOccupation
+                                )
+                            )
+                        );
                     }
-                    addActivity(
-                        simulatedRegion,
-                        TransferVehicleActivityState.create(
-                            nextUUID(draftState),
-                            vehicle.id,
-                            transferEvent!.transferDestinationType,
-                            transferEvent!.transferDestinationId,
-                            transferEvent!.key
-                        )
-                    );
                 }
                 break;
             default:

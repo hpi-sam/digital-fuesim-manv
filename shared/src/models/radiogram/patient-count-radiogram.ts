@@ -1,14 +1,14 @@
 import { IsBoolean, IsUUID, ValidateNested } from 'class-validator';
 import { UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
-import { IsPatientCount } from '../../utils/validators/is-patient-count';
 import { IsRadiogramStatus } from '../../utils/validators/is-radiogram-status';
-import type { PatientStatus } from '../utils';
-import { getCreate } from '../utils';
+import { getCreate } from '../utils/get-create';
+import type { PatientStatus } from '../utils/patient-status';
+import { patientStatusAllowedValues } from '../utils/patient-status';
+import { ResourceDescription } from '../utils/resource-description';
+import { IsResourceDescription } from '../../utils/validators/is-resource-description';
 import type { Radiogram } from './radiogram';
 import { ExerciseRadiogramStatus } from './status/exercise-radiogram-status';
-
-export type PatientCount = { [key in PatientStatus]: number };
 
 export class PatientCountRadiogram implements Radiogram {
     @IsUUID(4, uuidValidationOptions)
@@ -31,8 +31,8 @@ export class PatientCountRadiogram implements Radiogram {
     @IsBoolean()
     readonly informationAvailable: boolean = false;
 
-    @IsPatientCount()
-    readonly patientCount: PatientCount;
+    @IsResourceDescription(patientStatusAllowedValues)
+    readonly patientCount: ResourceDescription<PatientStatus>;
 
     /**
      * @deprecated Use {@link create} instead

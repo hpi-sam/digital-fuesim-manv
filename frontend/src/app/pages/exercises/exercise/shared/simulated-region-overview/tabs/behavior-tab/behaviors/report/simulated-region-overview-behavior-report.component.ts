@@ -6,7 +6,11 @@ import type {
     ReportableInformation,
     ReportBehaviorState,
 } from 'digital-fuesim-manv-shared';
-import { reportableInformations, UUID } from 'digital-fuesim-manv-shared';
+import {
+    reportableInformationTypeToGermanNameDictionary,
+    reportableInformations,
+    UUID,
+} from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { combineLatest, map } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
@@ -35,15 +39,8 @@ export class SimulatedRegionOverviewBehaviorReportComponent implements OnInit {
     currentTime$!: Observable<number>;
 
     reportableInformations = reportableInformations;
-    reportableInformationTranslationMap: {
-        [key in ReportableInformation]: string;
-    } = {
-        patientCount: 'Anzahl an Patienten',
-        vehicleCount: 'Anzahl an Fahrzeugen',
-        personnelCount: 'Anzahl an Rettungskräften',
-        materialCount: 'Anzahl an Material',
-        treatmentStatus: 'Behandlungsstatus',
-    };
+    reportableInformationTranslationMap =
+        reportableInformationTypeToGermanNameDictionary;
 
     createReportCollapsed = true;
     repeatingReport = false;
@@ -94,6 +91,28 @@ export class SimulatedRegionOverviewBehaviorReportComponent implements OnInit {
             simulatedRegionId: this.simulatedRegionId,
             behaviorId: this.reportBehaviorId,
             reportTreatmentProgressChanges: reportsEnabled,
+        });
+    }
+
+    updateReportTransferOfCategoryInSingleRegionCompleted(
+        reportsEnabled: boolean
+    ) {
+        this.exerciseService.proposeAction({
+            type: '[ReportBehavior] Update report transfer of category in single region completed',
+            simulatedRegionId: this.simulatedRegionId,
+            behaviorId: this.reportBehaviorId,
+            reportChanges: reportsEnabled,
+        });
+    }
+
+    updateReportTransferOfCategoryInMultipleRegionsCompleted(
+        reportsEnabled: boolean
+    ) {
+        this.exerciseService.proposeAction({
+            type: '[ReportBehavior] Update report transfer of category in multiple regions completed',
+            simulatedRegionId: this.simulatedRegionId,
+            behaviorId: this.reportBehaviorId,
+            reportChanges: reportsEnabled,
         });
     }
 

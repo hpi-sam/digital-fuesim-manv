@@ -1,4 +1,7 @@
 <div class="col-sm d-inline-flex justify-content-center">
+    <app-patient-identifier [patientId]="patientId" />
+</div>
+<div class="col-sm d-inline-flex justify-content-center">
     <app-patient-status-badge
         [status]="(visibleStatus$ | async)!"
     ></app-patient-status-badge>

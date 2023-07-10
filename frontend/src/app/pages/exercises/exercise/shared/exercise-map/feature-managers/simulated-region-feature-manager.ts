@@ -147,13 +147,13 @@ export class SimulatedRegionFeatureManager
     }
 
     public override onFeatureDrop(
-        droppedElement: Element,
+        droppedElement: Element | undefined,
         droppedOnFeature: Feature<any>,
         dropEvent?: TranslateEvent
     ) {
         const droppedOnSimulatedRegion = this.getElementFromFeature(
             droppedOnFeature
-        ) as SimulatedRegion;
+        ) as SimulatedRegion | undefined;
         if (!droppedElement || !droppedOnSimulatedRegion) {
             console.error('Could not find element for the features');
             return false;
@@ -196,6 +196,9 @@ export class SimulatedRegionFeatureManager
             elementUUID: feature.getId()?.toString(),
             component: SimulatedRegionPopupComponent,
             closingUUIDs: [feature.getId() as UUID],
+            markedForParticipantUUIDs: [],
+            markedForTrainerUUIDs: [],
+            changedLayers: [],
             context: {
                 simulatedRegionId: feature.getId() as UUID,
             },

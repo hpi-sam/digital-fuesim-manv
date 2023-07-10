@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsBoolean, ValidateNested } from 'class-validator';
+import { IsBoolean, IsString, ValidateNested } from 'class-validator';
 import { IsValue } from '../utils/validators';
 import { defaultTileMapProperties } from '../data/default-state/tile-map-properties';
 import { getCreate, TileMapProperties } from './utils';
@@ -12,6 +12,9 @@ export class ExerciseConfiguration {
     public readonly pretriageEnabled: boolean = true;
     @IsBoolean()
     public readonly bluePatientsEnabled: boolean = false;
+
+    @IsString()
+    public readonly patientIdentifierPrefix: string = '';
 
     @ValidateNested()
     @Type(() => TileMapProperties)

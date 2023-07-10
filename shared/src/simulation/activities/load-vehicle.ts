@@ -7,11 +7,16 @@ import {
     Min,
 } from 'class-validator';
 import { difference } from 'lodash-es';
+import { Type } from 'class-transformer';
 import {
+    ExerciseOccupation,
     SimulatedRegionPosition,
     VehiclePosition,
+    changeOccupation,
+    createVehicleActionTag,
     getCreate,
     isInSpecificSimulatedRegion,
+    occupationTypeOptions,
 } from '../../models/utils';
 import {
     UUID,
@@ -24,7 +29,7 @@ import {
     TransferDestination,
     transferDestinationTypeAllowedValues,
 } from '../utils/transfer-destination';
-import { getElement } from '../../store/action-reducers/utils';
+import { getElement, tryGetElement } from '../../store/action-reducers/utils';
 import { sendSimulationEvent } from '../events/utils';
 import {
     MaterialRemovedEvent,
@@ -36,6 +41,7 @@ import {
 import { completelyLoadVehicle } from '../../store/action-reducers/utils/completely-load-vehicle';
 import { IntermediateOccupation } from '../../models/utils/occupations/intermediate-occupation';
 import { changePositionWithId } from '../../models/utils/position/position-helpers-mutable';
+import { logVehicle } from '../../store/action-reducers/utils/log';
 import type {
     SimulationActivity,
     SimulationActivityState,
@@ -84,6 +90,10 @@ export class LoadVehicleActivityState implements SimulationActivityState {
     @Min(0)
     public readonly startTime: number = 0;
 
+    @IsOptional()
+    @Type(...occupationTypeOptions)
+    readonly successorOccupation?: ExerciseOccupation;
+
     /**
      * @deprecated Use {@link create} instead
      */
@@ -95,7 +105,8 @@ export class LoadVehicleActivityState implements SimulationActivityState {
         patientsToBeLoaded: UUIDSet,
         loadTimePerPatient: number,
         personnelLoadTime: number,
-        key?: string
+        key?: string,
+        successorOccupation?: ExerciseOccupation
     ) {
         this.id = id;
         this.vehicleId = vehicleId;
@@ -105,6 +116,7 @@ export class LoadVehicleActivityState implements SimulationActivityState {
         this.loadTimePerPatient = loadTimePerPatient;
         this.personnelLoadTime = personnelLoadTime;
         this.key = key;
+        this.successorOccupation = successorOccupation;
     }
 
     static readonly create = getCreate(this);
@@ -120,19 +132,26 @@ export const loadVehicleActivity: SimulationActivity<LoadVehicleActivityState> =
             tickInterval,
             terminate
         ) {
-            const vehicle = getElement(
+            const vehicle = tryGetElement(
                 draftState,
                 'vehicle',
                 activityState.vehicleId
             );
+            if (
+                vehicle === undefined ||
+                !isInSpecificSimulatedRegion(vehicle, simulatedRegion.id) ||
+                vehicle.occupation.type !== 'loadOccupation' ||
+                vehicle.occupation.loadingActivityId !== activityState.id
+            ) {
+                terminate();
+                return;
+            }
 
             // Start load process only once
-
             if (!activityState.hasBeenStarted) {
                 // Send remove events
 
                 let personnelToLoadCount = 0;
-
                 Object.keys(vehicle.personnelIds).forEach((personnelId) => {
                     const personnel = getElement(
                         draftState,
@@ -261,25 +280,27 @@ export const loadVehicleActivity: SimulationActivity<LoadVehicleActivityState> =
                 activityState.startTime + activityState.loadDelay <=
                     draftState.currentTime
             ) {
-                // terminate if the occupation has changed
-                if (
-                    vehicle.occupation.type !== 'loadOccupation' ||
-                    vehicle.occupation.loadingActivityId !== activityState.id
-                ) {
-                    terminate();
-                    return;
-                }
                 sendSimulationEvent(
                     simulatedRegion,
                     StartTransferEvent.create(
                         activityState.vehicleId,
                         activityState.transferDestinationType,
                         activityState.transferDestinationId,
-                        activityState.key
+                        activityState.key,
+                        cloneDeepMutable(activityState.successorOccupation)
                     )
                 );
 
-                vehicle.occupation = cloneDeepMutable(
+                logVehicle(
+                    draftState,
+                    [createVehicleActionTag(draftState, 'loaded')],
+                    `${vehicle.name} wurde automatisch beladen`,
+                    vehicle.id
+                );
+
+                changeOccupation(
+                    draftState,
+                    vehicle,
                     IntermediateOccupation.create(
                         draftState.currentTime + tickInterval
                     )

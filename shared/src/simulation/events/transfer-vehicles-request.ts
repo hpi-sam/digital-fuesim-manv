@@ -1,5 +1,5 @@
 import { IsOptional, IsString, IsUUID } from 'class-validator';
-import { getCreate } from '../../models/utils';
+import { Type } from 'class-transformer';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import { ResourceDescription } from '../../models/utils/resource-description';
 import { IsResourceDescription } from '../../utils/validators/is-resource-description';
@@ -8,6 +8,11 @@ import {
     TransferDestination,
     transferDestinationTypeAllowedValues,
 } from '../utils/transfer-destination';
+import {
+    ExerciseOccupation,
+    occupationTypeOptions,
+} from '../../models/utils/occupations/exercise-occupation';
+import { getCreate } from '../../models/utils/get-create';
 import type { SimulationEvent } from './simulation-event';
 
 export class TransferVehiclesRequestEvent implements SimulationEvent {
@@ -17,11 +22,18 @@ export class TransferVehiclesRequestEvent implements SimulationEvent {
     @IsResourceDescription()
     readonly requestedVehicles: ResourceDescription;
 
+    @IsUUID(4, uuidValidationOptions)
+    readonly transferInitiatingRegionId?: UUID;
+
     @IsLiteralUnion(transferDestinationTypeAllowedValues)
     readonly transferDestinationType: TransferDestination;
 
     @IsUUID(4, uuidValidationOptions)
     readonly transferDestinationId: UUID;
+
+    @IsOptional()
+    @Type(...occupationTypeOptions)
+    readonly successorOccupation?: ExerciseOccupation;
 
     @IsOptional()
     @IsString()
@@ -34,12 +46,16 @@ export class TransferVehiclesRequestEvent implements SimulationEvent {
         requestedVehicles: ResourceDescription,
         transferDestinationType: TransferDestination,
         transferDestinationId: UUID,
-        key?: string
+        transferInitiatingRegionId?: UUID,
+        key?: string,
+        successorOccupation?: ExerciseOccupation
     ) {
         this.requestedVehicles = requestedVehicles;
+        this.transferInitiatingRegionId = transferInitiatingRegionId;
         this.transferDestinationType = transferDestinationType;
         this.transferDestinationId = transferDestinationId;
         this.key = key;
+        this.successorOccupation = successorOccupation;
     }
 
     static readonly create = getCreate(this);

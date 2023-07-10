@@ -64,21 +64,6 @@
                     />
                 </ng-template>
             </ng-container>
-            <ng-container ngbNavItem="hospitalTransfer">
-                <a
-                    ngbNavLink
-                    data-cy="transferPointPopupOtherTransferPointsNav"
-                    ngbTooltip="Krankenhäuser"
-                    >Krankenhäuser</a
-                >
-                <ng-template ngbNavContent
-                    ><app-transfer-hospitals-tab
-                        class="mh-100 d-block h-100"
-                        *ngIf="transferPointId$ | async as transferPointId"
-                        [transferPointId]="transferPointId"
-                    />
-                </ng-template>
-            </ng-container>
             <ng-container ngbNavItem="behaviors">
                 <a
                     ngbNavLink

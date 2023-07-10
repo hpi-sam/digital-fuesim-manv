@@ -86,14 +86,14 @@ export class TransferPointFeatureManager extends MoveableFeatureManager<Transfer
     );
 
     public override onFeatureDrop(
-        droppedElement: Element,
+        droppedElement: Element | undefined,
         droppedOnFeature: Feature<Point>,
         dropEvent?: TranslateEvent
     ) {
         // TODO: droppedElement isn't necessarily a transfer point -> fix getElementFromFeature typings
         const droppedOnTransferPoint = this.getElementFromFeature(
             droppedOnFeature
-        ) as TransferPoint;
+        ) as TransferPoint | undefined;
         if (!droppedElement || !droppedOnTransferPoint) {
             console.error('Could not find element for the features');
             return false;
@@ -112,6 +112,9 @@ export class TransferPointFeatureManager extends MoveableFeatureManager<Transfer
                 ChooseTransferTargetPopupComponent,
                 droppedOnFeature,
                 [droppedOnTransferPoint.id, droppedElement.id],
+                [],
+                [],
+                [],
                 {
                     transferPointId: droppedOnTransferPoint.id,
                     droppedElementType: droppedElement.type,
@@ -163,6 +166,9 @@ export class TransferPointFeatureManager extends MoveableFeatureManager<Transfer
                 TransferPointPopupComponent,
                 feature,
                 [feature.getId() as UUID],
+                [],
+                [],
+                [],
                 {
                     transferPointId: feature.getId() as UUID,
                 }

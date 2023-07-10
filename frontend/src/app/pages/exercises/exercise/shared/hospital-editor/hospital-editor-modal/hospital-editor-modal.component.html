@@ -69,14 +69,21 @@
                     />
                     <span class="ps-2 pe-2" title="Minuten">min</span>
                 </td>
-                <td>
+                <td class="align-middle">
                     <button
                         (click)="removeHospital(hospital.id)"
                         class="btn btn-outline-danger float-end"
                         data-cy="hospitalDeleteButton"
+                        *ngIf="
+                            hospital.id !== catchAllHospitalId;
+                            else catchAllHospital
+                        "
                     >
                         <i class="bi bi-trash"></i> Löschen
                     </button>
+                    <ng-template #catchAllHospital>
+                        <span class="badge text-bg-secondary">Standard</span>
+                    </ng-template>
                 </td>
             </tr>
         </tbody>

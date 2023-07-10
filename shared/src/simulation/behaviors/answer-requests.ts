@@ -67,6 +67,7 @@ export const answerRequestsBehavior: SimulationBehavior<AnswerRequestsBehaviorSt
                                     event.requiredResource.vehicleCounts,
                                     'transferPoint',
                                     requiringSimulatedRegionTransferPoint.id,
+                                    event.requiringSimulatedRegionId,
                                     requiringSimulatedRegionTransferPoint.id +
                                         behaviorState.requestsHandled
                                 );
@@ -119,6 +120,9 @@ export const answerRequestsBehavior: SimulationBehavior<AnswerRequestsBehaviorSt
                                 1
                             );
                         }
+
+                        // createEvent might be set to `true` in the `forEach` arrow function
+                        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                         if (createEvent) {
                             addActivity(
                                 simulatedRegion,

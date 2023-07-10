@@ -10,7 +10,17 @@ import { sendSimulationEvent } from '../../simulation/events/utils';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
-import { getElement, getRadiogramById } from './utils';
+import {
+    createRadiogramActionTag,
+    isInSpecificSimulatedRegion,
+} from '../../models';
+import {
+    getElement,
+    getElementByPredicate,
+    getExerciseRadiogramById,
+    getRadiogramById,
+} from './utils';
+import { logRadiogram } from './utils/log';
 
 export class AcceptRadiogramAction implements Action {
     @IsValue('[Radiogram] Accept radiogram' as const)
@@ -65,18 +75,37 @@ export namespace RadiogramActionReducers {
     export const markDoneReducer: ActionReducer<MarkDoneRadiogramAction> = {
         action: MarkDoneRadiogramAction,
         reducer: (draftState, { radiogramId }) => {
-            const radiogram = draftState.radiograms[radiogramId];
-            if (radiogram?.type === 'resourceRequestRadiogram') {
+            const radiogram = getExerciseRadiogramById(draftState, radiogramId);
+            if (radiogram.type === 'resourceRequestRadiogram') {
                 const simulatedRegion = getElement(
                     draftState,
                     'simulatedRegion',
                     radiogram.simulatedRegionId
                 );
+                const transferPoint = getElementByPredicate(
+                    draftState,
+                    'transferPoint',
+                    (tp) =>
+                        isInSpecificSimulatedRegion(
+                            tp,
+                            radiogram.simulatedRegionId
+                        )
+                );
                 sendSimulationEvent(
                     simulatedRegion,
                     cloneDeepMutable(
-                        VehiclesSentEvent.create(VehicleResource.create({}))
+                        VehiclesSentEvent.create(
+                            VehicleResource.create({}),
+                            transferPoint.id
+                        )
                     )
+                );
+                radiogram.resourcesPromised = false;
+                logRadiogram(
+                    draftState,
+                    [createRadiogramActionTag(draftState, 'resourcesRejected')],
+                    'Die Ressourcen der Anfrage wurden verweigert.',
+                    radiogramId
                 );
             }
 
@@ -101,12 +130,32 @@ export namespace RadiogramActionReducers {
                     'simulatedRegion',
                     radiogram.simulatedRegionId
                 );
+                const transferPoint = getElementByPredicate(
+                    draftState,
+                    'transferPoint',
+                    (tp) =>
+                        isInSpecificSimulatedRegion(
+                            tp,
+                            radiogram.simulatedRegionId
+                        )
+                );
 
                 sendSimulationEvent(
                     simulatedRegion,
                     cloneDeepMutable(
-                        VehiclesSentEvent.create(radiogram.requiredResource)
+                        VehiclesSentEvent.create(
+                            radiogram.requiredResource,
+                            transferPoint.id
+                        )
                     )
+                );
+
+                radiogram.resourcesPromised = true;
+                logRadiogram(
+                    draftState,
+                    [createRadiogramActionTag(draftState, 'resourcesPromised')],
+                    'Die Ressourcen der Anfrage wurden versprochen.',
+                    radiogramId
                 );
 
                 markRadiogramDone(draftState, radiogramId);
@@ -130,12 +179,32 @@ export namespace RadiogramActionReducers {
                     'simulatedRegion',
                     radiogram.simulatedRegionId
                 );
+                const transferPoint = getElementByPredicate(
+                    draftState,
+                    'transferPoint',
+                    (tp) =>
+                        isInSpecificSimulatedRegion(
+                            tp,
+                            radiogram.simulatedRegionId
+                        )
+                );
 
                 sendSimulationEvent(
                     simulatedRegion,
                     cloneDeepMutable(
-                        VehiclesSentEvent.create(VehicleResource.create({}))
+                        VehiclesSentEvent.create(
+                            VehicleResource.create({}),
+                            transferPoint.id
+                        )
                     )
+                );
+
+                radiogram.resourcesPromised = false;
+                logRadiogram(
+                    draftState,
+                    [createRadiogramActionTag(draftState, 'resourcesRejected')],
+                    'Die Ressourcen der Anfrage wurden verweigert.',
+                    radiogramId
                 );
 
                 markRadiogramDone(draftState, radiogramId);

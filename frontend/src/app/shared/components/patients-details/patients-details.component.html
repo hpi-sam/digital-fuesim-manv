@@ -5,6 +5,18 @@
             <table class="table table-sm small mb-0">
                 <tbody>
                     <tr>
+                        <th scope="col">Identifikation</th>
+                        <td class="font-monospace">
+                            <app-patient-identifier [patientId]="patientId" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="col">Name</th>
+                        <td class="font-monospace">
+                            {{ patient.personalInformation.name }}
+                        </td>
+                    </tr>
+                    <tr>
                         <th scope="col">Alter</th>
                         <td class="font-monospace">
                             {{ patient.biometricInformation.age }}

@@ -2,7 +2,10 @@ import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
+import {
+    NgbDropdownModule,
+    NgbTooltipModule,
+} from '@ng-bootstrap/ng-bootstrap';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ExerciseComponent } from './exercise/exercise.component';
 import { AlarmGroupOverviewModule } from './shared/alarm-group-overview/alarm-group-overview.module';
@@ -20,6 +23,7 @@ import { TimeTravelComponent } from './shared/time-travel/time-travel.component'
 import { TrainerMapEditorComponent } from './shared/trainer-map-editor/trainer-map-editor.component';
 import { TrainerToolbarComponent } from './shared/trainer-toolbar/trainer-toolbar.component';
 import { TransferOverviewModule } from './shared/transfer-overview/transfer-overview.module';
+import { CoordinatePickerModule } from './shared/coordinate-picker/coordinate-picker.module';
 
 @NgModule({
     declarations: [
@@ -46,6 +50,8 @@ import { TransferOverviewModule } from './shared/transfer-overview/transfer-over
         AlarmGroupOverviewModule,
         HospitalEditorModule,
         EmergencyOperationsCenterModule,
+        CoordinatePickerModule,
+        NgbTooltipModule,
     ],
     exports: [ExerciseComponent],
 })

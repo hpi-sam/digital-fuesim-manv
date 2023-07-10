@@ -13,8 +13,10 @@ import {
     selectCurrentRole,
     selectRestrictedViewport,
 } from 'src/app/state/application/selectors/shared.selectors';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DragElementService } from '../core/drag-element.service';
 import { TransferLinesService } from '../core/transfer-lines.service';
+import { openCoordinatePickerModal } from '../coordinate-picker/open-coordinate-picker-modal';
 import { OlMapManager } from './utility/ol-map-manager';
 import { PopupManager } from './utility/popup-manager';
 import { PopupService } from './utility/popup.service';
@@ -45,7 +47,8 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
         private readonly exerciseService: ExerciseService,
         public readonly dragElementService: DragElementService,
         public readonly transferLinesService: TransferLinesService,
-        private readonly popupService: PopupService
+        private readonly popupService: PopupService,
+        private readonly modalService: NgbModal
     ) {}
 
     ngAfterViewInit(): void {
@@ -83,6 +86,12 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
         } else {
             document.exitFullscreen();
         }
+    }
+
+    public goToCoordinates() {
+        if (!this.olMapManager) return;
+
+        openCoordinatePickerModal(this.modalService, this.olMapManager);
     }
 
     ngOnDestroy(): void {

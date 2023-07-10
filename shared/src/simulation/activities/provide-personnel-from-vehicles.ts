@@ -1,5 +1,6 @@
 import { IsString, IsUUID } from 'class-validator';
 import type { SimulatedRegion } from '../../models';
+import { personnelTypeAllowedValues } from '../../models/utils/personnel-type';
 import type { PersonnelType } from '../../models/utils';
 import {
     PersonnelResource,
@@ -23,6 +24,7 @@ import { IsValue } from '../../utils/validators';
 import { IsResourceDescription } from '../../utils/validators/is-resource-description';
 import { ResourceRequiredEvent } from '../events';
 import { sendSimulationEvent } from '../events/utils';
+import { tryGetElement } from '../../store/action-reducers/utils';
 import type {
     SimulationActivity,
     SimulationActivityState,
@@ -38,7 +40,7 @@ export class ProvidePersonnelFromVehiclesActivityState
     @IsUUID(4, uuidValidationOptions)
     public readonly id: UUID;
 
-    @IsResourceDescription()
+    @IsResourceDescription(personnelTypeAllowedValues)
     public readonly requiredPersonnelCounts: ResourceDescription<PersonnelType>;
 
     @IsUUID(4, uuidArrayValidationOptions)
@@ -181,10 +183,15 @@ function personnelInUnloadingVehicles(
         )
         .flatMap((activity) =>
             StrictObject.keys(
-                draftState.vehicles[activity.vehicleId]?.personnelIds ?? {}
+                tryGetElement(draftState, 'vehicle', activity.vehicleId)
+                    ?.personnelIds ?? {}
             )
         )
-        .map((personnelId) => draftState.personnel[personnelId]?.personnelType)
+        .map(
+            (personnelId) =>
+                tryGetElement(draftState, 'personnel', personnelId)
+                    ?.personnelType
+        )
         .filter((pt): pt is PersonnelType => pt !== undefined)
         .forEach((pt) => resource[pt]++);
     return resource;

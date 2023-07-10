@@ -2,26 +2,7 @@
     class="d-flex justify-content-between align-items-center"
     *appLet="occupation$ | async as occupation"
 >
-    <ng-container [ngSwitch]="occupation.type">
-        <ng-container *ngSwitchCase="'noOccupation'">
-            <span>Das Fahrzeug wird nicht genutzt.</span>
-        </ng-container>
-        <ng-container *ngSwitchCase="'intermediateOccupation'">
-            <span>Das Fahrzeug wird gerade übergeben.</span>
-        </ng-container>
-        <ng-container *ngSwitchCase="'unloadingOccupation'">
-            <span>Das Fahrzeug wird gerade ausgeladen.</span>
-        </ng-container>
-        <ng-container *ngSwitchCase="'loadOccupation'">
-            <span>Das Fahrzeug wird gerade beladen.</span>
-        </ng-container>
-        <ng-container *ngSwitchCase="'waitForTransferOccupation'">
-            <span>Das Fahrzeug wartet auf den Transfer.</span>
-        </ng-container>
-        <ng-container *ngSwitchDefault>
-            <span class="text-muted">Die Tätigkeit ist unbekannt.</span>
-        </ng-container>
-    </ng-container>
+    <span>{{ occupationToGermanDictionary[occupation.type] }}.</span>
     <button
         type="button"
         class="btn btn-outline-danger ms-3"

@@ -1,5 +1,11 @@
 import { Type } from 'class-transformer';
-import { IsBoolean, IsString, IsUUID, ValidateNested } from 'class-validator';
+import {
+    IsBoolean,
+    IsOptional,
+    IsString,
+    IsUUID,
+    ValidateNested,
+} from 'class-validator';
 import { UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import { IsRadiogramStatus } from '../../utils/validators/is-radiogram-status';
@@ -25,6 +31,10 @@ export class ResourceRequestRadiogram implements Radiogram {
     @IsRadiogramStatus()
     @ValidateNested()
     readonly status: ExerciseRadiogramStatus;
+
+    @IsOptional()
+    @IsBoolean()
+    readonly resourcesPromised?: boolean;
 
     @IsBoolean()
     readonly informationAvailable: boolean = true;

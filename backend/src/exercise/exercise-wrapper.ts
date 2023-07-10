@@ -219,24 +219,41 @@ export class ExerciseWrapper extends NormalType<
      * All periodic actions of the exercise (e.g. status changes for patients) should happen here.
      */
     private readonly tick = async () => {
-        const patientUpdates = patientTick(
-            this.getStateSnapshot(),
-            this.tickInterval
-        );
-        const updateAction: ExerciseAction = {
-            type: '[Exercise] Tick',
-            patientUpdates,
-            /**
-             * Refresh every {@link refreshTreatmentInterval} * {@link tickInterval} ms seconds
-             */
-            // TODO: Refactor this: do this in the reducer instead of sending it in the action
-            refreshTreatments:
-                this.tickCounter % this.refreshTreatmentInterval === 0,
-            tickInterval: this.tickInterval,
-        };
-        this.applyAction(updateAction, this.emitterId);
-        this.tickCounter++;
-        this.markAsModified();
+        try {
+            const patientUpdates = patientTick(
+                this.getStateSnapshot(),
+                this.tickInterval
+            );
+            const updateAction: ExerciseAction = {
+                type: '[Exercise] Tick',
+                patientUpdates,
+                /**
+                 * Refresh every {@link refreshTreatmentInterval} * {@link tickInterval} ms seconds
+                 */
+                // TODO: Refactor this: do this in the reducer instead of sending it in the action
+                refreshTreatments:
+                    this.tickCounter % this.refreshTreatmentInterval === 0,
+                tickInterval: this.tickInterval,
+            };
+            this.applyAction(updateAction, this.emitterId);
+            this.tickCounter++;
+            this.markAsModified();
+        } catch (e: unknown) {
+            // Something went wrong in tick, probably some corrupted simulation state.
+            console.error(e);
+            try {
+                this.applyAction(
+                    {
+                        type: '[Exercise] Pause',
+                    },
+                    this.emitterId
+                );
+                this.markAsModified();
+            } catch {
+                // Alright, this is enough. Something is fundamentally broken.
+                this.pause();
+            }
+        }
     };
 
     // Call the tick every 1000 ms

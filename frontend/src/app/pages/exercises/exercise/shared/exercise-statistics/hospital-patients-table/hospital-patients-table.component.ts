@@ -32,6 +32,7 @@ export class HospitalPatientsTableComponent {
                             _hospital.patientIds[hospitalPatient.patientId]
                     );
                     const row: HospitalPatientsRow = {
+                        patientIdentifier: hospitalPatient.identifier,
                         hospitalName: hospital!.name,
                         arrivalTime: hospitalPatient.arrivalTime,
                         departureTime: hospitalPatient.startTime,
@@ -73,6 +74,7 @@ export class HospitalPatientsTableComponent {
 
 // If you update this interface you must also update the `mat-sort-header` in the template.
 interface HospitalPatientsRow {
+    patientIdentifier: string;
     hospitalName: string;
     patientStatus: string;
     arrivalTime: number;

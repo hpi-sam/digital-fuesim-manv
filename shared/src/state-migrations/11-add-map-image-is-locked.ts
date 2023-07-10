@@ -4,7 +4,7 @@ import type { Migration } from './migration-functions';
 
 export const addMapImageIsLocked11: Migration = {
     action: (_intermediaryState, action) => {
-        if ((action as Action | null)?.type === '[MapImage] Add MapImage') {
+        if ((action as Action).type === '[MapImage] Add MapImage') {
             Object.assign((action as { mapImage: object }).mapImage, {
                 isLocked: false,
             });

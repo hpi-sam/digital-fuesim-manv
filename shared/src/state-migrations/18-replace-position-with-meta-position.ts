@@ -3,10 +3,7 @@ import type { Migration } from './migration-functions';
 
 export const replacePositionWithMetaPosition18: Migration = {
     action: (_intermediaryState, action) => {
-        if (
-            (action as { type: string } | null)?.type ===
-            '[Patient] Add patient'
-        ) {
+        if ((action as { type: string }).type === '[Patient] Add patient') {
             const typedAction = action as {
                 patient: {
                     metaPosition?:
@@ -24,10 +21,7 @@ export const replacePositionWithMetaPosition18: Migration = {
             typedAction.patient.position = typedAction.patient.metaPosition;
             delete typedAction.patient.metaPosition;
         }
-        if (
-            (action as { type: string } | null)?.type ===
-            '[Vehicle] Add vehicle'
-        ) {
+        if ((action as { type: string }).type === '[Vehicle] Add vehicle') {
             const typedAction = action as {
                 vehicle: {
                     metaPosition?:
@@ -81,10 +75,7 @@ export const replacePositionWithMetaPosition18: Migration = {
             typedAction.vehicle.position = typedAction.vehicle.metaPosition;
             delete typedAction.vehicle.metaPosition;
         }
-        if (
-            (action as { type: string } | null)?.type ===
-            '[Viewport] Add viewport'
-        ) {
+        if ((action as { type: string }).type === '[Viewport] Add viewport') {
             const typedAction = action as {
                 viewport: {
                     position:
@@ -114,7 +105,7 @@ export const replacePositionWithMetaPosition18: Migration = {
             };
         }
         if (
-            (action as { type: string } | null)?.type ===
+            (action as { type: string }).type ===
             '[SimulatedRegion] Add simulated region'
         ) {
             const typedAction = action as {
@@ -145,10 +136,7 @@ export const replacePositionWithMetaPosition18: Migration = {
                 },
             };
         }
-        if (
-            (action as { type: string } | null)?.type ===
-            '[MapImage] Add MapImage'
-        ) {
+        if ((action as { type: string }).type === '[MapImage] Add MapImage') {
             const typedAction = action as {
                 mapImage: {
                     position:
@@ -178,7 +166,7 @@ export const replacePositionWithMetaPosition18: Migration = {
             };
         }
         if (
-            (action as { type: string } | null)?.type ===
+            (action as { type: string }).type ===
             '[TransferPoint] Add TransferPoint'
         ) {
             const typedAction = action as {

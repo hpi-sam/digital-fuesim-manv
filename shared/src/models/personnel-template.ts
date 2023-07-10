@@ -4,11 +4,11 @@ import { maxTreatmentRange } from '../state-helpers/max-treatment-range';
 import { IsLiteralUnion, IsValue } from '../utils/validators';
 import {
     PersonnelType,
-    CanCaterFor,
-    ImageProperties,
-    getCreate,
-} from './utils';
-import { personnelTypeAllowedValues } from './utils/personnel-type';
+    personnelTypeAllowedValues,
+} from './utils/personnel-type';
+import { CanCaterFor } from './utils/cater-for';
+import { ImageProperties } from './utils/image-properties';
+import { getCreate } from './utils/get-create';
 
 // TODO: These are not (yet) saved in the state -> Decide whether they should and if not move this file from the models folder away
 export class PersonnelTemplate {

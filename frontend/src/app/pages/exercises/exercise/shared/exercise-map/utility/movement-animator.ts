@@ -94,7 +94,7 @@ export class MovementAnimator<T extends GeometryWithCoordinates> {
         );
         // We should already be (nearly) at the end position
         if (progress >= 1) {
-            this.stopMovementAnimation(feature as Feature<T>);
+            this.stopMovementAnimation(feature);
             this.setCoordinates(featureGeometry, positions.endPosition);
             this.olMap.render();
             return;
@@ -110,7 +110,7 @@ export class MovementAnimator<T extends GeometryWithCoordinates> {
         if (!this.animationListeners.has(listenerId)) {
             return;
         }
-        this.layer.un('postrender', this.animationListeners.get(listenerId!)!);
+        this.layer.un('postrender', this.animationListeners.get(listenerId)!);
         this.animationListeners.delete(listenerId);
     }
 

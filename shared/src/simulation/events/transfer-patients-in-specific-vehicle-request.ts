@@ -1,5 +1,5 @@
 import { IsUUID } from 'class-validator';
-import { getCreate } from '../../models/utils';
+import { getCreate } from '../../models/utils/get-create';
 import { UUID, UUIDSet, uuidValidationOptions } from '../../utils';
 import { IsLiteralUnion, IsUUIDSet, IsValue } from '../../utils/validators';
 import {
@@ -20,6 +20,9 @@ export class TransferPatientsInSpecificVehicleRequestEvent
     @IsUUID(4, uuidValidationOptions)
     readonly vehicleId: UUID;
 
+    @IsUUID(4, uuidValidationOptions)
+    readonly transferInitiatingRegionId?: UUID;
+
     @IsLiteralUnion(transferDestinationTypeAllowedValues)
     readonly transferDestinationType: TransferDestination;
 
@@ -33,10 +36,12 @@ export class TransferPatientsInSpecificVehicleRequestEvent
         patientIds: UUIDSet,
         vehicleId: UUID,
         transferDestinationType: TransferDestination,
-        transferDestinationId: UUID
+        transferDestinationId: UUID,
+        transferInitiatingRegionId?: UUID
     ) {
         this.patientIds = patientIds;
         this.vehicleId = vehicleId;
+        this.transferInitiatingRegionId = transferInitiatingRegionId;
         this.transferDestinationType = transferDestinationType;
         this.transferDestinationId = transferDestinationId;
     }

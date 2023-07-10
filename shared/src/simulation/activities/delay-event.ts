@@ -1,10 +1,13 @@
 import { Type } from 'class-transformer';
 import { IsInt, IsUUID, Min, ValidateNested } from 'class-validator';
-import { getCreate } from '../../models/utils';
 import { UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
-import { ExerciseSimulationEvent, simulationEventTypeOptions } from '../events';
 import { sendSimulationEvent } from '../events/utils';
+import { getCreate } from '../../models/utils/get-create';
+import {
+    ExerciseSimulationEvent,
+    simulationEventTypeOptions,
+} from '../events/exercise-simulation-event';
 import type {
     SimulationActivity,
     SimulationActivityState,
