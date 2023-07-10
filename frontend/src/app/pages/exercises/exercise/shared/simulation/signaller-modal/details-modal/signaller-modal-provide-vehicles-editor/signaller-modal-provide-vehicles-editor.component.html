@@ -1,40 +1,58 @@
-<form (ngSubmit)="startTransfer()">
-    <div class="d-flex flex-row align-items-center">
-        <label class="flex-shrink-1 text-nowrap">Sende Fahrzeug</label>
-        <button
-            [ngbPopover]="selectVehicleTemplate"
-            #selectVehiclePopover="ngbPopover"
-            placement="bottom"
-            [disabled]="((availableVehicles$ | async)?.length ?? 0) === 0"
-            [appAutofocus]="true"
-            tabindex="1"
-            class="btn btn-outline-primary flex-grow-1 flex-shrink-1 ms-2 d-flex flex-row"
-            style="width: 1px"
-            type="button"
+<form (ngSubmit)="startTransfer()" class="container">
+    <h5>Anzahl zu sendender Fahrzeuge</h5>
+
+    <div
+        *ngFor="
+            let vehicleTemplate of vehicleTemplates$ | async;
+            first as first;
+            index as index
+        "
+        class="row"
+        [class.mt-2]="!first"
+    >
+        <ng-container
+            *appLet="(availableVehicles$ | async)?.[vehicleTemplate.vehicleType] ?? 0 as availableVehicles"
         >
-            <span
-                class="flex-grow-1 flex-shrink-1 text-nowrap overflow-hidden"
-                style="text-overflow: ellipsis; width: 1px"
+            <label class="col text-nowrap"
+                >{{ vehicleTemplate.name }}<br /><span class="text-muted">
+                    ({{ availableVehicles }} verfügbar)</span
+                ></label
             >
-                {{
-                    selectedVehicle
-                        ? selectedVehicle.name
-                        : 'Fahrzeug auswählen'
-                }}
-            </span>
-            <app-hotkey-indicator
-                [hotkey]="selectVehicleHotkey"
-                class="flex-shrink-1 ms-1"
+            <input
+                [ngModel]="vehicleAmounts[vehicleTemplate.vehicleType] ?? 0"
+                (ngModelChange)="
+                    vehicleAmounts[vehicleTemplate.vehicleType] = $event
+                "
+                [name]="vehicleTemplate.vehicleType + 'Count'"
+                [tabIndex]="index + 1"
+                #amountInput="ngModel"
+                required
+                appIntegerValidator
+                type="number"
+                min="0"
+                [max]="availableVehicles"
+                step="1"
+                class="form-control col ms-2"
+                style="width: 1px"
             />
-            <i class="bi bi-caret-down-fill flex-shrink-1 ms-1"></i>
-        </button>
-        <ng-template #selectVehicleTemplate>
-            <app-searchable-dropdown
-                *ngIf="((availableVehicles$ | async)?.length ?? 0) !== 0"
-                [options]="(availableVehicles$ | async)!"
-                (selected)="selectVehicle($event); selectVehiclePopover.close()"
-            />
-        </ng-template>
+            <div class="btn-group col-auto ms-2" role="group">
+                <button
+                    type="button"
+                    class="btn btn-outline-success"
+                    (click)="increaseAmount(vehicleTemplate.vehicleType)"
+                >
+                    +
+                </button>
+                <button
+                    type="button"
+                    class="btn btn-outline-danger"
+                    (click)="decreaseAmount(vehicleTemplate.vehicleType)"
+                >
+                    -
+                </button>
+            </div>
+            <app-display-validation [ngModelInput]="amountInput" />
+        </ng-container>
     </div>
     <div class="mt-2 d-flex flex-row align-items-center">
         <label class="flex-shrink-1 text-nowrap">nach</label>
@@ -43,7 +61,11 @@
             #selectTargetPopover="ngbPopover"
             placement="bottom"
             [disabled]="((availableTargets$ | async)?.length ?? 0) === 0"
-            tabindex="2"
+            [tabindex]="
+                ((vehicleTemplates$ | async)?.length ?? 0) === 0
+                    ? -1
+                    : (vehicleTemplates$ | async)!.length + 1
+            "
             class="btn btn-outline-primary flex-grow-1 flex-shrink-1 ms-2 d-flex flex-row"
             style="width: 1px"
             type="button"
@@ -71,9 +93,11 @@
     <button
         [disabled]="!canSend || loading"
         class="btn btn-primary mt-2 row g-0 w-100"
-        [tabIndex]="canSend ? 3 : -1"
+        [tabIndex]="
+            canSend ? ((vehicleTemplates$ | async)?.length ?? 0) + 2 : -1
+        "
     >
-        Sende Fahrzeug
+        Sende Fahrzeuge
         <span
             *ngIf="loading; else hotkey"
             class="spinner-border spinner-border-sm"
@@ -84,7 +108,4 @@
             <app-hotkey-indicator [hotkey]="submitHotkey" class="ms-1" />
         </ng-template>
     </button>
-    <span class="row g-0 mt-2 text-muted">
-        Mehrere Fahrzeuge bitte getrennt nacheinander senden.
-    </span>
 </form>

@@ -1,6 +1,7 @@
 import type { OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { Component, Input, ViewChild } from '@angular/core';
 import { Store } from '@ngrx/store';
+import type { ResourceDescription } from 'digital-fuesim-manv-shared';
 import {
     TransferPoint,
     UUID,
@@ -19,10 +20,12 @@ import type { SearchableDropdownOption } from 'src/app/shared/components/searcha
 import {
     selectCurrentTime,
     selectTransferPoints,
+    selectVehicleTemplates,
     selectVehicles,
 } from 'src/app/state/application/selectors/exercise.selectors';
 import { NgbPopover } from '@ng-bootstrap/ng-bootstrap';
 import { MessageService } from 'src/app/core/messages/message.service';
+import { groupBy } from 'lodash-es';
 import { SignallerModalDetailsService } from '../signaller-modal-details.service';
 
 @Component({
@@ -42,20 +45,22 @@ export class SignallerModalProvideVehiclesEditorComponent
     selectTargetPopover!: NgbPopover;
 
     public get canSend() {
-        return this.selectedVehicle !== null && this.selectedTarget !== null;
+        return (
+            this.selectedTarget !== null &&
+            Object.values(this.vehicleAmounts).every((amount) => amount >= 0)
+        );
     }
 
     private hotkeyLayer!: HotkeyLayer;
-    selectVehicleHotkey = new Hotkey('F', false, () =>
-        this.selectVehiclePopover.open()
-    );
     selectTargetHotkey = new Hotkey('Z', false, () =>
         this.selectTargetPopover.open()
     );
     submitHotkey = new Hotkey('Enter', false, () => this.startTransfer());
 
-    availableVehicles$!: Observable<SearchableDropdownOption[]>;
-    selectedVehicle: SearchableDropdownOption | null = null;
+    vehicleTemplates$ = this.store.select(selectVehicleTemplates);
+    vehicleAmounts: ResourceDescription = {};
+
+    availableVehicles$!: Observable<ResourceDescription>;
 
     availableTargets$!: Observable<SearchableDropdownOption[]>;
     selectedTarget: SearchableDropdownOption | null = null;
@@ -72,7 +77,6 @@ export class SignallerModalProvideVehiclesEditorComponent
 
     ngOnInit() {
         this.hotkeyLayer = this.hotkeysService.createLayer();
-        this.hotkeyLayer.addHotkey(this.selectVehicleHotkey);
         this.hotkeyLayer.addHotkey(this.selectTargetHotkey);
         this.hotkeyLayer.addHotkey(this.submitHotkey);
     }
@@ -92,21 +96,18 @@ export class SignallerModalProvideVehiclesEditorComponent
                 )
             ),
             map((vehicles) =>
-                vehicles.map((vehicle) => ({
-                    key: vehicle.id,
-                    name: vehicle.name,
-                }))
+                groupBy(vehicles, (vehicle) => vehicle.vehicleType)
             ),
-            map((options) => this.sortOptions(options)),
-            tap((options) => {
-                if (
-                    !options.some(
-                        (option) => option.key === this.selectedVehicle?.key
+            map((groupedVehicles) =>
+                Object.fromEntries(
+                    Object.entries(groupedVehicles).map(
+                        ([vehicleType, vehicles]) => [
+                            vehicleType,
+                            vehicles.length,
+                        ]
                     )
-                ) {
-                    this.selectedVehicle = null;
-                }
-            })
+                )
+            )
         );
 
         this.availableTargets$ = this.store.select(selectTransferPoints).pipe(
@@ -146,8 +147,24 @@ export class SignallerModalProvideVehiclesEditorComponent
         return options.sort((a, b) => a.name.localeCompare(b.name));
     }
 
-    selectVehicle(selectedVehicle: SearchableDropdownOption) {
-        this.selectedVehicle = selectedVehicle;
+    increaseAmount(vehicleType: string) {
+        if (this.vehicleAmounts[vehicleType] === undefined) {
+            this.vehicleAmounts[vehicleType] = 0;
+        }
+
+        this.vehicleAmounts[vehicleType]++;
+    }
+
+    decreaseAmount(vehicleType: string) {
+        if (this.vehicleAmounts[vehicleType] === undefined) {
+            this.vehicleAmounts[vehicleType] = 0;
+        }
+
+        this.vehicleAmounts[vehicleType]--;
+
+        if (this.vehicleAmounts[vehicleType]! < 0) {
+            this.vehicleAmounts[vehicleType] = 0;
+        }
     }
 
     selectTarget(selectedTarget: SearchableDropdownOption) {
@@ -159,13 +176,12 @@ export class SignallerModalProvideVehiclesEditorComponent
 
         this.exerciseService
             .proposeAction({
-                type: '[TransferBehavior] Send Transfer Request Event',
+                type: '[TransferBehavior] Transfer Vehicles',
                 simulatedRegionId: this.simulatedRegionId,
                 behaviorId: this.transferBehaviorId,
-                vehicleId: this.selectedVehicle!.key,
+                requestedVehicles: this.vehicleAmounts,
                 destinationType: 'transferPoint',
                 destinationId: this.selectedTarget!.key,
-                patients: {},
             })
             .then((result) => {
                 this.loading = false;
@@ -182,11 +198,11 @@ export class SignallerModalProvideVehiclesEditorComponent
                         body: 'Das Fahrzeug konnte nicht entsendet werden',
                     });
                 }
+
+                this.detailsModal.close();
             });
 
         this.loading = true;
-        this.selectedVehicle = null;
-        this.selectedTarget = null;
     }
 
     close() {
