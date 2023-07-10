@@ -7,6 +7,12 @@ const rtwImage: ImageProperties = {
     aspectRatio: 3693 / 1670,
 };
 
+const nawImage: ImageProperties = {
+    url: '/assets/naw-vehicle.png',
+    height: 100,
+    aspectRatio: 3693 / 1670,
+};
+
 const ktwImage: ImageProperties = {
     url: '/assets/ktw-vehicle.png',
     height: 100,
@@ -43,6 +49,15 @@ const rtwVehicleTemplate = VehicleTemplate.create(
     rtwImage,
     1,
     ['notSan', 'rettSan'],
+    ['standard']
+);
+
+const nawVehicleTemplate = VehicleTemplate.create(
+    'NAW',
+    `NAW ???`,
+    nawImage,
+    1,
+    ['notarzt', 'notSan', 'rettSan'],
     ['standard']
 );
 
@@ -108,4 +123,5 @@ export const defaultVehicleTemplates: readonly VehicleTemplate[] = [
     gwSanVehicleTemplate,
     carryingUnitVehicleTemplate,
     rthVehicleTemplate,
+    nawVehicleTemplate,
 ];

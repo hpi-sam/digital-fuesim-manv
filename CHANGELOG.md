@@ -7,6 +7,8 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ## [Unreleased]
 
+## [0.7.1] - 2023-07-10
+
 ## Added
 
 -   Patients can be identified with an unique ID
@@ -14,6 +16,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
     -   The ID consists of a 4 digit number incremented for each patients
     -   Optionally, a prefix for the IDs can be set
     -   The ID is shown in the patient popup, the simulation overview, statistics log entries and for hospital patients
+-   There is a new image for NAW vehicles.
 
 ## [0.7.0] - 2023-05-30
 
@@ -273,7 +276,8 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ### Initial unstable release of Digitale FüSim MANV
 
-[Unreleased]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.7.0...HEAD
+[Unreleased]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.7.1...HEAD
+[0.7.1]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.5.1...v0.6.0
 [0.5.1]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.5.0...v0.5.1
