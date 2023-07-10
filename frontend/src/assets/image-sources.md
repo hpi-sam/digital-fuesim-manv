@@ -67,3 +67,7 @@ and Fry1989
 
 [trash-can.svg](trash-can.svg):  
 Bootstrap-Icon `bi-trash-fill` (edited)
+
+[naw-vehicle.png](naw-vehicle.png):  
+Lukas Radermacher, based on <https://commons.wikimedia.org/wiki/File:RTW_Altenburg.png> by Florian Greiz 23  
+License: [CC-BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
