@@ -12,7 +12,7 @@ import {
     StrictObject,
     validateExerciseExport,
 } from 'digital-fuesim-manv-shared';
-import produce, { freeze } from 'immer';
+import { produce, freeze } from 'immer';
 import { isEqual } from 'lodash-es';
 import type { BenchmarkValue } from './benchmark';
 import { benchmark } from './benchmark';
