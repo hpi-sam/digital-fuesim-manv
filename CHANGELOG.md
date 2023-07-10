@@ -7,9 +7,13 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ## [Unreleased]
 
+### Fixed
+
+-   permissions for multiple actions around simulated regions were changed from participant to trainer
+
 ## [0.7.1] - 2023-07-10
 
-## Added
+### Added
 
 -   Patients can be identified with an unique ID
     -   The ID is assigned to every patient automatically
