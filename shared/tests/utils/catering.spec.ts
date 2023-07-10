@@ -1,4 +1,4 @@
-import produce from 'immer';
+import { produce } from 'immer';
 import type { ExerciseState } from '../../src/state';
 import { getElement } from '../../src/store/action-reducers/utils';
 import type { UUID } from '../../src/utils';

@@ -1,4 +1,4 @@
-import produce from 'immer';
+import { produce } from 'immer';
 import type { Patient } from '../../models';
 import {
     ImageProperties,

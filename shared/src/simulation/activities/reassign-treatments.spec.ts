@@ -1,4 +1,4 @@
-import produce from 'immer';
+import { produce } from 'immer';
 import { Personnel, SimulatedRegion, TransferPoint } from '../../models';
 import type { PatientStatus, PersonnelType } from '../../models/utils';
 import {
