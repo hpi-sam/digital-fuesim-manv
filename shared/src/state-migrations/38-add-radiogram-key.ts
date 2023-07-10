@@ -7,4 +7,6 @@ TODO:
 - Changes in the resource request radiogram (promised resource, can be accepted, ...)
 
 - Rename `reportTreatmentProgressChanges` in `UpdateReportTreatmentStatusChangesAction` to `reportChanges`
+
+- Add `sent` property to AlarmGroup
 */
