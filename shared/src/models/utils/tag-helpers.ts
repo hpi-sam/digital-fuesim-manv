@@ -51,13 +51,7 @@ export function createPatientTag(
     patientId: UUID
 ): Tag {
     const patient = getElement(draftState, 'patient', patientId);
-    return new Tag(
-        'Patient',
-        'cyan',
-        'black',
-        patient.personalInformation.name,
-        patientId
-    );
+    return new Tag('Patient', 'cyan', 'black', patient.identifier, patientId);
 }
 
 export function createTagsForSinglePatient(

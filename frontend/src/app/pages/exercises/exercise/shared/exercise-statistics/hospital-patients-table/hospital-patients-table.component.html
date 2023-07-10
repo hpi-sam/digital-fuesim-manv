@@ -7,6 +7,7 @@
     <thead>
         <tr>
             <!-- If you change a sort-header here, you must also update HospitalPatientsRow in the component! -->
+            <th mat-sort-header="patientIdentifier">ID</th>
             <th mat-sort-header="patientStatus">Patientenkategorie</th>
             <th mat-sort-header="vehicleType">Fahrzeugtyp</th>
             <th mat-sort-header="departureTime">Abfahrtszeit</th>
@@ -16,6 +17,7 @@
     </thead>
     <tbody>
         <tr *ngFor="let row of sortedRows$ | async">
+            <td>{{ row.patientIdentifier }}</td>
             <td>{{ row.patientStatus }}</td>
             <td>{{ row.vehicleType }}</td>
             <td>{{ row.departureTime | formatDuration }}</td>

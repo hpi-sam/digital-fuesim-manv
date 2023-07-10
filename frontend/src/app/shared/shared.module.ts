@@ -46,6 +46,7 @@ import { StartPauseButtonComponent } from './components/start-pause-button/start
 import { GeographicCoordinateDirective } from './validation/geographic-coordinate-validator.directive';
 import { SimulatedRegionNameComponent } from './components/simulated-region-name/simulated-region-name.component';
 import { SearchableDropdownComponent } from './components/searchable-dropdown/searchable-dropdown.component';
+import { PatientIdentifierComponent } from './components/patient-identifier/patient-identifier.component';
 
 @NgModule({
     declarations: [
@@ -88,6 +89,7 @@ import { SearchableDropdownComponent } from './components/searchable-dropdown/se
         SimulatedRegionNameComponent,
         GeographicCoordinateDirective,
         SearchableDropdownComponent,
+        PatientIdentifierComponent,
     ],
     imports: [
         CommonModule,
@@ -133,6 +135,7 @@ import { SearchableDropdownComponent } from './components/searchable-dropdown/se
         SimulatedRegionNameComponent,
         GeographicCoordinateDirective,
         SearchableDropdownComponent,
+        PatientIdentifierComponent,
     ],
 })
 export class SharedModule {}
