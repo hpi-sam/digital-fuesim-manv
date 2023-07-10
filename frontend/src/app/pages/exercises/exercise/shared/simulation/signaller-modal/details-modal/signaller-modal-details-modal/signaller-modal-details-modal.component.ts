@@ -25,7 +25,7 @@ export class SignallerModalDetailsModalComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit() {
-        this.hotkeyLayer = this.hotkeysServive.createLayer();
+        this.hotkeyLayer = this.hotkeysServive.createLayer(true);
         this.hotkeyLayer.addHotkey(this.closeHotkey);
     }
 
