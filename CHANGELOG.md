@@ -10,6 +10,8 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 ### Added
 
 -   this software has now a license (with some exceptions), see LICENSE-README.md
+    -   the software includes a file with third party acknoledgments, a license.html and the docker container will include a git archive of the source code downloadable in zip format
+    -   new npm run commands for licensing (third party acknowledgements) and creating source code archive
 
 ## [0.7.1] - 2023-07-10
 
@@ -127,8 +129,6 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 -   Loading or unloading a vehicle from its popup does not close the popup automatically.
 -   Patient treatment sorts the patients by their UUID before triaging or assigning treatments in simulated regions. This way, the order of triage does not depend on the order the patients have been added.
 -   The load all into vehicle button in the vehicle popup is now visible to trainers only.
--   the software includes a file with third party acknoledgments, a license.html and the docker container will include a git archive of the source code downloadable in zip format
--   new npm run commands for licensing (third party acknowledgements) and creating source code archive
 
 ### Fixed
 
