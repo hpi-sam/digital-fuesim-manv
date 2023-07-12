@@ -39,10 +39,10 @@ import { SimulatedRegionOverviewBehaviorReportComponent } from './trainer-modal/
 import { RadiogramCardContentInformationUnavailableComponent } from './trainer-modal/radiogram-list/radiogram-card/radiogram-card-content-information-unavailable/radiogram-card-content-information-unavailable.component';
 import { HumanReadableRadiogramTypePipe } from './trainer-modal/radiogram-list/human-readable-radiogram-type.pipe';
 import { TreatmentStatusBadgeComponent } from './trainer-modal/treatment-status-badge/treatment-status-badge.component';
-import { RadigoramCardContentMissingTransferConnectionComponent } from './trainer-modal/radiogram-list/radiogram-card/radigoram-card-content-missing-transfer-connection/radigoram-card-content-missing-transfer-connection.component';
+import { RadigoramCardContentMissingTransferConnectionComponent } from './trainer-modal/radiogram-list/radiogram-card/radiogram-card-content-missing-transfer-connection/radiogram-card-content-missing-transfer-connection.component';
 import { SimulatedRegionOverviewBehaviorProvidePersonnelComponent } from './trainer-modal/tabs/behavior-tab/behaviors/provide-personnel/simulated-region-overview-behavior-provide-personnel.component';
 import { SimulatedRegionOverviewBehaviorAnswerVehicleRequestsComponent } from './trainer-modal/tabs/behavior-tab/behaviors/answer-vehicle-requests/simulated-region-overview-behavior-answer-vehicle-requests.component';
-import { RadigoramCardContentResourceRequestComponent } from './trainer-modal/radiogram-list/radiogram-card/radigoram-card-content-resource-request/radigoram-card-content-resource-request.component';
+import { RadigoramCardContentResourceRequestComponent } from './trainer-modal/radiogram-list/radiogram-card/radiogram-card-content-resource-request/radiogram-card-content-resource-request.component';
 import { SimulatedRegionOverviewBehaviorAutomaticallyDistributeVehiclesComponent } from './trainer-modal/tabs/behavior-tab/behaviors/automatically-distribute-vehicles/simulated-region-overview-behavior-automatically-distribute-vehicles.component';
 import { RequestVehiclesComponent } from './trainer-modal/tabs/behavior-tab/behaviors/request-vehicles/simulated-region-overview-behavior-request-vehicles.component';
 import { SimulatedRegionOverviewPatientInteractionBarComponent } from './trainer-modal/tabs/patients-tab/simulated-region-overview-patient-interaction-bar/simulated-region-overview-patient-interaction-bar.component';

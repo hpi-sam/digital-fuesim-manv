@@ -10,9 +10,9 @@ import type { AppState } from 'src/app/state/app.state';
 import { createSelectRadiogram } from 'src/app/state/application/selectors/exercise.selectors';
 
 @Component({
-    selector: 'app-radigoram-card-content-resource-request',
-    templateUrl: './radigoram-card-content-resource-request.component.html',
-    styleUrls: ['./radigoram-card-content-resource-request.component.scss'],
+    selector: 'app-radiogram-card-content-resource-request',
+    templateUrl: './radiogram-card-content-resource-request.component.html',
+    styleUrls: ['./radiogram-card-content-resource-request.component.scss'],
     standalone: false,
 })
 export class RadigoramCardContentResourceRequestComponent implements OnInit {

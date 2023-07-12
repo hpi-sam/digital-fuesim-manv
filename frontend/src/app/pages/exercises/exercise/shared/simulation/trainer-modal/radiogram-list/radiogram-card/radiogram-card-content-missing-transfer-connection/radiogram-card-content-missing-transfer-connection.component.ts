@@ -12,11 +12,11 @@ import {
 } from 'src/app/state/application/selectors/exercise.selectors';
 
 @Component({
-    selector: 'app-radigoram-card-content-missing-transfer-connection',
+    selector: 'app-radiogram-card-content-missing-transfer-connection',
     templateUrl:
-        './radigoram-card-content-missing-transfer-connection.component.html',
+        './radiogram-card-content-missing-transfer-connection.component.html',
     styleUrls: [
-        './radigoram-card-content-missing-transfer-connection.component.scss',
+        './radiogram-card-content-missing-transfer-connection.component.scss',
     ],
     standalone: false,
 })
