@@ -16,11 +16,14 @@ export class SignallerModalEocComponent {
     alarmGroupsSentDisplay!: TemplateRef<any>;
     @ViewChild('arrivingVehiclesDisplay')
     arrivingVehiclesDisplay!: TemplateRef<any>;
+    @ViewChild('sendAlarmGroupEditor')
+    sendAlarmGroupEditor!: TemplateRef<any>;
 
     informationInteractions: InterfaceSignallerInteraction[] = [
         {
             key: 'alarmGroupsSent',
             name: 'Alarmierte Alarmgruppen',
+            details: 'Fragt ab, welche Alarmgruppen bereits alarmiert wurden',
             keywords: [
                 'alarm',
                 'gruppe',
@@ -39,6 +42,8 @@ export class SignallerModalEocComponent {
         {
             key: 'arrivingVehicles',
             name: 'Fahrzeuge auf Anfahrt',
+            details:
+                'Fragt ab, wie viele und welche Fahrzeuge aktuell auf Anfahrt sind und wie lange sie brauchen',
             keywords: [
                 'fahrzeug',
                 'fahrzeuge',
@@ -48,10 +53,38 @@ export class SignallerModalEocComponent {
                 'ankommen',
                 'anfahren',
                 'ankunft',
+                'zeit',
+                'dauer',
+                'zahl',
+                'anzahl',
+                'menge',
             ],
             hotkey: new Hotkey('B', false, () =>
                 this.requestArrivingVehicles()
             ),
+            requiredBehaviors: [],
+            loading$: new BehaviorSubject<boolean>(false),
+        },
+    ];
+
+    commandInteractions: InterfaceSignallerInteraction[] = [
+        {
+            key: 'sendAlarmGroup',
+            name: 'Alarmgruppe alarmieren',
+            details: 'Erhöht die Alarmstufe durch Senden weiterer Alarmgruppen',
+            keywords: [
+                'alarm',
+                'gruppe',
+                'gruppen',
+                'alarmgruppe',
+                'alarmgruppen',
+                'alarmieren',
+                'auslösen',
+                'starten',
+                'senden',
+                'erhöhen',
+            ],
+            hotkey: new Hotkey('1', false, () => this.sendAlarmGroup()),
             requiredBehaviors: [],
             loading$: new BehaviorSubject<boolean>(false),
         },
@@ -73,6 +106,13 @@ export class SignallerModalEocComponent {
         this.detailsModal.open(
             'Fahrzeuge auf Anfahrt',
             this.arrivingVehiclesDisplay
+        );
+    }
+
+    sendAlarmGroup() {
+        this.detailsModal.open(
+            'Alarmgruppe alarmieren',
+            this.sendAlarmGroupEditor
         );
     }
 }

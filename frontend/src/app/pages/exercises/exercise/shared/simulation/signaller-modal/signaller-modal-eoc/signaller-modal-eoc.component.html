@@ -16,6 +16,13 @@
         <div class="vr mx-1 h-100"></div>
         <div class="flex-grow-1 overflow-auto" style="max-width: 50%">
             <h5>Befehle</h5>
+
+            <app-signaller-modal-interactions
+                [interactions]="commandInteractions"
+                primaryActionLabel="Anordnen"
+                [showSecondaryButton]="false"
+                filterHotkeyKeys="F4"
+            />
         </div>
     </div>
 </div>
@@ -26,4 +33,8 @@
 
 <ng-template #arrivingVehiclesDisplay
     ><app-signaller-modal-eoc-information-arriving-vehicles
+/></ng-template>
+
+<ng-template #sendAlarmGroupEditor
+    ><app-send-alarm-group-interface
 /></ng-template>

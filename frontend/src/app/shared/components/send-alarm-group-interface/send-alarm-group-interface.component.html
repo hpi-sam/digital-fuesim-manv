@@ -48,8 +48,7 @@
                     #selectTargetPopover="ngbPopover"
                     placement="bottom"
                     [disabled]="(transferPoints?.length ?? 0) === 0"
-                    [appAutofocus]="true"
-                    tabindex="1"
+                    tabindex="2"
                     class="btn btn-outline-primary flex-grow-1 flex-shrink-1 ms-2 d-flex flex-row"
                     style="width: 1px"
                     type="button"
@@ -96,7 +95,7 @@
                     step="1"
                     name="firstVehiclesCount"
                     type="number"
-                    tabindex="2"
+                    tabindex="3"
                     class="form-control flex-grow-1 flex-shrink-1 ms-2"
                     style="width: 1px"
                 />
@@ -115,8 +114,7 @@
                         (transferPoints?.length ?? 0) === 0 ||
                         firstVehiclesCount < 1
                     "
-                    [appAutofocus]="true"
-                    tabindex="3"
+                    tabindex="4"
                     class="btn btn-outline-primary flex-grow-1 flex-shrink-1 ms-2 d-flex flex-row"
                     style="width: 1px"
                     type="button"
@@ -159,7 +157,7 @@
             </span>
             <button
                 class="btn btn-primary mt-4 row g-0 w-100"
-                [tabIndex]="4"
+                [tabIndex]="5"
                 [disabled]="!canSubmit"
             >
                 Sende Alarmgruppe
