@@ -13,6 +13,7 @@
                     class="btn btn-outline-primary flex-grow-1 flex-shrink-1 ms-2 d-flex flex-row"
                     style="width: 1px"
                     type="button"
+                    data-cy="sendAlarmGroupChooseAlarmGroupButton"
                 >
                     <span
                         class="flex-grow-1 flex-shrink-1 text-nowrap overflow-hidden"
@@ -52,6 +53,7 @@
                     class="btn btn-outline-primary flex-grow-1 flex-shrink-1 ms-2 d-flex flex-row"
                     style="width: 1px"
                     type="button"
+                    data-cy="sendAlarmGroupChooseTargetButton"
                 >
                     <span
                         class="flex-grow-1 flex-shrink-1 text-nowrap overflow-hidden"
@@ -159,6 +161,7 @@
                 class="btn btn-primary mt-4 row g-0 w-100"
                 [tabIndex]="5"
                 [disabled]="!canSubmit"
+                data-cy="sendAlarmGroupSendButton"
             >
                 Sende Alarmgruppe
                 <span
