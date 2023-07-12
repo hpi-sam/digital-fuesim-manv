@@ -6,10 +6,19 @@
         {{ (simulatedRegion$ | async)?.name ?? 'Gelöschter Bereich' }}
     </h6>
     <div class="card-body">
-        <app-radiogram-card-content
-            *ngIf="radiogram$ | async"
-            [radiogram]="(radiogram$ | async)!"
-        ></app-radiogram-card-content>
+        <div *ngIf="radiogram$ | async as radiogram" class="position-relative">
+            <app-radiogram-card-content
+                [radiogram]="radiogram!"
+            ></app-radiogram-card-content>
+            <div
+                *ngIf="(status$ | async) === 'unread'"
+                class="position-absolute top-0 left-0 w-100 h-100"
+                style="
+                    background-color: rgba(255, 255, 255, 0.25);
+                    backdrop-filter: blur(1px);
+                "
+            ></div>
+        </div>
     </div>
     <div class="card-footer">
         <ng-container [ngSwitch]="status$ | async">
