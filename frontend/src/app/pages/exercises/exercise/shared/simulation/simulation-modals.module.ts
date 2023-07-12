@@ -82,6 +82,8 @@ import { SignallerModalProvideVehiclesEditorComponent } from './signaller-modal/
 import { SignallerModalRequestDestinationEditorComponent } from './signaller-modal/details-modal/signaller-modal-request-target-editor/signaller-modal-request-target-editor.component';
 import { SignallerModalTransferConnectionsEditorComponent } from './signaller-modal/details-modal/signaller-modal-transfer-connections-editor/signaller-modal-transfer-connections-editor.component';
 import { SignallerModalRegionsOverviewComponent } from './signaller-modal/signaller-modal-regions-overview/signaller-modal-regions-overview.component';
+import { SignallerModalEocInformationAlarmGroupsSentComponent } from './signaller-modal/details-modal/eoc-information/signaller-modal-eoc-information-alarm-groups-sent/signaller-modal-eoc-information-alarm-groups-sent.component';
+import { SignallerModalEocInformationArrivingVehiclesComponent } from './signaller-modal/details-modal/eoc-information/signaller-modal-eoc-information-arriving-vehicles/signaller-modal-eoc-information-arriving-vehicles.component';
 
 @NgModule({
     declarations: [
@@ -151,6 +153,8 @@ import { SignallerModalRegionsOverviewComponent } from './signaller-modal/signal
         SignallerModalRequestDestinationEditorComponent,
         SignallerModalTransferConnectionsEditorComponent,
         SignallerModalRegionsOverviewComponent,
+        SignallerModalEocInformationAlarmGroupsSentComponent,
+        SignallerModalEocInformationArrivingVehiclesComponent,
     ],
     exports: [SimulatedRegionOverviewGeneralComponent],
     providers: [

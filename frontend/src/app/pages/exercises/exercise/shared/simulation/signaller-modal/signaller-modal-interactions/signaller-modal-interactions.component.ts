@@ -63,7 +63,7 @@ export class SignallerModalInteractionsComponent
     implements OnInit, OnChanges, OnDestroy
 {
     @Input()
-    simulatedRegionId!: UUID;
+    simulatedRegionId?: UUID;
     @Input()
     interactions: InterfaceSignallerInteraction[] = [];
     @Input()
@@ -137,11 +137,11 @@ export class SignallerModalInteractionsComponent
         }
         this.hotkeyLayer = this.hotkeysService.createLayer();
 
-        this.interactions.forEach((informationType) => {
-            this.hotkeyLayer!.addHotkey(informationType.hotkey);
+        this.interactions.forEach((interaction) => {
+            this.hotkeyLayer!.addHotkey(interaction.hotkey);
 
-            if (informationType.secondaryHotkey) {
-                this.hotkeyLayer!.addHotkey(informationType.secondaryHotkey);
+            if (interaction.secondaryHotkey) {
+                this.hotkeyLayer!.addHotkey(interaction.secondaryHotkey);
             }
         });
 
@@ -152,26 +152,28 @@ export class SignallerModalInteractionsComponent
             this.hotkeyLayer.addHotkey(this.filterHotkey);
         }
 
-        const behaviors$ = this.store.select(
-            createSelectBehaviorStates(this.simulatedRegionId)
-        );
+        if (this.simulatedRegionId) {
+            const behaviors$ = this.store.select(
+                createSelectBehaviorStates(this.simulatedRegionId)
+            );
 
-        this.requestable$ = behaviors$.pipe(
-            map((behaviors) =>
-                Object.fromEntries(
-                    this.interactions.map((interaction) => [
-                        interaction.key,
-                        interaction.requiredBehaviors.every(
-                            (requiredBehavior) =>
-                                behaviors.some(
-                                    (behavior) =>
-                                        behavior.type === requiredBehavior
-                                )
-                        ),
-                    ])
+            this.requestable$ = behaviors$.pipe(
+                map((behaviors) =>
+                    Object.fromEntries(
+                        this.interactions.map((interaction) => [
+                            interaction.key,
+                            interaction.requiredBehaviors.every(
+                                (requiredBehavior) =>
+                                    behaviors.some(
+                                        (behavior) =>
+                                            behavior.type === requiredBehavior
+                                    )
+                            ),
+                        ])
+                    )
                 )
-            )
-        );
+            );
+        }
 
         const radiograms$ = this.store
             .select(selectRadiograms)

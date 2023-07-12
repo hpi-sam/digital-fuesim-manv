@@ -32,7 +32,7 @@
         [class.active]="index === selectedIndex"
     >
         <div
-            *appLet="(requestable$ | async)?.[interaction.key] as enabled"
+            *appLet="(this.simulatedRegionId ? (requestable$ | async)?.[interaction.key] : true) as enabled"
             class="d-flex flex-row mb-2"
         >
             <div class="flex-grow-1">
