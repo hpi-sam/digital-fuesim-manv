@@ -35,16 +35,25 @@
             <ng-container *ngSwitchCase="'ownAccepted'">
                 <span class="text-success"
                     >Wird von <span class="fw-semibold">Ihnen</span> durchgesagt
-                    <button
-                        class="btn btn-success float-end"
-                        (click)="markAsDone()"
-                    >
-                        Fertig
-                        <app-hotkey-indicator
-                            *ngIf="first && shownInSignallerModal"
-                            [hotkey]="acceptHotkey"
-                        />
-                    </button>
+                    <div class="btn-group float-end">
+                        <button
+                            class="btn btn-outline-secondary"
+                            (click)="return()"
+                        >
+                            Zurücklegen
+                            <app-hotkey-indicator
+                                *ngIf="first && shownInSignallerModal"
+                                [hotkey]="returnHotkey"
+                            />
+                        </button>
+                        <button class="btn btn-success" (click)="markAsDone()">
+                            Fertig
+                            <app-hotkey-indicator
+                                *ngIf="first && shownInSignallerModal"
+                                [hotkey]="acceptHotkey"
+                            />
+                        </button>
+                    </div>
                 </span>
             </ng-container>
             <ng-container *ngSwitchCase="'otherAccepted'">

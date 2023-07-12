@@ -65,6 +65,18 @@ export class RadiogramCardComponent implements OnInit, OnChanges, OnDestroy {
     readonly acceptHotkey = new Hotkey('F1', false, () => {
         this.acceptOrMarkAsDone();
     });
+    readonly returnHotkey = new Hotkey('⇧ + F1', false, () => {
+        if (
+            isAccepted(
+                selectStateSnapshot(
+                    createSelectRadiogram(this.radiogramId),
+                    this.store
+                )
+            )
+        ) {
+            this.return();
+        }
+    });
 
     constructor(
         private readonly store: Store<AppState>,
@@ -125,8 +137,10 @@ export class RadiogramCardComponent implements OnInit, OnChanges, OnDestroy {
         if ('first' in changes) {
             if (this.first && this.shownInSignallerModal) {
                 this.hotkeyLayer!.addHotkey(this.acceptHotkey);
+                this.hotkeyLayer!.addHotkey(this.returnHotkey);
             } else {
                 this.hotkeyLayer!.removeHotkey(this.acceptHotkey);
+                this.hotkeyLayer!.removeHotkey(this.returnHotkey);
             }
         }
     }
@@ -175,6 +189,13 @@ export class RadiogramCardComponent implements OnInit, OnChanges, OnDestroy {
                     );
                 }
             });
+    }
+
+    return() {
+        this.exerciseService.proposeAction({
+            type: '[Radiogram] Return radiogram',
+            radiogramId: this.radiogramId,
+        });
     }
 
     markAsDone() {
