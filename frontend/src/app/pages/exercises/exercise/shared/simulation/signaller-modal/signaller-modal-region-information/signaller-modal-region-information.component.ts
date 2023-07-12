@@ -149,7 +149,6 @@ export class SignallerModalRegionInformationComponent
                 'Dieser Bereich benötigt keine Fahrzeuge für seine Arbeit',
             loading$: new BehaviorSubject<boolean>(false),
         },
-        // TODO: Arriving vehicles (number, ETA)
         {
             key: 'treatmentStatus',
             name: 'Behandlungsstatus',
