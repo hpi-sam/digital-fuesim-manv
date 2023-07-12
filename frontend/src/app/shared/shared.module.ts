@@ -52,6 +52,8 @@ import { HotkeysService } from './services/hotkeys.service';
 import { HotkeyIndicatorComponent } from './components/hotkey-indicator/hotkey-indicator.component';
 import { PatientStatusDropdownComponent } from './components/patient-status-dropdown/patient-status-dropdown.component';
 import { SendAlarmGroupInterfaceComponent } from './components/send-alarm-group-interface/send-alarm-group-interface.component';
+import { OccupationNamePipe } from './pipes/occupation-name.pipe';
+import { OccupationShortNamePipe } from './pipes/occupation-short-name.pipe';
 
 @NgModule({
     declarations: [
@@ -98,6 +100,8 @@ import { SendAlarmGroupInterfaceComponent } from './components/send-alarm-group-
         HotkeyIndicatorComponent,
         PatientStatusDropdownComponent,
         SendAlarmGroupInterfaceComponent,
+        OccupationNamePipe,
+        OccupationShortNamePipe,
     ],
     imports: [
         CommonModule,
@@ -148,6 +152,8 @@ import { SendAlarmGroupInterfaceComponent } from './components/send-alarm-group-
         HotkeyIndicatorComponent,
         PatientStatusDropdownComponent,
         SendAlarmGroupInterfaceComponent,
+        OccupationNamePipe,
+        OccupationShortNamePipe,
     ],
     providers: [HotkeysService],
 })

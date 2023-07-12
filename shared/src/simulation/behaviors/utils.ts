@@ -2,6 +2,7 @@ import {
     ResourceRequestRadiogram,
     TransferConnectionsRadiogram,
     TransferCountsRadiogram,
+    VehicleOccupationsRadiogram,
 } from '../../models/radiogram/index.js';
 import type { ExerciseRadiogram } from '../../models/radiogram/exercise-radiogram.js';
 import { MaterialCountRadiogram } from '../../models/radiogram/material-count-radiogram.js';
@@ -26,6 +27,7 @@ export const reportableInformationAllowedValues: AllowedValues<ReportableInforma
         transportManagementTransferCounts: true,
         treatmentStatus: true,
         vehicleCount: true,
+        vehicleOccupations: true,
     };
 
 export const reportableInformations = StrictObject.keys(
@@ -41,7 +43,8 @@ export type ReportableInformation =
     | 'transferConnections'
     | 'transportManagementTransferCounts'
     | 'treatmentStatus'
-    | 'vehicleCount';
+    | 'vehicleCount'
+    | 'vehicleOccupations';
 
 export const createRadiogramMap: {
     [Key in ReportableInformation]: (
@@ -60,6 +63,7 @@ export const createRadiogramMap: {
     transportManagementTransferCounts: TransferCountsRadiogram.create,
     treatmentStatus: TreatmentStatusRadiogram.create,
     vehicleCount: VehicleCountRadiogram.create,
+    vehicleOccupations: VehicleOccupationsRadiogram.create,
 };
 
 export const behaviorTypeToGermanNameDictionary: {
@@ -92,4 +96,5 @@ export const reportableInformationTypeToGermanNameDictionary: {
         'Anzahl unter dieser Transportorganisation in Krankenhäuser abtransportierter Patienten',
     treatmentStatus: 'Behandlungsstatus',
     vehicleCount: 'Anzahl an Fahrzeugen',
+    vehicleOccupations: 'Nutzung der Fahrzeuge',
 };

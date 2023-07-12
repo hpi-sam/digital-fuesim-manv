@@ -176,7 +176,30 @@ export class SignallerModalRegionInformationComponent
             loading$: new BehaviorSubject<boolean>(false),
         },
         // TODO: Location
-        // TODO: Vehicle occupation
+        {
+            key: 'vehicleOccupations',
+            name: 'Nutzung der Fahrzeuge',
+            keywords: [
+                'fahrzeug',
+                'fahrzeuge',
+                'aufgabe',
+                'aufgaben',
+                'nutzung',
+                'zweck',
+                'genutzt',
+                'benutzt',
+            ],
+            details:
+                'für welche Aufgaben die verfügbaren Fahrzeuge gerade genutzt werden',
+            hotkey: new Hotkey('G', false, () =>
+                this.requestVehicleOccupations()
+            ),
+            secondaryHotkey: new Hotkey('⇧ + G', true, () =>
+                this.openRecurringReportModal('vehicleOccupations')
+            ),
+            requiredBehaviors: [],
+            loading$: new BehaviorSubject<boolean>(false),
+        },
         {
             key: 'transferConnections',
             name: 'Bekannte Standorte anderer Bereiche',
@@ -198,10 +221,10 @@ export class SignallerModalRegionInformationComponent
             ],
             details:
                 '(welche anderen Bereiche sind bekannt, sodass z.B. Fahrzeuge dorthin fahren können?)',
-            hotkey: new Hotkey('G', false, () =>
+            hotkey: new Hotkey('H', false, () =>
                 this.requestTransferConnections()
             ),
-            secondaryHotkey: new Hotkey('⇧ + G', true, () =>
+            secondaryHotkey: new Hotkey('⇧ + H', true, () =>
                 this.openRecurringReportModal('transferConnections')
             ),
             requiredBehaviors: [],
@@ -221,8 +244,8 @@ export class SignallerModalRegionInformationComponent
                 'menge',
             ],
             details: 'nach Typ',
-            hotkey: new Hotkey('H', false, () => this.requestPersonnelCount()),
-            secondaryHotkey: new Hotkey('⇧ + H', true, () =>
+            hotkey: new Hotkey('I', false, () => this.requestPersonnelCount()),
+            secondaryHotkey: new Hotkey('⇧ + I', true, () =>
                 this.openRecurringReportModal('personnelCount')
             ),
             requiredBehaviors: [],
@@ -294,6 +317,10 @@ export class SignallerModalRegionInformationComponent
 
     public requestTreatmentStatus() {
         this.requestSimpleReport('treatmentStatus', 'treatmentStatus');
+    }
+
+    public requestVehicleOccupations() {
+        this.requestSimpleReport('vehicleOccupations', 'vehicleOccupations');
     }
 
     public requestTransferConnections() {

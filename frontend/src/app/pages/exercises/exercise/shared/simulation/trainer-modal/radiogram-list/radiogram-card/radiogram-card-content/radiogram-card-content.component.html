@@ -6,6 +6,10 @@
         *ngSwitchCase="'vehicleCountRadiogram'"
         [radiogramId]="radiogram.id"
     />
+    <app-radiogram-card-content-vehicle-occupations
+        *ngSwitchCase="'vehicleOccupationsRadiogram'"
+        [radiogramId]="radiogram.id"
+    />
     <app-radiogram-card-content-patient-count
         *ngSwitchCase="'patientCountRadiogram'"
         [radiogramId]="radiogram.id"

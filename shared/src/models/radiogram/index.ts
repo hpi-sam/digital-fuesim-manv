@@ -13,3 +13,4 @@ export * from './transfer-counts-radiogram.js';
 export * from './transfer-category-completed-radiogram.js';
 export * from './utils/index.js';
 export * from './new-patient-data-requested-radiogram.js';
+export * from './vehicle-occupations-radiogram.js';

@@ -31,6 +31,7 @@ import {
 import type { SimulatedRegion } from '../../models/simulated-region.js';
 import { addActivity } from '../activities/utils.js';
 import { DelayEventActivityState } from '../activities/delay-event.js';
+import { VehicleOccupationsRadiogram } from '../../models/radiogram/vehicle-occupations-radiogram.js';
 import type {
     SimulationBehavior,
     SimulationBehaviorState,
@@ -269,39 +270,69 @@ export const assignLeaderBehavior: SimulationBehavior<AssignLeaderBehaviorState>
 
                                 break;
                             }
-                            case 'vehicleCount':
-                                {
-                                    const radiogram = getActivityById(
-                                        draftState,
-                                        simulatedRegion.id,
-                                        event.generateReportActivityId,
-                                        'generateReportActivity'
+                            case 'vehicleCount': {
+                                const radiogram = getActivityById(
+                                    draftState,
+                                    simulatedRegion.id,
+                                    event.generateReportActivityId,
+                                    'generateReportActivity'
+                                ).radiogram as Mutable<VehicleCountRadiogram>;
+                                const vehicles = Object.values(
+                                    draftState.vehicles
+                                ).filter((vehicle) =>
+                                    isInSpecificSimulatedRegion(
+                                        vehicle,
+                                        simulatedRegion.id
                                     )
-                                        .radiogram as Mutable<VehicleCountRadiogram>;
-                                    const vehicles = Object.values(
-                                        draftState.vehicles
-                                    ).filter((vehicle) =>
-                                        isInSpecificSimulatedRegion(
-                                            vehicle,
-                                            simulatedRegion.id
-                                        )
-                                    );
-                                    const groupedVehicles = groupBy(
-                                        vehicles,
-                                        (vehicle) => vehicle.vehicleType
-                                    );
-                                    radiogram.vehicleCount = Object.fromEntries(
-                                        StrictObject.entries(
-                                            groupedVehicles
-                                        ).map(([vehicleType, vehicleGroup]) => [
+                                );
+                                const groupedVehicles = groupBy(
+                                    vehicles,
+                                    (vehicle) => vehicle.vehicleType
+                                );
+                                radiogram.vehicleCount = Object.fromEntries(
+                                    StrictObject.entries(groupedVehicles).map(
+                                        ([vehicleType, vehicleGroup]) => [
                                             vehicleType,
                                             vehicleGroup.length,
-                                        ])
-                                    );
+                                        ]
+                                    )
+                                );
 
-                                    radiogram.informationAvailable = true;
-                                }
+                                radiogram.informationAvailable = true;
                                 break;
+                            }
+                            case 'vehicleOccupations': {
+                                const radiogram = getActivityById(
+                                    draftState,
+                                    simulatedRegion.id,
+                                    event.generateReportActivityId,
+                                    'generateReportActivity'
+                                )
+                                    .radiogram as Mutable<VehicleOccupationsRadiogram>;
+                                const vehicles = Object.values(
+                                    draftState.vehicles
+                                ).filter((vehicle) =>
+                                    isInSpecificSimulatedRegion(
+                                        vehicle,
+                                        simulatedRegion.id
+                                    )
+                                );
+                                const groupedVehicles = groupBy(
+                                    vehicles,
+                                    (vehicle) => vehicle.occupation.type
+                                );
+                                radiogram.occupations = Object.fromEntries(
+                                    StrictObject.entries(groupedVehicles).map(
+                                        ([occupationType, vehicleGroup]) => [
+                                            occupationType,
+                                            vehicleGroup.length,
+                                        ]
+                                    )
+                                );
+
+                                radiogram.informationAvailable = true;
+                                break;
+                            }
                             default:
                             // Ignore event
                         }

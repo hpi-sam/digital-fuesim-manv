@@ -84,6 +84,7 @@ import { SignallerModalTransferConnectionsEditorComponent } from './signaller-mo
 import { SignallerModalRegionsOverviewComponent } from './signaller-modal/signaller-modal-regions-overview/signaller-modal-regions-overview.component';
 import { SignallerModalEocInformationAlarmGroupsSentComponent } from './signaller-modal/details-modal/eoc-information/signaller-modal-eoc-information-alarm-groups-sent/signaller-modal-eoc-information-alarm-groups-sent.component';
 import { SignallerModalEocInformationArrivingVehiclesComponent } from './signaller-modal/details-modal/eoc-information/signaller-modal-eoc-information-arriving-vehicles/signaller-modal-eoc-information-arriving-vehicles.component';
+import { RadiogramCardContentVehicleOccupationsComponent } from './trainer-modal/radiogram-list/radiogram-card/radiogram-card-content-vehicle-occupations/radiogram-card-content-vehicle-occupations.component';
 
 @NgModule({
     declarations: [
@@ -155,6 +156,7 @@ import { SignallerModalEocInformationArrivingVehiclesComponent } from './signall
         SignallerModalRegionsOverviewComponent,
         SignallerModalEocInformationAlarmGroupsSentComponent,
         SignallerModalEocInformationArrivingVehiclesComponent,
+        RadiogramCardContentVehicleOccupationsComponent,
     ],
     exports: [SimulatedRegionOverviewGeneralComponent],
     providers: [
