@@ -199,7 +199,7 @@ export class SignallerModalRegionCommandsComponent implements OnChanges {
 
     startTransportOfCategory() {
         this.detailsModal.open(
-            'Abtransport einer bestimmten Sichtungskategorie',
+            'Abtransport starten/stoppen/ändern',
             this.transportOfCategoryEditor
         );
     }
