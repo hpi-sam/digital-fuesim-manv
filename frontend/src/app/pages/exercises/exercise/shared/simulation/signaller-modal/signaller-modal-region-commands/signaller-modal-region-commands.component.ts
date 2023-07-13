@@ -86,7 +86,8 @@ export class SignallerModalRegionCommandsComponent implements OnChanges {
         {
             key: 'startTransportOfCategory',
             name: 'Patienten abtransportieren',
-            details: '(nur eine Sichtungskategorie)',
+            details:
+                '(Transport starten, stoppen oder Sichtungskategorien zum Abtransport festlegen)',
             keywords: [
                 'start',
                 'starten',
