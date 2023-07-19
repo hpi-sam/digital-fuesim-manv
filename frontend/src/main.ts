@@ -5,6 +5,8 @@ import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
 import { AppModule } from './app/app.module';
 import { environment } from './environments/environment';
+import type { ActionTiming } from './app/shared/benchmark-data';
+import { actionTiming } from './app/shared/benchmark-data';
 
 if (environment.production) {
     enableProdMode();
@@ -22,3 +24,13 @@ if (environment.production) {
 platformBrowserDynamic()
     .bootstrapModule(AppModule)
     .catch((err) => console.error(err));
+
+declare global {
+    interface Window {
+        __thesis: {
+            actionTiming: ActionTiming;
+        };
+    }
+}
+
+window.__thesis = { actionTiming };
