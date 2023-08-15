@@ -47,6 +47,9 @@ let style = `<style>
             tr:nth-child(odd) td {
                 border: 1px solid #dddddd;
             }
+            td:last-child {
+                white-space:pre-wrap;
+            }
         </style>`;
 
 let header =
