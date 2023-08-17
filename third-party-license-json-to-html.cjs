@@ -1,4 +1,5 @@
 const json2html = require('node-json2html');
+const fs = require('fs');
 
 /**
  * With the help of: https://gist.github.com/joviano-dias/f9bfb8af690a89bcf7d83213e6009b13
@@ -26,6 +27,15 @@ let template_table_body = {
 };
 
 let data = require('./frontend/src/assets/source-code/THIRD-PARTY-LICENSE-ACKNOWLEDGEMENTS.json');
+
+let inspired_by_or_copied_from_data = fs
+    .readFileSync('./inspired-by-or-copied-from-list.html')
+    .toString();
+
+let inspired_by_or_copied_from =
+    `<h1>List of links used for inspiration or copied from or as guidance</h1>
+                <a>If you want to know, where these where used search inside the source code for this specific URL <a href="assets/source-code/digital-fuesim-manv.zip">here</a>.</a>
+                ` + inspired_by_or_copied_from_data;
 
 let table_header = json2html.transform(data[0], template_table_header);
 let table_body = json2html.transform(data, template_table_body);
@@ -60,6 +70,7 @@ let header =
     '</head>';
 let body =
     '<input type="button" value="Zur&uuml;ck" onclick="history.back()">' +
+    inspired_by_or_copied_from +
     '<h1>Third Party Licenses</h1><br><table>\n<thead>' +
     table_header +
     '\n</thead>\n<tbody>\n' +
@@ -68,7 +79,6 @@ let body =
 body = '<body>' + body + '</body>';
 let html = header + body + '</html>\n';
 
-const fs = require('fs');
 fs.writeFileSync(
     './frontend/src/assets/source-code/THIRD-PARTY-LICENSE-ACKNOWLEDGEMENTS.html',
     html
