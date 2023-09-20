@@ -25,7 +25,7 @@ export class Config {
 
     private static _cleanupEnabled?: boolean;
 
-    private static _cleanupTime: number;
+    private static _cleanupTime?: number;
 
     public static get websocketPort(): number {
         this.throwIfNotInitialized();
