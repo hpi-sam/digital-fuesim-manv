@@ -71,12 +71,40 @@ export class FuesimServer {
         this.saveTickInterval
     );
 
+    private readonly cleanupTick = async () => {
+        exerciseMap.forEach((exercise, key) => {
+            // Only use exercises referenced by their trainer id (8 characters) to not choose the same exercise twice
+            // TODO: maybe put this `8` for the length of trainerId in some config file
+            if (key.length !== 8) {
+                return;
+            }
+            if (
+                exercise.ExerciseIsWithoutClients() &&
+                Math.floor(
+                    (Date.now() - exercise.sinceExerciseWithoutClients) / 60_000
+                ) > Config.cleanupTime
+            ) {
+                exercise.deleteExercise();
+            }
+        });
+    };
+
+    private readonly cleanupTickInterval = 10_000;
+
+    private readonly cleanupHandler = new PeriodicEventHandler(
+        this.cleanupTick,
+        this.cleanupTickInterval
+    );
+
     constructor(private readonly databaseService: DatabaseService) {
         const app = express();
         this._websocketServer = new ExerciseWebsocketServer(app);
         this._httpServer = new ExerciseHttpServer(app, databaseService);
         if (Config.useDb) {
             this.saveHandler.start();
+        }
+        if (Config.cleanupEnabled) {
+            this.cleanupHandler.start();
         }
     }
 
@@ -92,6 +120,7 @@ export class FuesimServer {
         this.httpServer.close();
         this.websocketServer.close();
         this.saveHandler.pause();
+        this.cleanupHandler.pause();
         // Save all remaining instances, if it's still possible
         if (this.databaseService.isInitialized) {
             await this.saveTick();

@@ -7,6 +7,8 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ## [Unreleased]
 
+-   A cleanup job is implemented, from now on (enabled by default) exercises that no client has been connected for a specific amount of time (default is 4 weeks) are automatically deleted (with or without database).
+
 ## [0.7.1] - 2023-07-10
 
 ## Added
