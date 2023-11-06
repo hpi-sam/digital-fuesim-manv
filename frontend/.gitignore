@@ -10,3 +10,6 @@
 /cypress/downloads
 /cypress-visual-screenshots/comparison
 /cypress-visual-screenshots/diff
+
+# mitigate accidental commit of files in source-code
+src/assets/source-code/*

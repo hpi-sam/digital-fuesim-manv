@@ -292,7 +292,25 @@ If you need to read from the state to change it, you should do this inside the a
 
 ## Licenses and Attributions
 
--   License information about used images can be found [here](frontend/src/assets/image-sources.md). All images are licensed under their original license.
+Digital Fuesim MANV
+Copyright (C) 2023 See [README.md#contributors](README.md#contributors) for authors/contributors (bottom of this document).
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the [GNU Affero General Public License](LICENSE.md) as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+[GNU Affero General Public License](LICENSE.md) for more details.
+
+You should have received a copy of the [GNU Affero General Public License](LICENSE.md)
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+Some files are excluded to the mentioned license, read [LICENSE-README.md](LICENSE-README.md) for further information to which files these applies.
+
+Keep in mind, that if you don't use docker you have to run `npm run licensing:all` before building the `frontend` to give users the option to download a copy of the source code of this software (and a list of attributions of third-parties, e.g. their libraries) or use another way that lets users download the source code of this software for free. If you didn't modify the source code, a link to this github repository is enough, but you can do both. If you run `npm run deployment` this command is already included.
 
 ## Contributors
 

@@ -7,9 +7,15 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ## [Unreleased]
 
+### Added
+
+-   this software has now a license (with some exceptions), see LICENSE-README.md
+    -   the software includes a file with third party acknoledgments, a license.html and the docker container will include a git archive of the source code downloadable in zip format
+    -   new npm run commands for licensing (third party acknowledgements) and creating source code archive
+
 ## [0.7.1] - 2023-07-10
 
-## Added
+### Added
 
 -   Patients can be identified with an unique ID
     -   The ID is assigned to every patient automatically
