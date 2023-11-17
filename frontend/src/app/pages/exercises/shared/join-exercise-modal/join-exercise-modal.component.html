@@ -13,21 +13,10 @@
             [maxlength]="255"
             type="text"
         />
-        <br />
-        <input
-            [ngModel]="agreedToTermsAndPrivacyPolicy"
-            (ngModelChange)="toggleAgreedToTermsAndPrivacyPolicy($event)"
-            class="form-check-input"
-            type="checkbox"
-            data-cy="joinExerciseModalButton"
-        />
-        <p>
-            Ich stimme den Nutzungsbedingungen und der Datenschutzerklärung zu.
-        </p>
     </div>
     <br />
+
     <button
-        [disabled]="!agreedToTermsAndPrivacyPolicy"
         (click)="joinExercise()"
         class="btn btn-primary"
         data-cy="joinExerciseModalButton"

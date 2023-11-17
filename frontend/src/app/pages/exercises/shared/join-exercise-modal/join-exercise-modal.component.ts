@@ -12,7 +12,6 @@ import { ApplicationService } from 'src/app/core/application.service';
 export class JoinExerciseModalComponent implements OnDestroy {
     public exerciseId!: string;
     public clientName = '';
-    public agreedToTermsAndPrivacyPolicy = false;
     /**
      * Emits true when the exercise was successfully joined.
      * If it completes without emitting a value or emits false, the exercise couldn't be joined.
@@ -35,10 +34,6 @@ export class JoinExerciseModalComponent implements OnDestroy {
 
     public close() {
         this.activeModal.close();
-    }
-
-    public toggleAgreedToTermsAndPrivacyPolicy(event: boolean) {
-        this.agreedToTermsAndPrivacyPolicy = event;
     }
 
     ngOnDestroy() {
