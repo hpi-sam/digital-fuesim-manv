@@ -14,25 +14,14 @@
             type="text"
         />
         <br />
-        <input
-            [ngModel]="agreedToTermsAndPrivacyPolicy"
-            (ngModelChange)="toggleAgreedToTermsAndPrivacyPolicy($event)"
-            class="form-check-input"
-            type="checkbox"
-            data-cy="joinExerciseModalButton"
-        />
-        <p>
-            Ich stimme den
-            <a href="/about/terms" target="_blank">Nutzungsbedingungen</a> und
-            der
-            <a href="/about/privacy" target="_blank">Datenschutzerklärung</a>
-            zu.
-        </p>
+        Mit dem beitreten der Übung stimmen Sie den
+        <a href="/about/terms" target="_blank">Nutzungsbedingungen</a> und der
+        <a href="/about/privacy" target="_blank">Datenschutzerklärung</a>
+        zu.
     </div>
     <br />
 
     <button
-        [disabled]="!agreedToTermsAndPrivacyPolicy"
         (click)="joinExercise()"
         class="btn btn-primary"
         data-cy="joinExerciseModalButton"
