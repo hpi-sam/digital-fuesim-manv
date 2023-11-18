@@ -70,22 +70,7 @@
                         </button>
                     </div>
                 </div>
-                <a
-                    class="btn btn-outline-primary ms-3"
-                    href="mailto:BP2022HG1-feedback@hpi.de?subject=Feedback zur Digitalen FüSim MANV Version {{
-                        version
-                    }}"
-                >
-                    Feedback
-                </a>
                 <div class="btn-group ms-3" role="group">
-                    <a
-                        class="btn btn-outline-secondary"
-                        href="/about/imprint"
-                        target="_blank"
-                    >
-                        Impressum
-                    </a>
                     <a
                         class="btn btn-outline-secondary"
                         href="/about/privacy"
@@ -95,11 +80,48 @@
                     </a>
                     <a
                         class="btn btn-outline-secondary"
-                        href="/about/license"
+                        href="/about/imprint"
                         target="_blank"
                     >
-                        Lizenz
+                        Impressum
                     </a>
+                </div>
+                <div ngbDropdown class="d-inline-block">
+                    <button
+                        type="button"
+                        class="btn btn-outline-secondary"
+                        ngbDropdownToggle
+                    >
+                        Infos
+                    </button>
+                    <!-- "position: absolute" is only set with a delay by "ngbDropdownMenu", therefore the map canvas has the wrong height when it is initialized -->
+                    <div ngbDropdownMenu class="position-absolute">
+                        <a
+                            ngbDropdownItem
+                            class="btn btn-outline-secondary"
+                            href="/about/terms"
+                            target="_blank"
+                        >
+                            Nutzungsbedingungen
+                        </a>
+                        <a
+                            ngbDropdownItem
+                            class="btn btn-outline-secondary"
+                            href="/about/license"
+                            target="_blank"
+                        >
+                            Lizenz
+                        </a>
+                        <a
+                            ngbDropdownItem
+                            class="btn btn-outline-secondary"
+                            href="mailto:BP2022HG1-feedback@hpi.de?subject=Feedback zur Digitalen FüSim MANV Version {{
+                                version
+                            }}"
+                        >
+                            Feedback
+                        </a>
+                    </div>
                 </div>
             </div>
         </h2>

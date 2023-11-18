@@ -4,11 +4,16 @@ import { RouterModule } from '@angular/router';
 import { ImprintComponent } from './imprint/imprint.component';
 import { LicenseComponent } from './license/license.component';
 import { PrivacyComponent } from './privacy/privacy.component';
+import { TermsComponent } from './terms/terms.component';
 
 const routes: Routes = [
     {
         path: 'imprint',
         component: ImprintComponent,
+    },
+    {
+        path: 'terms',
+        component: TermsComponent,
     },
     {
         path: 'license',
