@@ -116,7 +116,8 @@ export class TimeTravelComponent implements OnDestroy {
             this.store
         );
         const { trainerId } = await this.apiService.importExercise(
-            new StateExport(cloneDeepMutable(currentExerciseState))
+            new StateExport(cloneDeepMutable(currentExerciseState)),
+            'complete-history'
         );
         this.messageService.postMessage({
             color: 'success',

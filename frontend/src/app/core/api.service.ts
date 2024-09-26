@@ -4,7 +4,9 @@ import { Store } from '@ngrx/store';
 import type {
     ExerciseIds,
     ExerciseTimeline,
+    HistoryImportStrategy,
     StateExport,
+    StateImportBody,
 } from 'digital-fuesim-manv-shared';
 import { freeze } from 'immer';
 import { lastValueFrom } from 'rxjs';
@@ -30,11 +32,18 @@ export class ApiService {
         );
     }
 
-    public async importExercise(exportedState: StateExport) {
+    public async importExercise(
+        exportedState: StateExport,
+        historyImportStrategy: HistoryImportStrategy
+    ) {
+        const body: StateImportBody = {
+            stateExport: exportedState,
+            historyImportStrategy,
+        };
         return lastValueFrom(
             this.httpClient.post<ExerciseIds>(
                 `${httpOrigin}/api/exercise`,
-                exportedState
+                body
             )
         );
     }

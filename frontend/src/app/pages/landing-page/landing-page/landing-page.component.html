@@ -52,34 +52,88 @@
             >
                 Übung erstellen
             </button>
-            <label
-                class="btn btn-outline-primary btn-lg ms-5"
-                [class.disabled]="importingExercise"
+            <div
+                ngbDropdown
+                placement="bottom-end top-end"
+                class="btn-group ms-5"
             >
-                <i class="bi-cloud-upload me-2"> </i>
-                Übung importieren
-                <span
-                    *ngIf="importingExercise"
-                    class="spinner-border spinner-border-sm"
-                ></span>
-                <input
-                    (appFileInput)="importExerciseState($event)"
-                    type="file"
-                    accept="application/json"
-                    class="d-none"
-                    [disabled]="importingExercise"
-                />
-            </label>
+                <label
+                    class="btn btn-outline-primary btn-lg"
+                    [class.disabled]="importService.currentlyImporting$ | async"
+                >
+                    <i class="bi-cloud-upload me-2"> </i>
+                    {{ importService.historyImportStrategy }}
+                    <span
+                        *ngIf="importService.currentlyImporting$ | async"
+                        class="spinner-border spinner-border-sm"
+                    ></span>
+                    <input
+                        (appFileInput)="importExerciseState($event)"
+                        type="file"
+                        accept="application/json"
+                        class="d-none"
+                        [disabled]="importService.currentlyImporting$ | async"
+                    />
+                </label>
+                <button
+                    ngbDropdownToggle
+                    type="button"
+                    class="btn btn-outline-primary btn-lg dropdown-toggle-split"
+                    data-bs-toggle="dropdown"
+                >
+                    <span class="visually-hidden">Toggle Dropdown</span>
+                </button>
+                <ul ngbDropdownMenu class="dropdown-menu">
+                    <li>
+                        <a
+                            ngbDropdownItem
+                            class="dropdown-item"
+                            href="#"
+                            (click)="
+                                importService.historyImportStrategy =
+                                    'complete-history'
+                            "
+                        >
+                            Kompletten Verlauf importieren
+                        </a>
+                    </li>
+                    <li>
+                        <a
+                            ngbDropdownItem
+                            class="dropdown-item"
+                            href="#"
+                            (click)="
+                                importService.historyImportStrategy =
+                                    'up-to-start'
+                            "
+                        >
+                            Zustand bis zum Start importieren
+                        </a>
+                    </li>
+                    <li>
+                        <a
+                            ngbDropdownItem
+                            class="dropdown-item"
+                            href="#"
+                            (click)="
+                                importService.historyImportStrategy = 'current'
+                            "
+                        >
+                            Aktuellen Zustand importieren
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </div>
 
-        <p *ngIf="exerciseHasBeenCreated" class="mb-0">
+        <p *ngIf="importService.ids$ | async as ids" class="mb-0">
             Sie haben eine Übung mit der Übungsleitungs-ID
             <span class="font-monospace fw-bolder user-select-all">{{
-                trainerId
+                ids.trainerId
             }}</span>
             und der Teilnehmer-ID
             <span class="font-monospace fw-bolder user-select-all">{{
-                participantId
+                ids.participantId
             }}</span>
             erstellt.
         </p>
