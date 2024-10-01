@@ -4,7 +4,7 @@
     "type": "module",
     "scripts": {
         "build": "cd shared && npm run build && cd .. && concurrently \"cd frontend && npm run build\" \"cd backend && npm run build\"",
-        "build:deployment": "npm run licensing:all && cd shared && npm run build && cd .. && cd frontend && npm run build:deployment && cd ../backend && npm run build",
+        "build:deployment": "cd shared && npm run build && cd .. && cd frontend && npm run build:deployment && cd ../backend && npm run build",
         "start:all": "(cd frontend && npm run start) & (cd backend && npm run start)",
         "cy:ci": "cd frontend && npm run cy:run",
         "cy:install": "cd frontend && npm run cy:install",
