@@ -34,8 +34,8 @@
     },
     "private": true,
     "engines": {
-        "node": ">=18",
-        "npm": ">=8"
+        "node": ">=22",
+        "npm": ">=10"
     },
     "devDependencies": {
         "@weichwarenprojekt/license-reporter": "^0.4.1",

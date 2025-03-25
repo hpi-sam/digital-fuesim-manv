@@ -35,7 +35,7 @@ This project is currently developed as a [bachelor project](https://hpi.de/en/st
 
 ## Installation
 
-1. Install [NodeJs](https://nodejs.org/) (at least version 18.x) (if you need different node versions on your machine we recommend [nvm](https://github.com/nvm-sh/nvm) or [nvm for windows](https://github.com/coreybutler/nvm-windows))
+1. Install [NodeJs](https://nodejs.org/) (at least version 22.x) (if you need different node versions on your machine we recommend [nvm](https://github.com/nvm-sh/nvm) or [nvm for windows](https://github.com/coreybutler/nvm-windows))
 2. [npm](https://www.npmjs.com/) should already come with NodeJs - if not install it
 3. Clone the repo by running `git clone https://github.com/hpi-sam/digital-fuesim-manv`. To be able to run migration tests, you also have to clone the submodules: use `git clone --recurse-submodules https://github.com/hpi-sam/digital-fuesim-manv` or run `git submodule update --init --recursive` if you have cloned the repo already.
 4. Run `npm run setup` from the root folder

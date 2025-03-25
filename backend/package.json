@@ -31,8 +31,8 @@
     },
     "private": true,
     "engines": {
-        "node": ">=18",
-        "npm": ">=8"
+        "node": ">=22",
+        "npm": ">=10"
     },
     "dependencies": {
         "class-transformer": "^0.5.1",
