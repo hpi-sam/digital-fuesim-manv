@@ -38,9 +38,9 @@
         "npm": ">=10"
     },
     "devDependencies": {
-        "@weichwarenprojekt/license-reporter": "^0.4.1",
+        "@weichwarenprojekt/license-reporter": "^1.0.0",
         "concurrently": "^7.6.0",
-        "node-json2html": "^2.2.3",
+        "node-json2html": "^3.3.3",
         "npm-run-all": "^4.1.5",
         "nyc": "^15.1.0",
         "prettier": "^2.8.3"
