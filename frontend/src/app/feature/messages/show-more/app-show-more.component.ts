@@ -39,6 +39,7 @@ import { HeightChangeObservationStrategies } from './height-change-observation-s
     selector: 'app-show-more',
     templateUrl: './app-show-more.component.html',
     styleUrls: ['./app-show-more.component.scss'],
+    standalone: false,
 })
 export class AppShowMoreComponent
     implements OnChanges, AfterViewInit, OnDestroy

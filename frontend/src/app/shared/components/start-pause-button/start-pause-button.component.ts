@@ -11,6 +11,7 @@ import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
     selector: 'app-start-pause-button',
     templateUrl: './start-pause-button.component.html',
     styleUrls: ['./start-pause-button.component.scss'],
+    standalone: false,
 })
 export class StartPauseButtonComponent {
     public exerciseStatus$ = this.store.select(selectExerciseStatus);

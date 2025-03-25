@@ -11,6 +11,7 @@ import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
     selector: 'app-eoc-log-interface',
     templateUrl: './eoc-log-interface.component.html',
     styleUrls: ['./eoc-log-interface.component.scss'],
+    standalone: false,
 })
 export class EocLogInterfaceComponent {
     public readonly eocLogEntries$ = this.store

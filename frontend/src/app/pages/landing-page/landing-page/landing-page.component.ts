@@ -11,6 +11,7 @@ import { MessageService } from 'src/app/core/messages/message.service';
     selector: 'app-landing-page',
     templateUrl: './landing-page.component.html',
     styleUrls: ['./landing-page.component.scss'],
+    standalone: false,
 })
 export class LandingPageComponent {
     public exerciseId = '';

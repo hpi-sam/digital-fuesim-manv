@@ -11,6 +11,7 @@ import { PopupService } from '../../utility/popup.service';
     selector: 'app-material-popup',
     templateUrl: './material-popup.component.html',
     styleUrls: ['./material-popup.component.scss'],
+    standalone: false,
 })
 export class MaterialPopupComponent implements OnInit {
     public materialId!: UUID;

@@ -22,6 +22,7 @@ interface Filter {
     selector: 'app-log-table',
     templateUrl: './log-table.component.html',
     styleUrls: ['./log-table.component.scss'],
+    standalone: false,
 })
 export class LogTableComponent implements OnChanges, OnDestroy, AfterViewInit {
     @Input() public logEntries!: readonly LogEntry[];

@@ -11,6 +11,7 @@ import { createSelectViewport } from 'src/app/state/application/selectors/exerci
     selector: 'app-viewport-name',
     templateUrl: './viewport-name.component.html',
     styleUrls: ['./viewport-name.component.scss'],
+    standalone: false,
 })
 export class ViewportNameComponent implements OnChanges {
     @Input() viewportId!: UUID;

@@ -11,6 +11,7 @@ import { createSelectVehicle } from 'src/app/state/application/selectors/exercis
     selector: 'app-vehicle-available-slots-display',
     templateUrl: './vehicle-available-slots-display.component.html',
     styleUrls: ['./vehicle-available-slots-display.component.scss'],
+    standalone: false,
 })
 export class VehicleAvailableSlotsDisplayComponent implements OnChanges {
     @Input()

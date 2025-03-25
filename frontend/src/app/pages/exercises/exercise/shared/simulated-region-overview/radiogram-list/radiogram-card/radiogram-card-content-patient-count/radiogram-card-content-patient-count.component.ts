@@ -14,6 +14,7 @@ import {
     selector: 'app-radiogram-card-content-patient-count',
     templateUrl: './radiogram-card-content-patient-count.component.html',
     styleUrls: ['./radiogram-card-content-patient-count.component.scss'],
+    standalone: false,
 })
 export class RadiogramCardContentPatientCountComponent implements OnInit {
     @Input() radiogramId!: UUID;

@@ -11,6 +11,7 @@ import { createSelectSimulatedRegion } from 'src/app/state/application/selectors
     selector: 'app-simulated-region-name',
     templateUrl: './simulated-region-name.component.html',
     styleUrls: ['./simulated-region-name.component.scss'],
+    standalone: false,
 })
 export class SimulatedRegionNameComponent implements OnInit {
     @Input() simulatedRegionId!: UUID;

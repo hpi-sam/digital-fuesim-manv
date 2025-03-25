@@ -4,6 +4,7 @@ import type { CanCaterFor } from 'digital-fuesim-manv-shared';
 
 @Pipe({
     name: 'caterCapacityCount',
+    standalone: false,
 })
 export class CaterCapacityCountPipe implements PipeTransform {
     transform(canCaterFor: CanCaterFor): number {

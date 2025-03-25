@@ -25,6 +25,7 @@ import {
     selector: 'app-simulated-region-overview-behavior-report',
     templateUrl: './simulated-region-overview-behavior-report.component.html',
     styleUrls: ['./simulated-region-overview-behavior-report.component.scss'],
+    standalone: false,
 })
 export class SimulatedRegionOverviewBehaviorReportComponent implements OnInit {
     @Input() simulatedRegionId!: UUID;

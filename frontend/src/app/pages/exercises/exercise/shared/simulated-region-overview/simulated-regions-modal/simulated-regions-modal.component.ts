@@ -13,6 +13,7 @@ import { selectSimulatedRegions } from 'src/app/state/application/selectors/exer
     templateUrl: './simulated-regions-modal.component.html',
     styleUrls: ['./simulated-regions-modal.component.scss'],
     encapsulation: ViewEncapsulation.None,
+    standalone: false,
 })
 export class SimulatedRegionsModalComponent implements OnInit {
     simulatedRegionIds$!: Observable<UUID[]>;

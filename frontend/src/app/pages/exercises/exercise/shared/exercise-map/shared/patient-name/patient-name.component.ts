@@ -11,6 +11,7 @@ import { createSelectPatient } from 'src/app/state/application/selectors/exercis
     selector: 'app-patient-name',
     templateUrl: './patient-name.component.html',
     styleUrls: ['./patient-name.component.scss'],
+    standalone: false,
 })
 export class PatientNameComponent implements OnInit {
     @Input() patientId!: UUID;

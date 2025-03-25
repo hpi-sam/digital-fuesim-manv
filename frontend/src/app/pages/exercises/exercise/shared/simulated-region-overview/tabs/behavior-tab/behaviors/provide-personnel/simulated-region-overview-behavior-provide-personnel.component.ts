@@ -23,6 +23,7 @@ import type { CdkDragDrop } from '@angular/cdk/drag-drop';
     styleUrls: [
         './simulated-region-overview-behavior-provide-personnel.component.scss',
     ],
+    standalone: false,
 })
 export class SimulatedRegionOverviewBehaviorProvidePersonnelComponent
     implements OnInit, OnDestroy

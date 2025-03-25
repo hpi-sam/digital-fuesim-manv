@@ -33,6 +33,7 @@ const unavailableClient = Client.create('Unbekannt', 'participant');
     selector: 'app-radiogram-card',
     templateUrl: './radiogram-card.component.html',
     styleUrls: ['./radiogram-card.component.scss'],
+    standalone: false,
 })
 export class RadiogramCardComponent implements OnInit {
     @Input() radiogramId!: UUID;

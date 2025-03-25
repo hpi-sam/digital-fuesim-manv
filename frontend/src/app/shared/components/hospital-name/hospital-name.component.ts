@@ -11,6 +11,7 @@ import { createSelectHospital } from 'src/app/state/application/selectors/exerci
     selector: 'app-hospital-name',
     templateUrl: './hospital-name.component.html',
     styleUrls: ['./hospital-name.component.scss'],
+    standalone: false,
 })
 export class HospitalNameComponent implements OnChanges {
     @Input() hospitalId!: UUID;

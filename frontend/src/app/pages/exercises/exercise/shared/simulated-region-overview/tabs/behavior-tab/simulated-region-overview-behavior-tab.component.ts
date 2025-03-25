@@ -27,6 +27,7 @@ let globalLastBehaviorType: ExerciseSimulationBehaviorType | undefined;
     selector: 'app-simulated-region-overview-behavior-tab',
     templateUrl: './simulated-region-overview-behavior-tab.component.html',
     styleUrls: ['./simulated-region-overview-behavior-tab.component.scss'],
+    standalone: false,
 })
 export class SimulatedRegionOverviewBehaviorTabComponent
     implements OnChanges, OnInit

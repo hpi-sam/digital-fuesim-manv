@@ -11,6 +11,7 @@ import { createSelectRadiogram } from 'src/app/state/application/selectors/exerc
     selector: 'app-radiogram-card-content-transfer-counts',
     templateUrl: './radiogram-card-content-transfer-counts.component.html',
     styleUrls: ['./radiogram-card-content-transfer-counts.component.scss'],
+    standalone: false,
 })
 export class RadiogramCardContentTransferCountsComponent implements OnInit {
     /**

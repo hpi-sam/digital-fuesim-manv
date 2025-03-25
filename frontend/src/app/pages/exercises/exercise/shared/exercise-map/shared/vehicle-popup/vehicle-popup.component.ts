@@ -12,6 +12,7 @@ import { PopupService } from '../../utility/popup.service';
     selector: 'app-vehicle-popup',
     templateUrl: './vehicle-popup.component.html',
     styleUrls: ['./vehicle-popup.component.scss'],
+    standalone: false,
 })
 export class VehiclePopupComponent implements OnInit {
     // These properties are only set after OnInit

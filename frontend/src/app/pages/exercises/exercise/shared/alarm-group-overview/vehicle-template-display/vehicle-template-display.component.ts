@@ -11,6 +11,7 @@ import { createSelectVehicleTemplate } from 'src/app/state/application/selectors
     selector: 'app-vehicle-template-display',
     templateUrl: './vehicle-template-display.component.html',
     styleUrls: ['./vehicle-template-display.component.scss'],
+    standalone: false,
 })
 export class VehicleTemplateDisplayComponent implements OnChanges {
     @Input() vehicleTemplateId!: UUID;

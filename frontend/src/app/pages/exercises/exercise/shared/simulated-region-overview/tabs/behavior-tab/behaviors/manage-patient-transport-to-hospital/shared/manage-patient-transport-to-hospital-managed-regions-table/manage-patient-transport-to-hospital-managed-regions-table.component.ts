@@ -24,6 +24,7 @@ import {
     styleUrls: [
         './manage-patient-transport-to-hospital-managed-regions-table.component.scss',
     ],
+    standalone: false,
 })
 export class ManagePatientTransportToHospitalManagedRegionsTableComponent
     implements OnChanges

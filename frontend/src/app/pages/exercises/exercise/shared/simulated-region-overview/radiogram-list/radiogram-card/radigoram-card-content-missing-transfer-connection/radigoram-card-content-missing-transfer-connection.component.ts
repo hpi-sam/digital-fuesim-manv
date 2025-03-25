@@ -18,6 +18,7 @@ import {
     styleUrls: [
         './radigoram-card-content-missing-transfer-connection.component.scss',
     ],
+    standalone: false,
 })
 export class RadigoramCardContentMissingTransferConnectionComponent
     implements OnInit

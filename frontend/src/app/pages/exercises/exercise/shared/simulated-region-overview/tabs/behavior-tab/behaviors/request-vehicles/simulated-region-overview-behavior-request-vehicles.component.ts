@@ -30,6 +30,7 @@ type RequestTargetOption = UUID | 'trainees';
     styleUrls: [
         './simulated-region-overview-behavior-request-vehicles.component.scss',
     ],
+    standalone: false,
 })
 export class RequestVehiclesComponent implements OnChanges {
     @Input() simulatedRegionId!: UUID;

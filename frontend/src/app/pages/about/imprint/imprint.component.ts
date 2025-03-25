@@ -4,5 +4,6 @@ import { Component } from '@angular/core';
     selector: 'app-imprint',
     templateUrl: './imprint.component.html',
     styleUrls: ['./imprint.component.scss'],
+    standalone: false,
 })
 export class ImprintComponent {}

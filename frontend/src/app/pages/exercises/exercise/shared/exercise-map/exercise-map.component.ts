@@ -25,6 +25,7 @@ import { PopupService } from './utility/popup.service';
     selector: 'app-exercise-map',
     templateUrl: './exercise-map.component.html',
     styleUrls: ['./exercise-map.component.scss'],
+    standalone: false,
 })
 export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
     @ViewChild('openLayersContainer')

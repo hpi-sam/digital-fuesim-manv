@@ -12,6 +12,7 @@ const behaviorIconMap: { [Key in BehaviourCode]: string } = {
 
 @Pipe({
     name: 'patientBehaviorIcon',
+    standalone: false,
 })
 export class PatientBehaviorIconPipe implements PipeTransform {
     transform(value: BehaviourCode): string {

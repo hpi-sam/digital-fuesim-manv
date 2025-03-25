@@ -11,6 +11,7 @@ import { selectHospitals } from 'src/app/state/application/selectors/exercise.se
     selector: 'app-hospital-editor-modal',
     templateUrl: './hospital-editor-modal.component.html',
     styleUrls: ['./hospital-editor-modal.component.scss'],
+    standalone: false,
 })
 export class HospitalEditorModalComponent {
     public hospitals$ = this.store.select(selectHospitals);

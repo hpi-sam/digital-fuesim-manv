@@ -16,6 +16,7 @@ import {
     selector: 'app-transfer-hospitals-tab',
     templateUrl: './transfer-hospitals-tab.component.html',
     styleUrls: ['./transfer-hospitals-tab.component.scss'],
+    standalone: false,
 })
 export class TransferHospitalsTabComponent implements OnInit {
     @Input() public transferPointId!: UUID;

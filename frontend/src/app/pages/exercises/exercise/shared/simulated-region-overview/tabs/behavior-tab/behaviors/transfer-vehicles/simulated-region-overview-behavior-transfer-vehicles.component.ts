@@ -46,6 +46,7 @@ let globalLastTransferCollapsed = true;
     styleUrls: [
         './simulated-region-overview-behavior-transfer-vehicles.component.scss',
     ],
+    standalone: false,
 })
 export class SimulatedRegionOverviewBehaviorTransferVehiclesComponent
     implements OnInit, OnDestroy

@@ -6,6 +6,7 @@ import { CanCaterFor } from 'digital-fuesim-manv-shared';
     selector: 'app-cater-capacity',
     templateUrl: './cater-capacity.component.html',
     styleUrls: ['./cater-capacity.component.scss'],
+    standalone: false,
 })
 export class CaterCapacityComponent {
     @Input() canCaterFor!: CanCaterFor;

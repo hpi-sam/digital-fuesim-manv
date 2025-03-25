@@ -1,4 +1,3 @@
-import '@angular/localize/init';
 import type { OnDestroy, OnInit } from '@angular/core';
 import { Component, Input } from '@angular/core';
 import { createSelector, Store } from '@ngrx/store';
@@ -21,6 +20,7 @@ import {
     styleUrls: [
         './simulated-region-overview-behavior-treat-patients-patient-details.component.scss',
     ],
+    standalone: false,
 })
 export class SimulatedRegionOverviewBehaviorTreatPatientsPatientDetailsComponent
     implements OnInit, OnDestroy

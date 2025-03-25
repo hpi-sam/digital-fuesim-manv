@@ -12,6 +12,7 @@ import { StartTransferService } from '../../../start-transfer.service';
     styleUrls: [
         './simulated-region-overview-patient-interaction-bar.component.scss',
     ],
+    standalone: false,
 })
 export class SimulatedRegionOverviewPatientInteractionBarComponent {
     @Input() patientId!: UUID;

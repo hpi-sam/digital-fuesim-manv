@@ -17,6 +17,7 @@ import { selectCurrentRole } from 'src/app/state/application/selectors/shared.se
     selector: 'app-patients-details',
     templateUrl: './patients-details.component.html',
     styleUrls: ['./patients-details.component.scss'],
+    standalone: false,
 })
 export class PatientsDetailsComponent implements OnChanges {
     @Input() patientId!: UUID;

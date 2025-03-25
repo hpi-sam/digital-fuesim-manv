@@ -14,6 +14,7 @@ import {
     selector: 'app-hospital-patients-table',
     templateUrl: './hospital-patients-table.component.html',
     styleUrls: ['./hospital-patients-table.component.scss'],
+    standalone: false,
 })
 export class HospitalPatientsTableComponent {
     constructor(public readonly store: Store<AppState>) {}

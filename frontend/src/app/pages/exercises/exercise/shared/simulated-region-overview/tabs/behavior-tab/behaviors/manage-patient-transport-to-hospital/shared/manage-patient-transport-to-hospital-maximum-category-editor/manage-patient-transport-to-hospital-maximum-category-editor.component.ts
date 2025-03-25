@@ -16,6 +16,7 @@ import { createSelectBehaviorState } from 'src/app/state/application/selectors/e
     styleUrls: [
         './manage-patient-transport-to-hospital-maximum-category-editor.component.scss',
     ],
+    standalone: false,
 })
 export class ManagePatientTransportToHospitalMaximumCategoryEditorComponent
     implements OnChanges

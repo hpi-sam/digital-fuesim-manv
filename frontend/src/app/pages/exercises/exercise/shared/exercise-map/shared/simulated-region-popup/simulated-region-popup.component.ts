@@ -14,6 +14,7 @@ import { PopupService } from '../../utility/popup.service';
     selector: 'app-simulated-region-popup',
     templateUrl: './simulated-region-popup.component.html',
     styleUrls: ['./simulated-region-popup.component.scss'],
+    standalone: false,
 })
 export class SimulatedRegionPopupComponent implements OnInit {
     // These properties are only set after OnInit

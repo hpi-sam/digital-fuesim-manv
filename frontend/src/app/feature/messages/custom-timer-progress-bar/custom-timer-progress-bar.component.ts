@@ -46,6 +46,7 @@ import type { SimpleChangesGeneric } from 'src/app/shared/types/simple-changes-g
         ]),
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class CustomTimerProgressBarComponent implements OnChanges, OnDestroy {
     @Input() timer!: CustomTimer;

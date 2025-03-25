@@ -31,6 +31,7 @@ let activeNavId: NavIds = 'general';
     templateUrl: './simulated-region-overview.component.html',
     styleUrls: ['./simulated-region-overview.component.scss'],
     encapsulation: ViewEncapsulation.None,
+    standalone: false,
 })
 export class SimulatedRegionOverviewGeneralComponent
     implements OnInit, OnDestroy

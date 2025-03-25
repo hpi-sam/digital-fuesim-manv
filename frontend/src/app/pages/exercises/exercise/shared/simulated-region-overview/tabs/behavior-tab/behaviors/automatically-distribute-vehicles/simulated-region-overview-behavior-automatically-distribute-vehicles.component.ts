@@ -24,6 +24,7 @@ import {
     styleUrls: [
         './simulated-region-overview-behavior-automatically-distribute-vehicles.component.scss',
     ],
+    standalone: false,
 })
 export class SimulatedRegionOverviewBehaviorAutomaticallyDistributeVehiclesComponent
     implements OnInit

@@ -20,6 +20,7 @@ import { selectCurrentRole } from 'src/app/state/application/selectors/shared.se
     selector: 'app-patient-health-point-display',
     templateUrl: './patient-health-point-display.component.html',
     styleUrls: ['./patient-health-point-display.component.scss'],
+    standalone: false,
 })
 export class PatientHealthPointDisplayComponent implements OnInit {
     @Input() patientId!: UUID;

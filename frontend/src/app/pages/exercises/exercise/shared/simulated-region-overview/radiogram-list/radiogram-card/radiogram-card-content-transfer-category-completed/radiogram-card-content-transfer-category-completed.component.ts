@@ -14,6 +14,7 @@ import { createSelectRadiogram } from 'src/app/state/application/selectors/exerc
     styleUrls: [
         './radiogram-card-content-transfer-category-completed.component.scss',
     ],
+    standalone: false,
 })
 export class RadiogramCardContentTransferCategoryCompletedComponent
     implements OnInit

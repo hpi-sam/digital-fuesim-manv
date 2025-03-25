@@ -11,6 +11,7 @@ import { createSelectRadiogram } from 'src/app/state/application/selectors/exerc
     selector: 'app-radiogram-card-content-vehicle-count',
     templateUrl: './radiogram-card-content-vehicle-count.component.html',
     styleUrls: ['./radiogram-card-content-vehicle-count.component.scss'],
+    standalone: false,
 })
 export class RadiogramCardContentVehicleCountComponent implements OnInit {
     @Input() radiogramId!: UUID;

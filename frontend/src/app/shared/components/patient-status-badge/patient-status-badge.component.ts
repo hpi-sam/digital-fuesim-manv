@@ -5,6 +5,7 @@ import { PatientStatus, statusNames } from 'digital-fuesim-manv-shared';
     selector: 'app-patient-status-badge',
     templateUrl: './patient-status-badge.component.html',
     styleUrls: ['./patient-status-badge.component.scss'],
+    standalone: false,
 })
 export class PatientStatusBadgeComponent {
     @Input() status!: PatientStatus;

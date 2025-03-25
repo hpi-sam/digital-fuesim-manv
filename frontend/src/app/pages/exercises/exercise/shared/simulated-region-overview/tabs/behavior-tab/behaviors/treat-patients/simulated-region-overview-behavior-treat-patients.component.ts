@@ -31,6 +31,7 @@ let globalLastInformationCollapsed = true;
     styleUrls: [
         './simulated-region-overview-behavior-treat-patients.component.scss',
     ],
+    standalone: false,
 })
 export class SimulatedRegionOverviewBehaviorTreatPatientsComponent
     implements OnInit

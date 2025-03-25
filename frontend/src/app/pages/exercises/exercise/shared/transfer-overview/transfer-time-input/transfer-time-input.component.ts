@@ -9,6 +9,7 @@ import { selectCurrentTime } from 'src/app/state/application/selectors/exercise.
     selector: 'app-transfer-time-input',
     templateUrl: './transfer-time-input.component.html',
     styleUrls: ['./transfer-time-input.component.scss'],
+    standalone: false,
 })
 export class TransferTimeInputComponent {
     @Input() elementType!: 'personnel' | 'vehicle';

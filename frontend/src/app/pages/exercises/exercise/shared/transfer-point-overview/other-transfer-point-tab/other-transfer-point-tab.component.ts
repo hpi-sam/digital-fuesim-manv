@@ -15,6 +15,7 @@ import {
     selector: 'app-other-transfer-point-tab',
     templateUrl: './other-transfer-point-tab.component.html',
     styleUrls: ['./other-transfer-point-tab.component.scss'],
+    standalone: false,
 })
 export class OtherTransferPointTabComponent implements OnInit {
     @Input() public transferPointId!: UUID;

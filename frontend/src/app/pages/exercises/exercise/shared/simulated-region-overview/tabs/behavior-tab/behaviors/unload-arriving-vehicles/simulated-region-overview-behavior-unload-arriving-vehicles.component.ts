@@ -24,6 +24,7 @@ import {
     styleUrls: [
         './simulated-region-overview-behavior-unload-arriving-vehicles.component.scss',
     ],
+    standalone: false,
 })
 export class SimulatedRegionOverviewBehaviorUnloadArrivingVehiclesComponent
     implements OnInit

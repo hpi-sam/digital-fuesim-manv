@@ -14,6 +14,7 @@ import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
     selector: 'app-alarm-group-item',
     templateUrl: './alarm-group-item.component.html',
     styleUrls: ['./alarm-group-item.component.scss'],
+    standalone: false,
 })
 export class AlarmGroupItemComponent {
     @Input() alarmGroup!: AlarmGroup;

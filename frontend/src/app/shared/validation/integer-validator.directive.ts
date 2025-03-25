@@ -12,6 +12,7 @@ import { CustomValidators } from './custom-validators';
             multi: true,
         },
     ],
+    standalone: false,
 })
 export class IntegerValidatorDirective implements Validator {
     private readonly validator = CustomValidators.integerValidator();

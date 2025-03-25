@@ -10,6 +10,7 @@ import { createSelectAlarmGroup } from 'src/app/state/application/selectors/exer
     selector: 'app-start-point-name',
     templateUrl: './start-point-name.component.html',
     styleUrls: ['./start-point-name.component.scss'],
+    standalone: false,
 })
 export class StartPointNameComponent implements OnChanges {
     @Input() startPoint!: StartPoint;

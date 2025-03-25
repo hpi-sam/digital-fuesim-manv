@@ -11,6 +11,7 @@ import { createSelectTransferPoint } from 'src/app/state/application/selectors/e
     selector: 'app-transfer-point-name',
     templateUrl: './transfer-point-name.component.html',
     styleUrls: ['./transfer-point-name.component.scss'],
+    standalone: false,
 })
 export class TransferPointNameComponent implements OnChanges {
     @Input() transferPointId!: UUID;

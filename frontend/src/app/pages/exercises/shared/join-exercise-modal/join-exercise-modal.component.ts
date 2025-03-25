@@ -8,6 +8,7 @@ import { ApplicationService } from 'src/app/core/application.service';
     selector: 'app-join-exercise-modal',
     templateUrl: './join-exercise-modal.component.html',
     styleUrls: ['./join-exercise-modal.component.scss'],
+    standalone: false,
 })
 export class JoinExerciseModalComponent implements OnDestroy {
     public exerciseId!: string;

@@ -23,6 +23,7 @@ import {
     styleUrls: [
         './manage-patient-transport-to-hospital-vehicles-for-categories-editor.component.scss',
     ],
+    standalone: false,
 })
 export class ManagePatientTransportToHospitalVehiclesForCategoriesEditorComponent
     implements OnChanges

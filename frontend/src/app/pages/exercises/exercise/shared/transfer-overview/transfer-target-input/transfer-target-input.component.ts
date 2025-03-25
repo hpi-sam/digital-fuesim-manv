@@ -9,6 +9,7 @@ import { selectTransferPoints } from 'src/app/state/application/selectors/exerci
     selector: 'app-transfer-target-input',
     templateUrl: './transfer-target-input.component.html',
     styleUrls: ['./transfer-target-input.component.scss'],
+    standalone: false,
 })
 export class TransferTargetInputComponent {
     @Input() elementType!: 'personnel' | 'vehicle';

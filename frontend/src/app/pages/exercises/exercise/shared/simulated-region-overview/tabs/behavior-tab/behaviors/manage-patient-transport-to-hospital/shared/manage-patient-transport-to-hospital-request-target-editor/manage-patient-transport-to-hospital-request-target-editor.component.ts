@@ -22,6 +22,7 @@ import {
     styleUrls: [
         './manage-patient-transport-to-hospital-request-target-editor.component.scss',
     ],
+    standalone: false,
 })
 export class ManagePatientTransportToHospitalRequestTargetEditorComponent
     implements OnChanges

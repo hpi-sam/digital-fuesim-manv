@@ -12,6 +12,7 @@ import { createSelectVehicle } from 'src/app/state/application/selectors/exercis
     selector: 'app-vehicle-name-editor',
     templateUrl: './vehicle-name-editor.component.html',
     styleUrls: ['./vehicle-name-editor.component.scss'],
+    standalone: false,
 })
 export class VehicleNameEditorComponent implements OnChanges {
     @Input()

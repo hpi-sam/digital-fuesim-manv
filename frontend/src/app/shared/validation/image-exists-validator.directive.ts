@@ -12,6 +12,7 @@ import { getImageAspectRatio } from '../functions/get-image-aspect-ratio';
             multi: true,
         },
     ],
+    standalone: false,
 })
 export class ImageExistsValidatorDirective implements AsyncValidator {
     async validate(

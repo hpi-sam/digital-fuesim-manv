@@ -19,6 +19,7 @@ import { selectCurrentRole } from 'src/app/state/application/selectors/shared.se
     selector: 'app-vehicle-load-unload-controls',
     templateUrl: './vehicle-load-unload-controls.component.html',
     styleUrls: ['./vehicle-load-unload-controls.component.scss'],
+    standalone: false,
 })
 export class VehicleLoadUnloadControlsComponent implements OnChanges {
     @Input()

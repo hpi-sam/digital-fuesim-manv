@@ -16,6 +16,7 @@ import type { PatientWithVisibleStatus } from '../../../patients-table/simulated
     selector: 'app-simulated-region-overview-patients-tab',
     templateUrl: './simulated-region-overview-patients-tab.component.html',
     styleUrls: ['./simulated-region-overview-patients-tab.component.scss'],
+    standalone: false,
 })
 export class SimulatedRegionOverviewPatientsTabComponent implements OnInit {
     @Input() simulatedRegion!: SimulatedRegion;

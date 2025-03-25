@@ -12,6 +12,7 @@ import { createSelectRadiogram } from 'src/app/state/application/selectors/exerc
     selector: 'app-radigoram-card-content-resource-request',
     templateUrl: './radigoram-card-content-resource-request.component.html',
     styleUrls: ['./radigoram-card-content-resource-request.component.scss'],
+    standalone: false,
 })
 export class RadigoramCardContentResourceRequestComponent implements OnInit {
     @Input() radiogramId!: UUID;
