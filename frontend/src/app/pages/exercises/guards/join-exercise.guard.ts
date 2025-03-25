@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import type {
     ActivatedRouteSnapshot,
-    CanActivate,
     RouterStateSnapshot,
 } from '@angular/router';
 import { Router } from '@angular/router';
@@ -17,7 +16,7 @@ import { tryToJoinExercise } from '../shared/join-exercise-modal/try-to-join-exe
 @Injectable({
     providedIn: 'root',
 })
-export class JoinExerciseGuard implements CanActivate {
+export class JoinExerciseGuard {
     constructor(
         private readonly ngbModalService: NgbModal,
         private readonly router: Router,
