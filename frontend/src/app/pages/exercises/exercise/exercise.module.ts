@@ -1,5 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
+import {
+    provideHttpClient,
+    withInterceptorsFromDi,
+} from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
@@ -37,12 +40,12 @@ import { CoordinatePickerModule } from './shared/coordinate-picker/coordinate-pi
         EditImageTemplateModalComponent,
         ImageTemplateFormComponent,
     ],
+    exports: [ExerciseComponent],
     imports: [
         CommonModule,
         SharedModule,
         NgbDropdownModule,
         FormsModule,
-        HttpClientModule,
         ClientOverviewModule,
         ExerciseStatisticsModule,
         ExerciseMapModule,
@@ -53,6 +56,6 @@ import { CoordinatePickerModule } from './shared/coordinate-picker/coordinate-pi
         CoordinatePickerModule,
         NgbTooltipModule,
     ],
-    exports: [ExerciseComponent],
+    providers: [provideHttpClient(withInterceptorsFromDi())],
 })
 export class ExerciseModule {}

@@ -4,6 +4,7 @@
     "compileOnSave": false,
     "compilerOptions": {
         "moduleResolution": "node",
+        "esModuleInterop": true,
         "baseUrl": "./",
         "outDir": "./dist/out-tsc",
         "lib": ["ES2022", "dom"],
