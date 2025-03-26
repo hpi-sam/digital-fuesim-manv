@@ -1,4 +1,4 @@
-import produce from 'immer';
+import { produce } from 'immer';
 import type { ExerciseState } from '../state';
 import type { Mutable } from '../utils';
 import { sleep } from '../utils';
