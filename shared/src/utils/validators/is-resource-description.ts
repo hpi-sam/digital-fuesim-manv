@@ -23,7 +23,7 @@ export function isResourceDescription<Key extends string>(
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export function IsResourceDescription<
     Key extends string,
-    Each extends boolean = false
+    Each extends boolean = false,
 >(
     keyAllowedValues?: AllowedValues<Key>,
     validationOptions?: ValidationOptions & { each?: Each }

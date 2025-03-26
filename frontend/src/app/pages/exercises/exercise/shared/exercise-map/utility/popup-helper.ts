@@ -14,7 +14,10 @@ import type { OpenPopupOptions } from './popup-manager';
  * This class is a helper with a workaround to get the bounding box of the style.
  */
 export class ImagePopupHelper {
-    constructor(private readonly olMap: OlMap, public readonly layer: Layer) {}
+    constructor(
+        private readonly olMap: OlMap,
+        public readonly layer: Layer
+    ) {}
 
     /**
      * @param feature the feature in {@link layer} next to which the popup should be opened

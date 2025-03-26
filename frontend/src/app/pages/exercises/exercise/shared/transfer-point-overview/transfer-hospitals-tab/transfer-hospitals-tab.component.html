@@ -14,7 +14,7 @@
                 *ngFor="
                     let reachableHospital of reachableHospitals$ | async;
                     trackBy: 'id'
-                        | appTrackByProperty : (reachableHospitals$ | async)
+                        | appTrackByProperty: (reachableHospitals$ | async)
                 "
                 class="list-group-item d-flex align-items-center flex-nowrap p-0"
             >
@@ -64,7 +64,7 @@
                     let hospital of hospitalsToBeAdded$
                         | async
                         | values
-                        | orderBy : getHospitalOrderByValue;
+                        | orderBy: getHospitalOrderByValue;
                     trackBy: 'id'
                         | appTrackByProperty
                             : (hospitalsToBeAdded$ | async | values)

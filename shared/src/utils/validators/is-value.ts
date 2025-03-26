@@ -12,7 +12,7 @@ import { makeValidator } from './make-validator';
  * @returns Whether the values are identical.
  */
 export function isValue<
-    T extends bigint | boolean | number | string | symbol | null | undefined
+    T extends bigint | boolean | number | string | symbol | null | undefined,
 >(expectedValue: T, valueToBeValidated: unknown): boolean {
     return isIn(valueToBeValidated, [expectedValue]);
 }
@@ -31,7 +31,7 @@ export function isValue<
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export function IsValue<
     T extends bigint | boolean | number | string | symbol | null | undefined,
-    Each extends boolean = false
+    Each extends boolean = false,
 >(
     expectedValue: T,
     validationOptions?: ValidationOptions & { each?: Each }

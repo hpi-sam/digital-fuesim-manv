@@ -24,8 +24,8 @@ export const createNewDataSource = (mode: DataSourceMode = 'default') => {
                 ? // This database probably always exists
                   'postgres'
                 : mode === 'default'
-                ? defaultDatabaseName
-                : testingDatabaseName,
+                  ? defaultDatabaseName
+                  : testingDatabaseName,
         entities: [ActionWrapperEntity, ExerciseWrapperEntity],
         migrations: [
             AddExerciseAndActions1653554608164,

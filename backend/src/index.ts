@@ -30,9 +30,8 @@ async function main() {
         try {
             console.log('Loading exercises from database…');
             const startTime = performance.now();
-            const exercises = await ExerciseWrapper.restoreAllExercises(
-                databaseService
-            );
+            const exercises =
+                await ExerciseWrapper.restoreAllExercises(databaseService);
             const endTime = performance.now();
             console.log(
                 `✅ Successfully loaded ${exercises.length} exercise(s) in ${(

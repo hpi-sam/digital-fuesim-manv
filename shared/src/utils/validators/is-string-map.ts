@@ -20,7 +20,7 @@ export function IsStringMap<T extends object, Each extends boolean = false>(
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export function IsMultiTypedStringMap<
     T extends Constructor,
-    Each extends boolean = false
+    Each extends boolean = false,
 >(
     getConstructor: (value: InstanceType<T>) => T | undefined,
     keyValidator: (key: string, plain: InstanceType<T>) => boolean,

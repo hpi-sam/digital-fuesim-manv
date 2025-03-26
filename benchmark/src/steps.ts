@@ -183,7 +183,7 @@ export const steps: Step<StepState>[] = [
                 (
                     StrictObject.entries(sortedTotalTimePerAction) as [
                         ExerciseAction['type'],
-                        number
+                        number,
                     ][]
                 )
                     .map(([type, time]) => `${type}: ${time.toFixed(2)}ms`)
@@ -247,7 +247,7 @@ export const steps: Step<StepState>[] = [
                 (
                     StrictObject.entries(sortedNumberOfActionsPerType) as [
                         ExerciseAction['type'],
-                        number
+                        number,
                     ][]
                 )
                     .map(([type, amount]) => `${type}: ${amount}`)

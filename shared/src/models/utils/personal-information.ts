@@ -59,8 +59,8 @@ function generateName(sex: Sex) {
         sex === 'male'
             ? maleFirstNames
             : sex === 'female'
-            ? femaleFirstNames
-            : unisexNames;
+              ? femaleFirstNames
+              : unisexNames;
     const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
     const surname = surnames[Math.floor(Math.random() * surnames.length)];
     return `${firstName} ${surname}`;

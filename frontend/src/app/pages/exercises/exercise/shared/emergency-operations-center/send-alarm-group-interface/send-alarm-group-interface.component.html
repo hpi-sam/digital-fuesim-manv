@@ -7,7 +7,7 @@
                 transferPoints$
                     | async
                     | values
-                    | orderBy : getTransferPointOrderByValue as transferPoints
+                    | orderBy: getTransferPointOrderByValue as transferPoints
             "
             class="d-flex flex-row justify-content-end"
         >
@@ -65,7 +65,7 @@
             <button
                 *ngFor="
                     let alarmGroup of alarmGroups;
-                    trackBy: 'id' | appTrackByProperty : alarmGroups
+                    trackBy: 'id' | appTrackByProperty: alarmGroups
                 "
                 [disabled]="!targetTransferPointId"
                 (click)="sendAlarmGroup(alarmGroup)"

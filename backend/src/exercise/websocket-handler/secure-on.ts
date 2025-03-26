@@ -21,7 +21,7 @@ export function secureOn<
         SocketReservedEventsMap,
         ClientToServerEvents,
         Ev
-    >
+    >,
 >(client: ExerciseSocket, event: Ev, listener: Callback) {
     client.on(event, (async (
         arg0: any,

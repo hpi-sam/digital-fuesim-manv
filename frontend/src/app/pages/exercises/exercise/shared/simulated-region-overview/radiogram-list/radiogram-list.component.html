@@ -37,8 +37,7 @@
         <app-radiogram-card
             *ngFor="
                 let radiogram of visibleRadiograms$ | async;
-                trackBy: 'id'
-                    | appTrackByProperty : (visibleRadiograms$ | async)
+                trackBy: 'id' | appTrackByProperty: (visibleRadiograms$ | async)
             "
             [radiogramId]="radiogram.id"
         ></app-radiogram-card>

@@ -7,7 +7,7 @@
                 *ngFor="
                     let vehicleGroup of groupedVehicles$ | async;
                     trackBy: 'vehicleType'
-                        | appTrackByProperty : (groupedVehicles$ | async)
+                        | appTrackByProperty: (groupedVehicles$ | async)
                 "
                 class="table table-striped table-hover"
             >
@@ -21,7 +21,7 @@
                         *ngFor="
                             let vehicle of vehicleGroup.vehicles;
                             trackBy: 'id'
-                                | appTrackByProperty : vehicleGroup.vehicles
+                                | appTrackByProperty: vehicleGroup.vehicles
                         "
                         style="cursor: pointer"
                         (click)="selectVehicle(vehicle.id)"

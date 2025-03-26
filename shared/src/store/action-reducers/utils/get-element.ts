@@ -17,7 +17,7 @@ import { ReducerError } from '../../reducer-error';
  */
 export function getElement<
     ElementType extends keyof ElementTypePluralMap,
-    State extends ExerciseState | Mutable<ExerciseState>
+    State extends ExerciseState | Mutable<ExerciseState>,
 >(state: State, elementType: ElementType, elementId: UUID) {
     const element = tryGetElement(state, elementType, elementId);
     if (!element) {
@@ -33,7 +33,7 @@ export function getElement<
  */
 export function tryGetElement<
     ElementType extends keyof ElementTypePluralMap,
-    State extends ExerciseState | Mutable<ExerciseState>
+    State extends ExerciseState | Mutable<ExerciseState>,
 >(state: State, elementType: ElementType, elementId: UUID) {
     return state[elementTypePluralMap[elementType]][elementId] as
         | State[ElementTypePluralMap[ElementType]][UUID]
@@ -42,7 +42,7 @@ export function tryGetElement<
 
 export function getElementByPredicate<
     ElementType extends keyof ElementTypePluralMap,
-    State extends Mutable<ExerciseState>
+    State extends Mutable<ExerciseState>,
 >(
     state: State,
     elementType: ElementType,

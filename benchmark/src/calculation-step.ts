@@ -9,7 +9,7 @@ export class CalculationStep<
         [StepName: string]: any | undefined;
     },
     Name extends keyof State = keyof State,
-    Value extends State[Name] = State[Name]
+    Value extends State[Name] = State[Name],
 > extends Step<State> {
     constructor(
         name: Name,

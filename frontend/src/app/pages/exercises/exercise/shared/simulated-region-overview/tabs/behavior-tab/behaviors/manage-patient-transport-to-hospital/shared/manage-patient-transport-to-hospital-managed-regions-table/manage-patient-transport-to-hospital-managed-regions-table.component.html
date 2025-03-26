@@ -36,8 +36,10 @@
                                     else editPatientCount
                                 "
                             >
-                                {{ behaviorState.patientsExpectedInRegions[managedSimulatedRegion.id]?.[patientStatus]
-                        ?? 0
+                                {{
+                                    behaviorState.patientsExpectedInRegions[
+                                        managedSimulatedRegion.id
+                                    ]?.[patientStatus] ?? 0
                                 }}
                             </span>
                             <ng-template #editPatientCount>
@@ -45,7 +47,11 @@
                                     type="number"
                                     class="form-control"
                                     min="0"
-                                    [ngModel]="behaviorState.patientsExpectedInRegions[managedSimulatedRegion.id]?.[patientStatus] ?? 0"
+                                    [ngModel]="
+                                        behaviorState.patientsExpectedInRegions[
+                                            managedSimulatedRegion.id
+                                        ]?.[patientStatus] ?? 0
+                                    "
                                     (appSaveOnTyping)="
                                         updatePatientsExpectedInRegion(
                                             managedSimulatedRegion.id,

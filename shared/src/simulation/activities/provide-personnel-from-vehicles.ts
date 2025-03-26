@@ -98,7 +98,7 @@ export const providePersonnelFromVehiclesActivity: SimulationActivity<ProvidePer
 
             const personnelStillMissing = ([personnelType, personnelCount]: [
                 PersonnelType,
-                number
+                number,
             ]) => personnelCount > availablePersonnel[personnelType];
 
             while (

@@ -11,12 +11,12 @@ _A screenshot of a part of an MCI exercise with initially ca. 50 patients at the
 
 The concept is as follows:
 
--   A _trainer_ creates an exercise, which consists of _patients_, _vehicles_, _viewports_, _transferPoints_ and other objects placed on a map.
--   _Participants_ can then join the exercise.
--   The _trainer_ can restrict the participants to a specific _viewport_. The _participant_ cannot move out of this area.
--   _Vehicles_ (containing _material_, _personnel_ and (sometimes) _patients_) can be transferred to other areas via _transferPoints_.
--   After the exercise is started, _patients_ that are not adequately treated by _personnel_ and _material_ can deteriorate and die. The goal of the _participants_ is to prevent the _patients_ from dying and transport them to the _hospitals_. To do this effectively they have to communicate with each other (via real radio devices, or remote via third-party services) and make the right decisions.
--   Afterward, the exercise can be evaluated via statistics and a "time-travel" feature.
+- A _trainer_ creates an exercise, which consists of _patients_, _vehicles_, _viewports_, _transferPoints_ and other objects placed on a map.
+- _Participants_ can then join the exercise.
+- The _trainer_ can restrict the participants to a specific _viewport_. The _participant_ cannot move out of this area.
+- _Vehicles_ (containing _material_, _personnel_ and (sometimes) _patients_) can be transferred to other areas via _transferPoints_.
+- After the exercise is started, _patients_ that are not adequately treated by _personnel_ and _material_ can deteriorate and die. The goal of the _participants_ is to prevent the _patients_ from dying and transport them to the _hospitals_. To do this effectively they have to communicate with each other (via real radio devices, or remote via third-party services) and make the right decisions.
+- Afterward, the exercise can be evaluated via statistics and a "time-travel" feature.
 
 This simulation has been designed in cooperation with and with support from the [Federal Academy for Civil Protection and Civil Defence](https://www.bbk.bund.de/DE/Themen/Akademie-BABZ/akademie-babz_node.html) of the [Federal Office of Civil Protection and Disaster Assistance Germany](https://www.bbk.bund.de/DE/Home/home_node.html), who are the original copyright holders of the analog "FüSim MANV" simulation system, and the [Malteser Hilfsdienst e.V. Berlin](https://www.malteser-berlin.de/) as well as the [Johanniter Akademie NRW, Campus Münster der Johanniter-Unfall-Hilfe e.V.](https://www.johanniter.de/bildungseinrichtungen/johanniter-akademie/johanniter-akademie-nordrhein-westfalen/standorte-der-akademie-in-nordrhein-westfalen/campus-muenster/)
 
@@ -26,12 +26,12 @@ This project is currently developed as a [bachelor project](https://hpi.de/en/st
 
 ## Links for collaborators
 
--   [Internal test scenarios](https://github.com/hpi-sam/digital-fuesim-manv_test-scenarios)
-    -   Used only for private testing
--   [Public test scenarios](https://github.com/hpi-sam/digital-fuesim-manv-public-test-scenarios)
-    -   Used for test scenarios in pipelines, Can also be used for private testing
-    -   For usage see the README.md in that repo
-    -   This repo is also a submodule of this repo. Use `--recurse-submodules` when cloning the repo or `run git submodule update --init --recursive` if you have cloned the repo already to get its contents.
+- [Internal test scenarios](https://github.com/hpi-sam/digital-fuesim-manv_test-scenarios)
+    - Used only for private testing
+- [Public test scenarios](https://github.com/hpi-sam/digital-fuesim-manv-public-test-scenarios)
+    - Used for test scenarios in pipelines, Can also be used for private testing
+    - For usage see the README.md in that repo
+    - This repo is also a submodule of this repo. Use `--recurse-submodules` when cloning the repo or `run git submodule update --init --recursive` if you have cloned the repo already to get its contents.
 
 ## Installation
 
@@ -91,28 +91,28 @@ Note the database requirements depicted in [the installation section](#installat
 
 ### Docker volumes / persistent data
 
--   All important volumes are listed in [the docker-compose file](./docker-compose.yml).
+- All important volumes are listed in [the docker-compose file](./docker-compose.yml).
 
 ### Docker ENVs
 
--   All available Docker ENVs are listed with their default values in [.env.example](./.env.example) file. Copy this file and name it `.env` (under Linux, this would be e.g. `cp .env.example .env`)
+- All available Docker ENVs are listed with their default values in [.env.example](./.env.example) file. Copy this file and name it `.env` (under Linux, this would be e.g. `cp .env.example .env`)
 
 ## Before you commit
 
--   We are using [prettier](https://prettier.io/) as our code formatter. Run it via `npm run prettier` or `npm run prettier:windows` in the root to format all files and make the CI happy. Please use the [vscode extension](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode).
--   We are using [eslint](https://eslint.org/) as our linter. Run it via `npm run lint:fix` in the root to lint (and auto fix if possible) all files. Please use the [vscode extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint).
+- We are using [prettier](https://prettier.io/) as our code formatter. Run it via `npm run prettier` or `npm run prettier:windows` in the root to format all files and make the CI happy. Please use the [vscode extension](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode).
+- We are using [eslint](https://eslint.org/) as our linter. Run it via `npm run lint:fix` in the root to lint (and auto fix if possible) all files. Please use the [vscode extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint).
 
 ## Debugging
 
 There are already the following [debug configurations](https://code.visualstudio.com/docs/editor/debugging) for vscode saved:
 
--   `Launch Frontend [Chrome]`
--   `Launch Frontend [Firefox]` (You have to install an extra extension)
--   `Debug Jest Tests`
+- `Launch Frontend [Chrome]`
+- `Launch Frontend [Firefox]` (You have to install an extra extension)
+- `Debug Jest Tests`
 
 In addition, you can make use of the following browser extensions:
 
--   [Angular DevTools](https://chrome.google.com/webstore/detail/angular-devtools/ienfalfjdbdpebioblfackkekamfmbnh)
+- [Angular DevTools](https://chrome.google.com/webstore/detail/angular-devtools/ienfalfjdbdpebioblfackkekamfmbnh)
 
 ## Testing
 
@@ -130,8 +130,8 @@ We are using [Jest](https://jestjs.io/) for our unit tests.
 
 You can run it during the development
 
--   from the terminal via `npm run test:watch` in the root, `/shared`, `/backend` or `/frontend` folder
--   or via the [recommended vscode extension](https://marketplace.visualstudio.com/items?itemName=Orta.vscode-jest). **(Note: this option is currently broken)**
+- from the terminal via `npm run test:watch` in the root, `/shared`, `/backend` or `/frontend` folder
+- or via the [recommended vscode extension](https://marketplace.visualstudio.com/items?itemName=Orta.vscode-jest). **(Note: this option is currently broken)**
 
 ### End to end tests
 
@@ -150,14 +150,14 @@ Look at the [benchmark readme](./benchmark/README.md) for more information.
 
 ## Styleguide
 
--   names are never unique, ids are
--   Use [StrictObject](shared\src\utils\strict-object.ts) instead of `Object` wherever possible
--   A leading underscore should only be used
-    -   for private properties that may be used with getters/setters
-    -   to resolve certain naming conflicts (e.g. `.some(_item => ...)`)
--   `dependencies` should be used for packages that must be installed when running the app (e.g. `express`), whereas `devDependencies` should be used for packages only required for developing, debugging, building, or testing (e.g. `jest`), which includes all `@types` packages. We try to follow this route even for the frontend and the backend, although it is not important there. See also [this](https://stackoverflow.com/a/22004559) answer on StackOverflow for more information about the differences.
--   Use JSDoc features for further documentation because editors like VSCode can display them better.
-    -   Be aware that JSDoc comments must always go above the Decorator of the class/component/function/variable etc.
+- names are never unique, ids are
+- Use [StrictObject](shared\src\utils\strict-object.ts) instead of `Object` wherever possible
+- A leading underscore should only be used
+    - for private properties that may be used with getters/setters
+    - to resolve certain naming conflicts (e.g. `.some(_item => ...)`)
+- `dependencies` should be used for packages that must be installed when running the app (e.g. `express`), whereas `devDependencies` should be used for packages only required for developing, debugging, building, or testing (e.g. `jest`), which includes all `@types` packages. We try to follow this route even for the frontend and the backend, although it is not important there. See also [this](https://stackoverflow.com/a/22004559) answer on StackOverflow for more information about the differences.
+- Use JSDoc features for further documentation because editors like VSCode can display them better.
+    - Be aware that JSDoc comments must always go above the Decorator of the class/component/function/variable etc.
     ```ts
     /**
      * Here is a description of the class/function/variable/etc.
@@ -167,8 +167,8 @@ Look at the [benchmark readme](./benchmark/README.md) for more information.
      * @throws myError when something goes wrong
      */
     ```
--   You should use the keyword `TODO` to mark things that need to be done later. Whether an issue should be created is an individual decision.
-    -   You are encouraged to add expiration conditions to your TODOs. Eslint will complain as soon as the condition is met. See [here](https://github.com/sindresorhus/eslint-plugin-unicorn/blob/main/docs/rules/expiring-todo-comments.md) for more information.
+- You should use the keyword `TODO` to mark things that need to be done later. Whether an issue should be created is an individual decision.
+    - You are encouraged to add expiration conditions to your TODOs. Eslint will complain as soon as the condition is met. See [here](https://github.com/sindresorhus/eslint-plugin-unicorn/blob/main/docs/rules/expiring-todo-comments.md) for more information.
     ```ts
     // TODO [engine:node@>=8]: We can use async/await now.
     // TODO [typescript@>=4.9]: Use satisfies https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-9.html#the-satisfies-operator
@@ -198,10 +198,10 @@ Upon pushing to `main` or `dev`, GitHub Actions will build and push docker conta
 
 This repository is a monorepo that consists of the following packages:
 
--   [frontend](./frontend) the browser-based client application ([Angular](https://angular.io/))
--   [backend](./backend) the server-side application ([NodeJs](https://nodejs.org/))
--   [benchmark](./benchmark/) benchmarks and tests some parts of the application
--   [shared](./shared) the shared code that is used by the frontend, backend and the benchmark package
+- [frontend](./frontend) the browser-based client application ([Angular](https://angular.io/))
+- [backend](./backend) the server-side application ([NodeJs](https://nodejs.org/))
+- [benchmark](./benchmark/) benchmarks and tests some parts of the application
+- [shared](./shared) the shared code that is used by the frontend, backend and the benchmark package
 
 Each package has its own `README.md` file with additional documentation. Please check them out before you start working on the project.
 
@@ -288,7 +288,7 @@ If you need to read from the state to change it, you should do this inside the a
 
 #### Performance considerations
 
--   Currently, every client maintains the whole state, and every action is sent to all clients. There is no way to only subscribe to a part of the state and only receive updates for that part.
+- Currently, every client maintains the whole state, and every action is sent to all clients. There is no way to only subscribe to a part of the state and only receive updates for that part.
 
 ## Licenses and Attributions
 

@@ -8,7 +8,7 @@ import type { Immutable, JsonObject } from 'digital-fuesim-manv-shared';
  */
 export function handleChanges<
     T extends Immutable<JsonObject>,
-    ImmutableT extends Immutable<T> = Immutable<T>
+    ImmutableT extends Immutable<T> = Immutable<T>,
 >(
     oldDictionary: Readonly<{ [key: string]: ImmutableT }>,
     newDictionary: Readonly<{ [key: string]: ImmutableT }>,

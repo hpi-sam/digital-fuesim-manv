@@ -182,12 +182,12 @@ export class SimulatedRegionOverviewBehaviorTransferVehiclesComponent
                     destination:
                         bufferedTransferEvent.transferDestinationType ===
                         'hospital'
-                            ? hospitals[
+                            ? (hospitals[
                                   bufferedTransferEvent.transferDestinationId
-                              ]?.name ?? 'Gelöschtes Krankenhaus'
-                            : transferPoints[
+                              ]?.name ?? 'Gelöschtes Krankenhaus')
+                            : (transferPoints[
                                   bufferedTransferEvent.transferDestinationId
-                              ]?.externalName ?? 'Gelöschtes Transferziel',
+                              ]?.externalName ?? 'Gelöschtes Transferziel'),
                     numberOfPatients: Object.keys(
                         vehicles[bufferedTransferEvent.vehicleId]?.patientIds ??
                             {}
@@ -256,12 +256,12 @@ export class SimulatedRegionOverviewBehaviorTransferVehiclesComponent
                     destination:
                         activeActivityState.transferDestinationType ===
                         'hospital'
-                            ? hospitals[
+                            ? (hospitals[
                                   activeActivityState.transferDestinationId
-                              ]?.name ?? 'Gelöschtes Krankenhaus'
-                            : transferPoints[
+                              ]?.name ?? 'Gelöschtes Krankenhaus')
+                            : (transferPoints[
                                   activeActivityState.transferDestinationId
-                              ]?.externalName ?? 'Gelöschtes Transferziel',
+                              ]?.externalName ?? 'Gelöschtes Transferziel'),
                     numberOfPatients: Object.keys(
                         activeActivityState.patientsToBeLoaded
                     ).length,

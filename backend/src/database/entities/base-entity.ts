@@ -5,7 +5,7 @@ import { PrimaryGeneratedColumn } from 'typeorm';
 
 export abstract class BaseEntity<
     TSelf extends BaseEntity<TSelf, NormalEntity>,
-    NormalEntity extends NormalType<any, TSelf>
+    NormalEntity extends NormalType<any, TSelf>,
 > {
     @PrimaryGeneratedColumn('uuid')
     @IsUUID(4, uuidValidationOptions)

@@ -17,9 +17,10 @@ export type CustomValidationErrors = Partial<
 
 type CustomValidator = (typeof CustomValidators)[keyof typeof CustomValidators];
 type CustomValidatorFn = ReturnType<CustomValidator>;
-type CustomValidationError = ReturnType<CustomValidatorFn> extends Promise<any>
-    ? Awaited<ReturnType<CustomValidatorFn>>
-    : ReturnType<CustomValidatorFn>;
+type CustomValidationError =
+    ReturnType<CustomValidatorFn> extends Promise<any>
+        ? Awaited<ReturnType<CustomValidatorFn>>
+        : ReturnType<CustomValidatorFn>;
 
 /**
  * The error types of the custom validation errors already implemented by angular

@@ -12,7 +12,7 @@
             <option
                 *ngFor="
                     let option of possibleRequestTargets;
-                    trackBy: 'id' | appTrackByProperty : possibleRequestTargets
+                    trackBy: 'id' | appTrackByProperty: possibleRequestTargets
                 "
                 [value]="option.id"
             >

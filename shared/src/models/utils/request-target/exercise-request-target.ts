@@ -22,7 +22,7 @@ type ExerciseRequestTargetDictionary = {
 };
 
 export type ExerciseRequestTargetConfiguration<
-    T extends ExerciseRequestTargetType = ExerciseRequestTargetType
+    T extends ExerciseRequestTargetType = ExerciseRequestTargetType,
 > = InstanceType<ExerciseRequestTargetDictionary[T]['configuration']>;
 
 export const requestTargetDictionary = Object.fromEntries(

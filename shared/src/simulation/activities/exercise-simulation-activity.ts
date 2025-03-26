@@ -44,7 +44,7 @@ export type ExerciseSimulationActivityType = InstanceType<
 >['type'];
 
 export type ExerciseSimulationActivityState<
-    T extends ExerciseSimulationActivityType = ExerciseSimulationActivityType
+    T extends ExerciseSimulationActivityType = ExerciseSimulationActivityType,
 > = InstanceType<ExerciseSimulationActivityDictionary[T]['activityState']>;
 
 export const simulationActivityDictionary = Object.fromEntries(

@@ -49,7 +49,7 @@ export function migrateStateExport(
  * @returns The new state version
  */
 export function applyMigrations<
-    H extends { initialState: object; actions: (object | null)[] } | undefined
+    H extends { initialState: object; actions: (object | null)[] } | undefined,
 >(
     currentStateVersion: number,
     propertiesToMigrate: {

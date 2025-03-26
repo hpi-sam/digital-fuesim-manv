@@ -40,7 +40,7 @@ export type ExerciseSimulationBehaviorDictionary = {
 };
 
 export type ExerciseSimulationBehaviorState<
-    T extends ExerciseSimulationBehaviorType = ExerciseSimulationBehaviorType
+    T extends ExerciseSimulationBehaviorType = ExerciseSimulationBehaviorType,
 > = InstanceType<ExerciseSimulationBehaviorDictionary[T]['behaviorState']>;
 
 export const simulationBehaviorDictionary = Object.fromEntries(

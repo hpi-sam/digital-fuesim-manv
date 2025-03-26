@@ -5,7 +5,7 @@ import type { DatabaseService } from './services/database-service';
 
 export abstract class NormalType<
     TSelf extends NormalType<TSelf, EntityType>,
-    EntityType extends BaseEntity<any, TSelf>
+    EntityType extends BaseEntity<any, TSelf>,
 > {
     protected constructor(
         protected readonly databaseService: DatabaseService

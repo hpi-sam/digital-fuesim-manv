@@ -15,7 +15,7 @@ export class BenchmarkStep<
         ? T
         : never = NonNullable<State[Name]> extends BenchmarkValue<infer T>
         ? T
-        : never
+        : never,
 > extends Step<State, Name, State[Name]> {
     constructor(
         name: Name,

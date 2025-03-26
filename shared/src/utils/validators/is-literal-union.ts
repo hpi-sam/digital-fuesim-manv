@@ -46,7 +46,7 @@ export function isLiteralUnion<T extends number | string | symbol>(
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export function IsLiteralUnion<
     T extends number | string | symbol,
-    Each extends boolean = false
+    Each extends boolean = false,
 >(
     allowedValues: AllowedValues<T>,
     validationOptions?: ValidationOptions & { each?: Each }
@@ -75,7 +75,7 @@ export const isLiteralUnionMap = <T extends number | string | symbol, V>(
 export function IsLiteralUnionMap<
     K extends number | string | symbol,
     V,
-    Each extends boolean = false
+    Each extends boolean = false,
 >(
     allowedValues: AllowedValues<K>,
     valueValidator: (value: unknown) => value is V,

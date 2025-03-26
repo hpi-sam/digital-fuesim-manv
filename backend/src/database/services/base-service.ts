@@ -18,7 +18,7 @@ import type { BaseEntity } from '../entities/base-entity';
 export abstract class BaseService<
     Entity extends BaseEntity<Entity, any>,
     Creatable,
-    Updatable
+    Updatable,
 > {
     public constructor(protected readonly dataSource: DataSource) {}
 

@@ -69,7 +69,7 @@ export function getExerciseActionTypeDictionary(): ExerciseActionTypeDictionary 
                     // therefore we have to call the constructor (An ActionClass constructor is therefore required to not throw an error when called without arguments)
                     type: new actionReducer.action().type,
                     actionClass: actionReducer,
-                } as const)
+                }) as const
         )
         .forEach(({ type, actionClass }) => {
             dictionary[type] = actionClass;

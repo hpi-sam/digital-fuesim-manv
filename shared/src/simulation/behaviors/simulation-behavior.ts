@@ -10,7 +10,7 @@ export class SimulationBehaviorState {
 
 export interface SimulationBehavior<
     S extends SimulationBehaviorState,
-    C extends Constructor<S> = Constructor<S>
+    C extends Constructor<S> = Constructor<S>,
 > {
     readonly behaviorState: C & {
         readonly create: (...args: ConstructorParameters<C>) => S;
