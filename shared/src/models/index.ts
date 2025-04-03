@@ -21,3 +21,5 @@ export { ExerciseConfiguration } from './exercise-configuration.js';
 export * from './utils/index.js';
 export * from './log-entry.js';
 export * from './tag.js';
+export { MaterialTemplate } from './material-template.js';
+export { PersonnelTemplate } from './personnel-template.js';
