@@ -27,13 +27,9 @@ export const addPatientIdentifiers37: Migration = {
             patientCounter?: number;
         };
 
-        if (typedState.patientCounter === undefined) {
-            typedState.patientCounter = 0;
-        }
+        typedState.patientCounter ??= 0;
 
-        if (typedState.configuration.patientIdentifierPrefix === undefined) {
-            typedState.configuration.patientIdentifierPrefix = '';
-        }
+        typedState.configuration.patientIdentifierPrefix ??= '';
 
         Object.values(typedState.patients)
             .sort((a, b) => a.id.localeCompare(b.id))

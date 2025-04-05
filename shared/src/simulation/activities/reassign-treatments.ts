@@ -764,6 +764,8 @@ function assignTreatments(
     });
 
     const [secured, missingPersonnel] = calculateMissingPersonnel(
+        // False positive
+        // eslint-disable-next-line total-functions/no-unsafe-readonly-mutable-assignment
         groupedPatients,
         cateringPersonnel,
         personnelTreatments,
@@ -823,18 +825,14 @@ function recordPatientTreatedByPersonnel(
     }
 ) {
     const { personnelTreatments, patientTreatments } = context;
-    if (personnelTreatments[personnelId] === undefined)
-        personnelTreatments[personnelId] = {};
-    if (personnelTreatments[personnelId]![minType] === undefined)
-        personnelTreatments[personnelId]![minType] = {};
-    personnelTreatments[personnelId]![minType]![patientStatus] =
-        (personnelTreatments[personnelId]![minType]![patientStatus] ?? 0) + 1;
+    personnelTreatments[personnelId] ??= {};
+    personnelTreatments[personnelId][minType] ??= {};
+    personnelTreatments[personnelId][minType][patientStatus] =
+        (personnelTreatments[personnelId][minType][patientStatus] ?? 0) + 1;
 
-    if (patientTreatments[patientId] === undefined)
-        patientTreatments[patientId] = {};
-    if (patientTreatments[patientId]![minType] === undefined)
-        patientTreatments[patientId]![minType] = [];
-    patientTreatments[patientId]![minType]!.push(personnelId);
+    patientTreatments[patientId] ??= {};
+    patientTreatments[patientId][minType] ??= [];
+    patientTreatments[patientId][minType].push(personnelId);
 }
 
 /**

@@ -81,7 +81,7 @@ export class AlarmGroupItemComponent {
         const vehicleTemplate = selectStateSnapshot(
             createSelectVehicleTemplate(vehicleTemplateId),
             this.store
-        )!;
+        );
         this.exerciseService.proposeAction({
             type: '[AlarmGroup] Add AlarmGroupVehicle',
             alarmGroupId: this.alarmGroup.id,

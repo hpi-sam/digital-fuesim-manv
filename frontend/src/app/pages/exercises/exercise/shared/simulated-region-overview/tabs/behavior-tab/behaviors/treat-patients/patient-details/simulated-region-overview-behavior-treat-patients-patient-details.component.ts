@@ -53,9 +53,9 @@ export class SimulatedRegionOverviewBehaviorTreatPatientsPatientDetailsComponent
                             .map((personnelId) => personnel[personnelId])
                             .filter((person) => person !== undefined)
                             .map((person) => ({
-                                personnelType: person!.personnelType,
+                                personnelType: person.personnelType,
                                 assignedPatientCount: Object.values(
-                                    person!.assignedPatientIds
+                                    person.assignedPatientIds
                                 ).length,
                             }))
                 )
@@ -70,7 +70,7 @@ export class SimulatedRegionOverviewBehaviorTreatPatientsPatientDetailsComponent
                             (val, index) =>
                                 val.assignedPatientCount ===
                                     b[index]?.assignedPatientCount &&
-                                val.personnelType === b[index]?.personnelType
+                                val.personnelType === b[index].personnelType
                         )
                 ),
                 takeUntil(this.destroy$)

@@ -145,7 +145,7 @@ export const reportBehavior: SimulationBehavior<ReportBehaviorState> = {
         StrictObject.values(behaviorState.activityIds)
             .filter((activityId) => activityId !== undefined)
             .forEach((activityId) => {
-                delete simulatedRegion.activities[activityId!];
+                delete simulatedRegion.activities[activityId];
             });
     },
 };

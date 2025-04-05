@@ -41,22 +41,18 @@ export class FuesimServer {
             await manager.save(actionEntities);
             // Re-map database id to instance
             exercisesToSave.forEach((exercise) => {
-                if (!exercise.id) {
-                    exercise.id = exerciseEntities.find(
-                        (entity) => entity.trainerId === exercise.trainerId
-                    )?.id;
-                }
+                exercise.id ??= exerciseEntities.find(
+                    (entity) => entity.trainerId === exercise.trainerId
+                )?.id;
             });
             exercisesToSave
                 .flatMap((exercise) => exercise.temporaryActionHistory)
                 .forEach((action) => {
-                    if (!action.id) {
-                        action.id = actionEntities.find(
-                            (entity) =>
-                                entity.index === action.index &&
-                                entity.exercise.id === action.exercise.id
-                        )?.id;
-                    }
+                    action.id ??= actionEntities.find(
+                        (entity) =>
+                            entity.index === action.index &&
+                            entity.exercise.id === action.exercise.id
+                    )?.id;
                 });
             exercisesToSave.forEach((exercise) => {
                 exercise.markAsSaved();

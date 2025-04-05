@@ -11,7 +11,11 @@ module.exports = {
         // TODO: doesn't work for some reason from this config and has to be imported separately
         // 'prettier',
     ],
-    ignorePatterns: ['**/migrations/**/*.ts', '**/migrations/**/*.js'],
+    ignorePatterns: [
+        '**/migrations/**/*.ts',
+        '**/migrations/**/*.js',
+        'jest.config.js',
+    ],
     rules: {
         /**
          * eslint
@@ -194,7 +198,7 @@ module.exports = {
         'unicorn/custom-error-definition': 'off',
         'unicorn/error-message': 'warn',
         'unicorn/escape-case': 'warn',
-        'unicorn/expiring-todo-comments': 'warn',
+        'unicorn/expiring-todo-comments': 'off',
         'unicorn/import-index': 'warn',
         'unicorn/no-for-loop': 'warn',
         'unicorn/no-keyword-prefix': 'off',
@@ -310,12 +314,18 @@ module.exports = {
                 modifiers: ['public'],
                 leadingUnderscore: 'allow',
             },
+            {
+                // There are false-positives if the type of an import (e.g. class) could not be determined
+                selector: 'import',
+                format: null,
+            },
         ],
         '@typescript-eslint/no-base-to-string': 'warn',
         '@typescript-eslint/no-confusing-non-null-assertion': 'warn',
         '@typescript-eslint/no-namespace': 'off',
         '@typescript-eslint/non-nullable-type-assertion-style': 'warn',
-        '@typescript-eslint/sort-type-union-intersection-members': 'warn',
+        // TODO: deprecated rule, to be replaced
+        '@typescript-eslint/sort-type-constituents': 'warn',
         '@typescript-eslint/no-confusing-void-expression': [
             'warn',
             { ignoreArrowShorthand: true },
@@ -328,10 +338,6 @@ module.exports = {
         ],
         // maybe turn on later...
         '@typescript-eslint/no-floating-promises': 'off',
-        '@typescript-eslint/no-implicit-any-catch': [
-            'warn',
-            { allowExplicitAny: true },
-        ],
         '@typescript-eslint/no-invalid-void-type': 'warn',
         '@typescript-eslint/no-parameter-properties': 'off',
         '@typescript-eslint/no-require-imports': 'warn',
@@ -356,13 +362,15 @@ module.exports = {
         '@typescript-eslint/prefer-ts-expect-error': 'warn',
         '@typescript-eslint/promise-function-async': 'warn',
         '@typescript-eslint/require-array-sort-compare': 'warn',
-        '@typescript-eslint/switch-exhaustiveness-check': 'warn',
+        '@typescript-eslint/switch-exhaustiveness-check': [
+            'warn',
+            { considerDefaultExhaustiveForUnions: true },
+        ],
         '@typescript-eslint/unified-signatures': 'warn',
         // Extension rules that should be used instead of the eslint ones:
         '@typescript-eslint/default-param-last': 'warn',
         '@typescript-eslint/dot-notation': 'warn',
         '@typescript-eslint/no-dupe-class-members': 'warn',
-        '@typescript-eslint/no-duplicate-imports': 'warn',
         '@typescript-eslint/no-empty-function': 'warn',
         '@typescript-eslint/no-implied-eval': 'warn',
         '@typescript-eslint/no-invalid-this': 'warn',

@@ -98,6 +98,7 @@ export class SpatialTree {
         targetPosition: MapCoordinates
     ) {
         // TODO: use the move function from RBush, when available: https://github.com/mourner/rbush/issues/28
+        // eslint-disable-next-line total-functions/no-unsafe-readonly-mutable-assignment
         this.removeElement(spatialTree, elementId, startPosition);
         this.addElement(spatialTree, elementId, targetPosition);
     }

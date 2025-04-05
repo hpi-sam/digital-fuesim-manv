@@ -39,7 +39,7 @@ export class ResizeRectangleInteraction extends PointerInteraction {
             return false;
         }
         const geometry = feature.getGeometry()!;
-        const corners = geometry.getCoordinates()![0]!;
+        const corners = geometry.getCoordinates()[0]!;
         const distances = corners.map((corner) =>
             distance(corner, mouseCoordinate)
         );
@@ -94,7 +94,7 @@ export class ResizeRectangleInteraction extends PointerInteraction {
 
         const coordinates = this.currentResizeValues.feature
             .getGeometry()!
-            .getCoordinates()![0]!;
+            .getCoordinates()[0]!;
         const topLeftCoordinate = coordinates.reduce<Coordinate>(
             (smallestCoordinate, coordinate) =>
                 coordinate[0]! <= smallestCoordinate[0]! ||

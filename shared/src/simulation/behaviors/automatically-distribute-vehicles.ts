@@ -101,15 +101,9 @@ export const automaticallyDistributeVehiclesBehavior: SimulationBehavior<Automat
                         Object.entries(behaviorState.remainingInNeed).forEach(
                             ([vehicleType, regionsInNeed]) => {
                                 if (Object.keys(regionsInNeed).length === 0) {
-                                    if (
-                                        !behaviorState.distributedRounds[
-                                            vehicleType
-                                        ]
-                                    ) {
-                                        behaviorState.distributedRounds[
-                                            vehicleType
-                                        ] = 0;
-                                    }
+                                    behaviorState.distributedRounds[
+                                        vehicleType
+                                    ] ??= 0;
 
                                     // Check if a vehicle was distributed during the last distribution try
                                     // to not increase the distributed rounds if all transfer connections were missing
@@ -168,10 +162,8 @@ export const automaticallyDistributeVehiclesBehavior: SimulationBehavior<Automat
                                 }
 
                                 Object.keys(regionsInNeed).forEach((region) => {
-                                    if (!vehiclesToBeSent[region]) {
-                                        vehiclesToBeSent[region] = {};
-                                    }
-                                    vehiclesToBeSent[region]![vehicleType] = 1;
+                                    vehiclesToBeSent[region] ??= {};
+                                    vehiclesToBeSent[region][vehicleType] = 1;
                                 });
                             }
                         );
@@ -185,7 +177,7 @@ export const automaticallyDistributeVehiclesBehavior: SimulationBehavior<Automat
                                 DelayEventActivityState.create(
                                     nextUUID(draftState),
                                     TransferVehiclesRequestEvent.create(
-                                        cloneDeep(vehiclesToBeSent[region]!),
+                                        cloneDeep(vehiclesToBeSent[region]),
                                         'transferPoint',
                                         region,
                                         simulatedRegion.id,
@@ -227,15 +219,9 @@ export const automaticallyDistributeVehiclesBehavior: SimulationBehavior<Automat
                                 if (vehicleAmount === 0) {
                                     return;
                                 }
-                                if (
-                                    !behaviorState.distributedLastRound[
-                                        vehicleType
-                                    ]
-                                ) {
-                                    behaviorState.distributedLastRound[
-                                        vehicleType
-                                    ] = 0;
-                                }
+                                behaviorState.distributedLastRound[
+                                    vehicleType
+                                ] ??= 0;
                                 behaviorState.distributedLastRound[
                                     vehicleType
                                 ]++;
@@ -245,7 +231,7 @@ export const automaticallyDistributeVehiclesBehavior: SimulationBehavior<Automat
                                 ) {
                                     delete behaviorState.remainingInNeed[
                                         vehicleType
-                                    ]![event.transferDestinationId];
+                                    ][event.transferDestinationId];
                                 }
                             }
                         );

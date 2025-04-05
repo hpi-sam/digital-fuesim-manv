@@ -24,7 +24,6 @@ import { StrictObject, uuid } from '../../utils';
 import { RecurringEventActivityState } from '../activities';
 import { addActivity } from '../activities/utils';
 import { SendRequestEvent } from '../events/send-request';
-import type { CreateRequestActivityState } from '../activities/create-request';
 import { ResourcePromise } from '../utils/resource-promise';
 import { NoOccupation } from '../../models/utils/occupations/no-occupation';
 import {
@@ -516,7 +515,7 @@ describe('request behavior', () => {
                 );
                 expect(activity).toBeDefined();
 
-                const typedActivity = activity as CreateRequestActivityState;
+                const typedActivity = activity!;
                 expect(typedActivity.targetConfiguration).toEqual(
                     afterBehaviorState.requestTarget
                 );
@@ -550,9 +549,7 @@ describe('request behavior', () => {
 
                     const afterRecurringEventActivity = StrictObject.values(
                         afterSimulatedRegion.activities
-                    ).find(
-                        (a) => a.type === 'recurringEventActivity'
-                    ) as RecurringEventActivityState;
+                    ).find((a) => a.type === 'recurringEventActivity')!;
 
                     expect(
                         afterRecurringEventActivity.recurrenceIntervalTime

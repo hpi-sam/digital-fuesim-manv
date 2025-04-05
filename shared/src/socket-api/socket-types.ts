@@ -22,8 +22,10 @@ export interface ClientToServerEvents {
     ) => void;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface InterServerEvents {}
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface SocketData {}
 
 export type SocketResponse<T = undefined> =

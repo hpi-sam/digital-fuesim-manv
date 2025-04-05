@@ -16,7 +16,7 @@ export function combineDecorators<T, Each extends boolean>(
         | PropertyDecorator
     >
 ) {
-    // eslint-disable-next-line @typescript-eslint/ban-types
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
     return <TFunction extends Function, Y>(
         target: TFunction | object,
         propertyKey?: string | symbol,
@@ -28,6 +28,7 @@ export function combineDecorators<T, Each extends boolean>(
                 continue;
             }
             (decorator as MethodDecorator | PropertyDecorator)(
+                // eslint-disable-next-line total-functions/no-unsafe-readonly-mutable-assignment
                 target,
                 propertyKey!,
                 descriptor!

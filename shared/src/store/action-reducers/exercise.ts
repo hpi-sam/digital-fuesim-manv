@@ -222,7 +222,7 @@ function calculateTreatmentAssignment(
         StrictObject.keys(personnel.assignedPatientIds)
             .filter((patientId) => treatmentAssignment[patientId])
             .forEach((patientId) => {
-                treatmentAssignment[patientId]![personnel.personnelType]! +=
+                treatmentAssignment[patientId]![personnel.personnelType] +=
                     1 / assignedPatientCount;
             });
     });
@@ -255,7 +255,7 @@ function evaluateTreatmentReassignment(
                         createPersonnelTypeTag(draftState, personnelType)
                     ),
                 `Diese Einsatzkräfte wurden dem Patienten neu zugeteilt: ${
-                    StrictObject.entries(newTreatmentAssignment[patientId]!)!
+                    StrictObject.entries(newTreatmentAssignment[patientId]!)
                         .filter(([, count]) => count > 0)
                         .map(
                             ([personnelType, count]) =>

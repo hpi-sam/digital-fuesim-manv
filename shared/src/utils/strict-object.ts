@@ -15,6 +15,7 @@ export namespace StrictObject {
     ): {
         [Key in keyof T]: [Key, T[Key]];
     }[keyof T][] {
+        // eslint-disable-next-line total-functions/no-unsafe-readonly-mutable-assignment
         return Object.entries(object);
     }
 
@@ -26,6 +27,7 @@ export namespace StrictObject {
     export function values<T extends { [key: string]: any }>(
         object: T
     ): T[keyof T][] {
+        // eslint-disable-next-line total-functions/no-unsafe-readonly-mutable-assignment
         return Object.values(object);
     }
 

@@ -1171,17 +1171,11 @@ export namespace SimulationActionReducers {
                         vehicleType
                     ];
                 } else {
-                    if (
-                        !automaticDistributionBehaviorState.remainingInNeed[
-                            vehicleType
-                        ]
-                    ) {
-                        automaticDistributionBehaviorState.remainingInNeed[
-                            vehicleType
-                        ] = cloneDeepMutable(
-                            automaticDistributionBehaviorState.distributionDestinations
-                        );
-                    }
+                    automaticDistributionBehaviorState.remainingInNeed[
+                        vehicleType
+                    ] ??= cloneDeepMutable(
+                        automaticDistributionBehaviorState.distributionDestinations
+                    );
                 }
                 return draftState;
             },
@@ -1774,22 +1768,16 @@ export namespace SimulationActionReducers {
                     managedSimulatedRegionId
                 ] = true;
 
-                if (
-                    !behaviorState.patientsExpectedInRegions[
-                        managedSimulatedRegionId
-                    ]
-                ) {
-                    behaviorState.patientsExpectedInRegions[
-                        managedSimulatedRegionId
-                    ] = {
-                        red: 0,
-                        yellow: 0,
-                        green: 0,
-                        blue: 0,
-                        black: 0,
-                        white: 0,
-                    };
-                }
+                behaviorState.patientsExpectedInRegions[
+                    managedSimulatedRegionId
+                ] ??= {
+                    red: 0,
+                    yellow: 0,
+                    green: 0,
+                    blue: 0,
+                    black: 0,
+                    white: 0,
+                };
 
                 return draftState;
             },
@@ -1913,7 +1901,7 @@ export namespace SimulationActionReducers {
 
                 behaviorState.patientsExpectedInRegions[
                     managedSimulatedRegionId
-                ]![patientStatus] = patientsExpected;
+                ][patientStatus] = patientsExpected;
                 return draftState;
             },
             rights: 'trainer',

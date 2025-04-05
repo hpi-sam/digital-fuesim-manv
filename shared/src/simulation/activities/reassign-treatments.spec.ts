@@ -453,7 +453,7 @@ describe('reassign treatment', () => {
 
             const event = simulatedRegion?.inEvents.find(
                 (element) => element.type === 'treatmentProgressChangedEvent'
-            ) as TreatmentProgressChangedEvent | undefined;
+            );
 
             expect(event).toBeDefined();
             expect(event?.newProgress).toBe('counted');
@@ -671,7 +671,7 @@ describe('reassign treatment', () => {
 
             const event = simulatedRegion?.inEvents.find(
                 (element) => element.type === 'treatmentProgressChangedEvent'
-            ) as TreatmentProgressChangedEvent | undefined;
+            );
 
             expect(event).toBeDefined();
             expect(event?.newProgress).toBe('triaged');
@@ -1531,7 +1531,7 @@ describe('reassign treatment', () => {
                 const event = simulatedRegion?.inEvents.find(
                     (element) =>
                         element.type === 'treatmentProgressChangedEvent'
-                ) as TreatmentProgressChangedEvent | undefined;
+                );
 
                 expect(event).toBeDefined();
                 expect(event?.newProgress).toBe('secured');

@@ -63,8 +63,7 @@ export const countPatientsActivity: SimulationActivity<CountPatientsActivityStat
 
             StrictObject.keys(patientStatusAllowedValues).forEach(
                 (patientStatus) => {
-                    if (patientCount[patientStatus] === undefined)
-                        patientCount[patientStatus] = 0;
+                    patientCount[patientStatus] ??= 0;
                 }
             );
 
