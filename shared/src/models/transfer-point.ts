@@ -1,13 +1,15 @@
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
-import { UUID, uuid, UUIDSet, uuidValidationOptions } from '../utils';
+import type { UUID, UUIDSet } from '../utils/index.js';
+import { uuid, uuidValidationOptions } from '../utils/index.js';
 import {
     IsReachableTransferPoints,
     IsUUIDSet,
     IsValue,
-} from '../utils/validators';
-import { IsPosition } from '../utils/validators/is-position';
-import type { ImageProperties } from './utils';
-import { Position, getCreate } from './utils';
+} from '../utils/validators/index.js';
+import { IsPosition } from '../utils/validators/is-position.js';
+import type { ImageProperties } from './utils/index.js';
+import type { Position } from './utils/index.js';
+import { getCreate } from './utils/index.js';
 
 export class TransferPoint {
     @IsUUID(4, uuidValidationOptions)

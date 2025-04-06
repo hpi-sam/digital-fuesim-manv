@@ -3,11 +3,11 @@ import {
     femaleFirstNames,
     maleFirstNames,
     unisexNames,
-} from '../../data/generator-data/first-names';
-import { streetNames } from '../../data/generator-data/street-names';
-import { surnames } from '../../data/generator-data/surnames';
-import { getCreate } from './get-create';
-import type { Sex } from './sex';
+} from '../../data/generator-data/first-names.js';
+import { streetNames } from '../../data/generator-data/street-names.js';
+import { surnames } from '../../data/generator-data/surnames.js';
+import { getCreate } from './get-create.js';
+import type { Sex } from './sex.js';
 
 export class PersonalInformation {
     @IsString()

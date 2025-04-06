@@ -1,5 +1,3 @@
-import { createNewDataSource, testingDatabaseName } from 'database/data-source';
-import { DatabaseService } from 'database/services/database-service';
 import type {
     ClientToServerEvents,
     ExerciseIds,
@@ -11,10 +9,15 @@ import type { Socket } from 'socket.io-client';
 import { io } from 'socket.io-client';
 import request from 'supertest';
 import type { DataSource } from 'typeorm';
-import { Config } from '../src/config';
-import type { HttpMethod } from '../src/exercise/http-handler/secure-http';
-import { FuesimServer } from '../src/fuesim-server';
-import type { SocketReservedEvents } from './socket-reserved-events';
+import { DatabaseService } from '../src/database/services/database-service.js';
+import {
+    createNewDataSource,
+    testingDatabaseName,
+} from '../src/database/data-source.js';
+import { Config } from '../src/config.js';
+import type { HttpMethod } from '../src/exercise/http-handler/secure-http.js';
+import { FuesimServer } from '../src/fuesim-server.js';
+import type { SocketReservedEvents } from './socket-reserved-events.js';
 
 export interface ExerciseCreationResponse {
     readonly participantId: string;

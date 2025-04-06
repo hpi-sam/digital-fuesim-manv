@@ -1,4 +1,4 @@
-import type { Vehicle } from '../../vehicle';
+import type { Vehicle } from '../../vehicle.js';
 
 export function isUnoccupiedImmutable(vehicle: Vehicle, currentTime: number) {
     return (

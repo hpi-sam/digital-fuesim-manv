@@ -1,9 +1,9 @@
 import type { ExerciseState, Mutable, UUID } from 'digital-fuesim-manv-shared';
 import { applyMigrations } from 'digital-fuesim-manv-shared';
 import type { EntityManager } from 'typeorm';
-import { RestoreError } from '../utils/restore-error';
-import { ActionWrapperEntity } from './entities/action-wrapper.entity';
-import { ExerciseWrapperEntity } from './entities/exercise-wrapper.entity';
+import { RestoreError } from '../utils/restore-error.js';
+import { ActionWrapperEntity } from './entities/action-wrapper.entity.js';
+import { ExerciseWrapperEntity } from './entities/exercise-wrapper.entity.js';
 
 export async function migrateInDatabase(
     exerciseId: UUID,

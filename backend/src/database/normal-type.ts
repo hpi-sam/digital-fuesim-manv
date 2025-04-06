@@ -1,7 +1,7 @@
 import type { UUID } from 'digital-fuesim-manv-shared';
 import type { EntityManager } from 'typeorm';
-import type { BaseEntity } from './entities/base-entity';
-import type { DatabaseService } from './services/database-service';
+import type { BaseEntity } from './entities/base-entity.js';
+import type { DatabaseService } from './services/database-service.js';
 
 export abstract class NormalType<
     TSelf extends NormalType<TSelf, EntityType>,

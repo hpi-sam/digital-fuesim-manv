@@ -1,6 +1,6 @@
 import type { ValidationArguments, ValidationOptions } from 'class-validator';
 import { registerDecorator } from 'class-validator';
-import type { GenericPropertyDecorator } from './generic-property-decorator';
+import type { GenericPropertyDecorator } from './generic-property-decorator.js';
 
 export function makeValidator<T, Each extends boolean = false>(
     name: `is${string}`,

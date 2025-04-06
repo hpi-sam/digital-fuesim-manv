@@ -1,4 +1,4 @@
-import type { GenericPropertyDecorator } from './generic-property-decorator';
+import type { GenericPropertyDecorator } from './generic-property-decorator.js';
 
 // Source: https://github.com/nestjs/nest/blob/a448f53b7746d35bf25a18f1759c971e5b7fea1c/packages/common/decorators/core/apply-decorators.ts
 

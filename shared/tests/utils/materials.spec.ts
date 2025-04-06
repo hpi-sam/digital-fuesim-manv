@@ -1,14 +1,14 @@
-import { defaultMaterialTemplates } from '../../src/data/default-state/material-templates';
-import { Material } from '../../src/models';
-import type { Position } from '../../src/models/utils';
+import { defaultMaterialTemplates } from '../../src/data/default-state/material-templates.js';
+import { Material } from '../../src/models/index.js';
+import type { Position } from '../../src/models/utils/index.js';
 import {
     currentCoordinatesOf,
     isPositionOnMap,
     SpatialTree,
-} from '../../src/models/utils';
-import type { ExerciseState } from '../../src/state';
-import type { Mutable } from '../../src/utils';
-import { cloneDeepMutable, uuid } from '../../src/utils';
+} from '../../src/models/utils/index.js';
+import type { ExerciseState } from '../../src/state.js';
+import type { Mutable } from '../../src/utils/index.js';
+import { cloneDeepMutable, uuid } from '../../src/utils/index.js';
 
 export function addMaterial(state: Mutable<ExerciseState>, position: Position) {
     const material = cloneDeepMutable(

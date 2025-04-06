@@ -1,11 +1,11 @@
 import type { ValidationArguments, ValidationOptions } from 'class-validator';
 import { min, isString, isInt } from 'class-validator';
-import type { ResourceDescription } from '../../models/utils/resource-description';
-import { createMapValidator } from './create-map-validator';
-import type { GenericPropertyDecorator } from './generic-property-decorator';
-import { makeValidator } from './make-validator';
-import type { AllowedValues } from './is-literal-union';
-import { isLiteralUnion } from './is-literal-union';
+import type { ResourceDescription } from '../../models/utils/resource-description.js';
+import { createMapValidator } from './create-map-validator.js';
+import type { GenericPropertyDecorator } from './generic-property-decorator.js';
+import { makeValidator } from './make-validator.js';
+import type { AllowedValues } from './is-literal-union.js';
+import { isLiteralUnion } from './is-literal-union.js';
 
 export function isResourceDescription<Key extends string>(
     keyAllowedValues?: AllowedValues<Key>,

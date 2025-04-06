@@ -1,19 +1,22 @@
 import { groupBy } from 'lodash-es';
-import type { MapCoordinates, PatientStatus } from '../../../models/utils';
+import type {
+    MapCoordinates,
+    PatientStatus,
+} from '../../../models/utils/index.js';
 import {
     currentCoordinatesOf,
     isNotOnMap,
     isInSimulatedRegion,
-} from '../../../models/utils/position/position-helpers';
-import { SpatialTree } from '../../../models/utils/spatial-tree';
-import type { ExerciseState } from '../../../state';
-import { maxTreatmentRange } from '../../../state-helpers/max-treatment-range';
-import type { Mutable, UUID } from '../../../utils';
-import { elementTypePluralMap } from '../../../utils/element-type-plural-map';
-import type { Personnel } from '../../../models/personnel';
-import type { Material } from '../../../models/material';
-import { Patient } from '../../../models/patient';
-import { getElement } from './get-element';
+} from '../../../models/utils/position/position-helpers.js';
+import { SpatialTree } from '../../../models/utils/spatial-tree.js';
+import type { ExerciseState } from '../../../state.js';
+import { maxTreatmentRange } from '../../../state-helpers/max-treatment-range.js';
+import type { Mutable, UUID } from '../../../utils/index.js';
+import { elementTypePluralMap } from '../../../utils/element-type-plural-map.js';
+import type { Personnel } from '../../../models/personnel.js';
+import type { Material } from '../../../models/material.js';
+import { Patient } from '../../../models/patient.js';
+import { getElement } from './get-element.js';
 
 // TODO: `caterFor` and `treat` are currently used as synonyms without a clear distinction.
 

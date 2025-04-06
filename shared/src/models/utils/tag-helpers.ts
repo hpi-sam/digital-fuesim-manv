@@ -4,32 +4,32 @@
  * and they should figure out the color and name for the tag by themselves.
  */
 
-import { behaviorTypeToGermanNameDictionary } from '../../simulation/behaviors/utils';
-import type { TreatmentProgress } from '../../simulation/utils/treatment';
-import { treatmentProgressToGermanNameDictionary } from '../../simulation/utils/treatment';
-import type { ExerciseState } from '../../state';
+import { behaviorTypeToGermanNameDictionary } from '../../simulation/behaviors/utils.js';
+import type { TreatmentProgress } from '../../simulation/utils/treatment.js';
+import { treatmentProgressToGermanNameDictionary } from '../../simulation/utils/treatment.js';
+import type { ExerciseState } from '../../state.js';
 import {
     getElement,
     getExerciseBehaviorById,
     getExerciseRadiogramById,
-} from '../../store/action-reducers/utils/get-element';
-import type { UUID } from '../../utils';
-import type { Mutable } from '../../utils/immutability';
-import { Patient } from '../patient';
-import { radiogramTypeToGermanDictionary } from '../radiogram/exercise-radiogram';
-import type { ExerciseRadiogramStatus } from '../radiogram/status/exercise-radiogram-status';
-import { radiogramStatusTypeToGermanDictionary } from '../radiogram/status/exercise-radiogram-status';
-import { Tag } from '../tag';
-import type { ExerciseOccupation } from './occupations';
-import { occupationToGermanDictionary } from './occupations/exercise-occupation';
-import { statusNames } from './patient-status';
-import type { PatientStatus } from './patient-status';
-import type { PersonnelType } from './personnel-type';
-import { personnelTypeNames } from './personnel-type';
+} from '../../store/action-reducers/utils/get-element.js';
+import type { UUID } from '../../utils/index.js';
+import type { Mutable } from '../../utils/immutability.js';
+import { Patient } from '../patient.js';
+import { radiogramTypeToGermanDictionary } from '../radiogram/exercise-radiogram.js';
+import type { ExerciseRadiogramStatus } from '../radiogram/status/exercise-radiogram-status.js';
+import { radiogramStatusTypeToGermanDictionary } from '../radiogram/status/exercise-radiogram-status.js';
+import { Tag } from '../tag.js';
+import type { ExerciseOccupation } from './occupations/index.js';
+import { occupationToGermanDictionary } from './occupations/exercise-occupation.js';
+import { statusNames } from './patient-status.js';
+import type { PatientStatus } from './patient-status.js';
+import type { PersonnelType } from './personnel-type.js';
+import { personnelTypeNames } from './personnel-type.js';
 import {
     currentSimulatedRegionIdOf,
     isInSimulatedRegion,
-} from './position/position-helpers';
+} from './position/position-helpers.js';
 
 export function createPatientStatusTag(
     _draftState: Mutable<ExerciseState>,

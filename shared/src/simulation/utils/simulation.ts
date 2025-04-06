@@ -1,11 +1,11 @@
-import type { SimulatedRegion } from '../../models';
-import type { ExerciseState } from '../../state';
-import type { Mutable } from '../../utils';
-import { simulationActivityDictionary } from '../activities';
-import { terminateActivity } from '../activities/utils';
-import { simulationBehaviorDictionary } from '../behaviors';
-import { TickEvent } from '../events/tick';
-import { sendSimulationEvent } from '../events/utils';
+import type { SimulatedRegion } from '../../models/index.js';
+import type { ExerciseState } from '../../state.js';
+import type { Mutable } from '../../utils/index.js';
+import { simulationActivityDictionary } from '../activities/index.js';
+import { terminateActivity } from '../activities/utils.js';
+import { simulationBehaviorDictionary } from '../behaviors/index.js';
+import { TickEvent } from '../events/tick.js';
+import { sendSimulationEvent } from '../events/utils.js';
 
 export function simulateAllRegions(
     draftState: Mutable<ExerciseState>,

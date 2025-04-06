@@ -9,8 +9,8 @@ import {
     Min,
     ValidateNested,
 } from 'class-validator';
-import { defaultMaterialTemplates } from './data/default-state/material-templates';
-import { defaultPersonnelTemplates } from './data/default-state/personnel-templates';
+import { defaultMaterialTemplates } from './data/default-state/material-templates.js';
+import { defaultPersonnelTemplates } from './data/default-state/personnel-templates.js';
 import {
     AlarmGroup,
     Client,
@@ -28,34 +28,41 @@ import {
     Vehicle,
     VehicleTemplate,
     Viewport,
-} from './models';
-import { ExerciseConfiguration } from './models/exercise-configuration';
-import type { MaterialTemplate } from './models/material-template';
-import type { PersonnelTemplate } from './models/personnel-template';
-import type { ExerciseRadiogram } from './models/radiogram/exercise-radiogram';
-import { getRadiogramConstructor } from './models/radiogram/exercise-radiogram';
-import type { PersonnelType } from './models/utils';
+} from './models/index.js';
+import { ExerciseConfiguration } from './models/exercise-configuration.js';
+import type { MaterialTemplate } from './models/material-template.js';
+import type { PersonnelTemplate } from './models/personnel-template.js';
+import type { ExerciseRadiogram } from './models/radiogram/exercise-radiogram.js';
+import { getRadiogramConstructor } from './models/radiogram/exercise-radiogram.js';
+import type { PersonnelType } from './models/utils/index.js';
+import type { ExerciseStatus } from './models/utils/index.js';
 import {
-    ExerciseStatus,
     exerciseStatusAllowedValues,
     getCreate,
     SpatialTree,
-} from './models/utils';
-import type { MaterialType } from './models/utils/material-type';
-import { RandomState, seededRandomState } from './simulation/utils/randomness';
-import type { SpatialElementPlural } from './store/action-reducers/utils/spatial-elements';
-import type { UUID } from './utils';
-import { uuid, uuidValidationOptions } from './utils';
-import { IsIdMap, IsLiteralUnion, IsMultiTypedIdMap } from './utils/validators';
+} from './models/utils/index.js';
+import type { MaterialType } from './models/utils/material-type.js';
+import {
+    RandomState,
+    seededRandomState,
+} from './simulation/utils/randomness.js';
+import type { SpatialElementPlural } from './store/action-reducers/utils/spatial-elements.js';
+import type { UUID } from './utils/index.js';
+import { uuid, uuidValidationOptions } from './utils/index.js';
+import {
+    IsIdMap,
+    IsLiteralUnion,
+    IsMultiTypedIdMap,
+} from './utils/validators/index.js';
 import {
     createCatchAllHospital,
     catchAllHospitalId,
-} from './data/default-state/catch-all-hospital';
-import { defaultPatientCategories } from './data/default-state/patient-templates';
-import { defaultVehicleTemplates } from './data/default-state/vehicle-templates';
-import { defaultMapImagesTemplates } from './data/default-state/map-images-templates';
-import type { LogEntry } from './models/log-entry';
-import { TreatmentAssignment } from './store/action-reducers/exercise';
+} from './data/default-state/catch-all-hospital.js';
+import { defaultPatientCategories } from './data/default-state/patient-templates.js';
+import { defaultVehicleTemplates } from './data/default-state/vehicle-templates.js';
+import { defaultMapImagesTemplates } from './data/default-state/map-images-templates.js';
+import type { LogEntry } from './models/log-entry.js';
+import type { TreatmentAssignment } from './store/action-reducers/exercise.js';
 
 export class ExerciseState {
     @IsUUID(4, uuidValidationOptions)

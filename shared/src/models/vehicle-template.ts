@@ -6,16 +6,17 @@ import {
     IsNumber,
     IsArray,
 } from 'class-validator';
-import { uuidValidationOptions, UUID, uuid } from '../utils';
-import { IsLiteralUnion, IsValue } from '../utils/validators';
-import type { PersonnelType } from './utils';
+import type { UUID } from '../utils/index.js';
+import { uuidValidationOptions, uuid } from '../utils/index.js';
+import { IsLiteralUnion, IsValue } from '../utils/validators/index.js';
+import type { PersonnelType } from './utils/index.js';
 import {
     ImageProperties,
     personnelTypeAllowedValues,
     getCreate,
-} from './utils';
-import type { MaterialType } from './utils/material-type';
-import { materialTypeAllowedValues } from './utils/material-type';
+} from './utils/index.js';
+import type { MaterialType } from './utils/material-type.js';
+import { materialTypeAllowedValues } from './utils/material-type.js';
 
 export class VehicleTemplate {
     @IsUUID(4, uuidValidationOptions)

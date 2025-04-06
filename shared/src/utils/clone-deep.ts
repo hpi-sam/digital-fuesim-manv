@@ -1,6 +1,6 @@
 import { freeze } from 'immer';
 import { cloneDeep } from 'lodash-es';
-import type { Immutable, Mutable } from './immutability';
+import type { Immutable, Mutable } from './immutability.js';
 
 /**
  * @param obj The object to clone

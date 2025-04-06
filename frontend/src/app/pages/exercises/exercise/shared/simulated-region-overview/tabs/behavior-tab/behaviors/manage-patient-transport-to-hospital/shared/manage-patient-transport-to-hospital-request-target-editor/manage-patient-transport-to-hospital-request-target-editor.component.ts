@@ -5,7 +5,7 @@ import type {
     ManagePatientTransportToHospitalBehaviorState,
     SimulatedRegion,
 } from 'digital-fuesim-manv-shared';
-import { UUID } from 'digital-fuesim-manv-shared';
+import type { UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { map } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';

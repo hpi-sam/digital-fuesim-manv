@@ -1,11 +1,17 @@
 import { Type } from 'class-transformer';
 import { ValidateNested } from 'class-validator';
-import { IsValue } from '../../../utils/validators';
-import { getCreate } from '../get-create';
-import { MapCoordinates } from './map-coordinates';
+import { IsValue } from '../../../utils/validators/index.js';
+import { getCreate } from '../get-create.js';
+import { MapCoordinates } from './map-coordinates.js';
 // import needed to display @link Links in Comments
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { isOnMap, isNotOnMap, currentCoordinatesOf } from './position-helpers';
+import {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    isOnMap,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    isNotOnMap,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    currentCoordinatesOf,
+} from './position-helpers.js';
 
 export class MapPosition {
     /**

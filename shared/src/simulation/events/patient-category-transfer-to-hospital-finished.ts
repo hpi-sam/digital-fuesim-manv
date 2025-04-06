@@ -1,11 +1,9 @@
 import { IsBoolean } from 'class-validator';
-import { IsLiteralUnion, IsValue } from '../../utils/validators';
-import {
-    PatientStatus,
-    patientStatusAllowedValues,
-} from '../../models/utils/patient-status';
-import { getCreate } from '../../models/utils/get-create';
-import type { SimulationEvent } from './simulation-event';
+import { IsLiteralUnion, IsValue } from '../../utils/validators/index.js';
+import type { PatientStatus } from '../../models/utils/patient-status.js';
+import { patientStatusAllowedValues } from '../../models/utils/patient-status.js';
+import { getCreate } from '../../models/utils/get-create.js';
+import type { SimulationEvent } from './simulation-event.js';
 
 export class PatientCategoryTransferToHospitalFinishedEvent
     implements SimulationEvent

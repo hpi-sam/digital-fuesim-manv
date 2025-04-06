@@ -1,3 +1,3 @@
-export * from './calculate-distance';
-export * from './get-element';
-export * from './patient-updates';
+export * from './calculate-distance.js';
+export * from './get-element.js';
+export * from './patient-updates.js';

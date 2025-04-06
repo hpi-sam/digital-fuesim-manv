@@ -1,7 +1,8 @@
 import { IsInt, IsUUID, Min } from 'class-validator';
-import { IsValue } from '../../utils/validators';
-import { getCreate } from '../../models/utils/get-create';
-import { UUID, uuidValidationOptions } from '../../utils';
+import { IsValue } from '../../utils/validators/index.js';
+import { getCreate } from '../../models/utils/get-create.js';
+import type { UUID } from '../../utils/index.js';
+import { uuidValidationOptions } from '../../utils/index.js';
 
 export class PatientsTransportPromise {
     @IsValue('patientsTransportPromise')

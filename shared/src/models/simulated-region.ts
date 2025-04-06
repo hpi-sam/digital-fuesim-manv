@@ -1,16 +1,18 @@
 import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
-import { UUID, uuid, uuidValidationOptions } from '../utils';
-import { IsPosition } from '../utils/validators/is-position';
-import { IsMultiTypedIdMap, IsValue } from '../utils/validators';
-import type { ExerciseSimulationEvent } from '../simulation/events/exercise-simulation-event';
-import { simulationEventTypeOptions } from '../simulation/events/exercise-simulation-event';
-import type { ExerciseSimulationActivityState } from '../simulation/activities/exercise-simulation-activity';
-import { getSimulationActivityConstructor } from '../simulation/activities/exercise-simulation-activity';
-import type { ExerciseSimulationBehaviorState } from '../simulation/behaviors/exercise-simulation-behavior';
-import { simulationBehaviorTypeOptions } from '../simulation/behaviors/exercise-simulation-behavior';
-import type { ImageProperties, MapCoordinates } from './utils';
-import { getCreate, MapPosition, Position, Size } from './utils';
+import type { UUID } from '../utils/index.js';
+import { uuid, uuidValidationOptions } from '../utils/index.js';
+import { IsPosition } from '../utils/validators/is-position.js';
+import { IsMultiTypedIdMap, IsValue } from '../utils/validators/index.js';
+import type { ExerciseSimulationEvent } from '../simulation/events/exercise-simulation-event.js';
+import { simulationEventTypeOptions } from '../simulation/events/exercise-simulation-event.js';
+import type { ExerciseSimulationActivityState } from '../simulation/activities/exercise-simulation-activity.js';
+import { getSimulationActivityConstructor } from '../simulation/activities/exercise-simulation-activity.js';
+import type { ExerciseSimulationBehaviorState } from '../simulation/behaviors/exercise-simulation-behavior.js';
+import { simulationBehaviorTypeOptions } from '../simulation/behaviors/exercise-simulation-behavior.js';
+import type { ImageProperties, MapCoordinates } from './utils/index.js';
+import type { Position } from './utils/index.js';
+import { getCreate, MapPosition, Size } from './utils/index.js';
 
 export class SimulatedRegion {
     @IsUUID(4, uuidValidationOptions)

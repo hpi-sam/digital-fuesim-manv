@@ -1,10 +1,8 @@
-import { getCreate } from '../../models/utils/get-create';
-import { IsLiteralUnion, IsValue } from '../../utils/validators';
-import {
-    TreatmentProgress,
-    treatmentProgressAllowedValues,
-} from '../utils/treatment';
-import type { SimulationEvent } from './simulation-event';
+import { getCreate } from '../../models/utils/get-create.js';
+import { IsLiteralUnion, IsValue } from '../../utils/validators/index.js';
+import type { TreatmentProgress } from '../utils/treatment.js';
+import { treatmentProgressAllowedValues } from '../utils/treatment.js';
+import type { SimulationEvent } from './simulation-event.js';
 
 export class TreatmentProgressChangedEvent implements SimulationEvent {
     @IsValue('treatmentProgressChangedEvent')

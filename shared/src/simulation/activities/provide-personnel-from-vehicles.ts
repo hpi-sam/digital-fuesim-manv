@@ -1,35 +1,35 @@
 import { IsString, IsUUID } from 'class-validator';
-import type { SimulatedRegion } from '../../models';
-import { personnelTypeAllowedValues } from '../../models/utils/personnel-type';
-import type { PersonnelType } from '../../models/utils';
+import type { SimulatedRegion } from '../../models/index.js';
+import { personnelTypeAllowedValues } from '../../models/utils/personnel-type.js';
+import type { PersonnelType } from '../../models/utils/index.js';
 import {
     PersonnelResource,
     VehicleResource,
     getCreate,
-} from '../../models/utils';
+} from '../../models/utils/index.js';
+import type { ResourceDescription } from '../../models/utils/resource-description.js';
 import {
     addResourceDescription,
     greaterEqualResourceDescription,
-    ResourceDescription,
-} from '../../models/utils/resource-description';
-import type { ExerciseState } from '../../state';
+} from '../../models/utils/resource-description.js';
+import type { ExerciseState } from '../../state.js';
+import type { UUID } from '../../utils/index.js';
 import {
     cloneDeepMutable,
     StrictObject,
-    UUID,
     uuidArrayValidationOptions,
     uuidValidationOptions,
-} from '../../utils';
-import { IsValue } from '../../utils/validators';
-import { IsResourceDescription } from '../../utils/validators/is-resource-description';
-import { ResourceRequiredEvent } from '../events';
-import { sendSimulationEvent } from '../events/utils';
-import { tryGetElement } from '../../store/action-reducers/utils';
+} from '../../utils/index.js';
+import { IsValue } from '../../utils/validators/index.js';
+import { IsResourceDescription } from '../../utils/validators/is-resource-description.js';
+import { ResourceRequiredEvent } from '../events/index.js';
+import { sendSimulationEvent } from '../events/utils.js';
+import { tryGetElement } from '../../store/action-reducers/utils/index.js';
 import type {
     SimulationActivity,
     SimulationActivityState,
-} from './simulation-activity';
-import type { UnloadVehicleActivityState } from './unload-vehicle';
+} from './simulation-activity.js';
+import type { UnloadVehicleActivityState } from './unload-vehicle.js';
 
 export class ProvidePersonnelFromVehiclesActivityState
     implements SimulationActivityState

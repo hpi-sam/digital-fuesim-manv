@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/no-shadow
-import type { Element } from '../models/element';
-import type { ExerciseState } from '../state';
+import type { Element } from '../models/element.js';
+import type { ExerciseState } from '../state.js';
 
 type ElementType = Element['type'];
 

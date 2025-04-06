@@ -1,8 +1,10 @@
 import { Type } from 'class-transformer';
 import { IsBoolean, IsNumber, IsUUID, ValidateNested } from 'class-validator';
-import { UUID, uuidValidationOptions } from '../../utils';
-import { getCreate } from './get-create';
-import { StartPoint, startPointTypeOptions } from './start-points';
+import type { UUID } from '../../utils/index.js';
+import { uuidValidationOptions } from '../../utils/index.js';
+import { getCreate } from './get-create.js';
+import type { StartPoint } from './start-points.js';
+import { startPointTypeOptions } from './start-points.js';
 
 export class Transfer {
     /**

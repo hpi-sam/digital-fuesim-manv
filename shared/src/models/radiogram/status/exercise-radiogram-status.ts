@@ -1,10 +1,10 @@
 import type { Type } from 'class-transformer';
-import type { Constructor } from '../../../utils/constructor';
-import { RadiogramAcceptedStatus } from './radiogram-accepted-status';
-import { RadiogramDoneStatus } from './radiogram-done-status';
-import { RadiogramStatus } from './radiogram-status';
-import { RadiogramUnpublishedStatus } from './radiogram-unpublished-status';
-import { RadiogramUnreadStatus } from './radiogram-unread-status';
+import type { Constructor } from '../../../utils/constructor.js';
+import { RadiogramAcceptedStatus } from './radiogram-accepted-status.js';
+import { RadiogramDoneStatus } from './radiogram-done-status.js';
+import { RadiogramStatus } from './radiogram-status.js';
+import { RadiogramUnpublishedStatus } from './radiogram-unpublished-status.js';
+import { RadiogramUnreadStatus } from './radiogram-unread-status.js';
 
 export const radiogramStatus = {
     RadiogramAcceptedStatus,

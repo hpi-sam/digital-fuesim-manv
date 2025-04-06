@@ -17,22 +17,22 @@ import {
 } from 'digital-fuesim-manv-shared';
 import type { EntityManager } from 'typeorm';
 import { LessThan } from 'typeorm';
-import { Config } from '../config';
-import type { ActionWrapperEntity } from '../database/entities/action-wrapper.entity';
-import { ExerciseWrapperEntity } from '../database/entities/exercise-wrapper.entity';
-import { migrateInDatabase } from '../database/migrate-in-database';
-import { NormalType } from '../database/normal-type';
-import type { DatabaseService } from '../database/services/database-service';
-import { pushAll, removeAll } from '../utils/array';
-import { IncrementIdGenerator } from '../utils/increment-id-generator';
-import { RestoreError } from '../utils/restore-error';
-import { UserReadableIdGenerator } from '../utils/user-readable-id-generator';
-import { ValidationErrorWrapper } from '../utils/validation-error-wrapper';
-import { ActionWrapper } from './action-wrapper';
-import type { ClientWrapper } from './client-wrapper';
-import { exerciseMap } from './exercise-map';
-import { patientTick } from './patient-ticking';
-import { PeriodicEventHandler } from './periodic-events/periodic-event-handler';
+import { Config } from '../config.js';
+import type { ActionWrapperEntity } from '../database/entities/action-wrapper.entity.js';
+import { ExerciseWrapperEntity } from '../database/entities/exercise-wrapper.entity.js';
+import { migrateInDatabase } from '../database/migrate-in-database.js';
+import { NormalType } from '../database/normal-type.js';
+import type { DatabaseService } from '../database/services/database-service.js';
+import { pushAll, removeAll } from '../utils/array.js';
+import { IncrementIdGenerator } from '../utils/increment-id-generator.js';
+import { RestoreError } from '../utils/restore-error.js';
+import { UserReadableIdGenerator } from '../utils/user-readable-id-generator.js';
+import { ValidationErrorWrapper } from '../utils/validation-error-wrapper.js';
+import { ActionWrapper } from './action-wrapper.js';
+import type { ClientWrapper } from './client-wrapper.js';
+import { exerciseMap } from './exercise-map.js';
+import { patientTick } from './patient-ticking.js';
+import { PeriodicEventHandler } from './periodic-events/periodic-event-handler.js';
 
 export class ExerciseWrapper extends NormalType<
     ExerciseWrapper,

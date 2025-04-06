@@ -1,12 +1,10 @@
 import type { ClientToServerEvents } from 'digital-fuesim-manv-shared';
-// eslint-disable-next-line no-restricted-imports
-import type { SocketReservedEventsMap } from 'socket.io/dist/socket';
-// eslint-disable-next-line no-restricted-imports
+import type { SocketReservedEventsMap } from '../../../node_modules/socket.io/dist/socket.js';
 import type {
     ReservedOrUserEventNames,
     ReservedOrUserListener,
-} from 'socket.io/dist/typed-events';
-import type { ExerciseSocket } from '../../exercise-server';
+} from '../../../node_modules/socket.io/dist/typed-events.js';
+import type { ExerciseSocket } from '../../exercise-server.js';
 
 function isDevelopment() {
     return process.env['NODE_ENV'] !== 'production';

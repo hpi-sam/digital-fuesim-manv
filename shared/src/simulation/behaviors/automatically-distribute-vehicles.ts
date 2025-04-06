@@ -1,22 +1,26 @@
 import { IsInt, IsOptional, IsUUID, Min } from 'class-validator';
 import { cloneDeep } from 'lodash-es';
-import { getCreate } from '../../models/utils/get-create';
-import type { Mutable } from '../../utils';
-import { cloneDeepMutable, UUID, uuid, UUIDSet } from '../../utils';
-import { IsUUIDSet, IsUUIDSetMap, IsValue } from '../../utils/validators';
-import { IsResourceDescription } from '../../utils/validators/is-resource-description';
+import { getCreate } from '../../models/utils/get-create.js';
+import type { Mutable, UUID, UUIDSet } from '../../utils/index.js';
+import { cloneDeepMutable, uuid } from '../../utils/index.js';
+import {
+    IsUUIDSet,
+    IsUUIDSetMap,
+    IsValue,
+} from '../../utils/validators/index.js';
+import { IsResourceDescription } from '../../utils/validators/is-resource-description.js';
 import {
     DelayEventActivityState,
     RecurringEventActivityState,
-} from '../activities';
-import { addActivity } from '../activities/utils';
-import { TryToDistributeEvent } from '../events/try-to-distribute';
-import { nextUUID } from '../utils/randomness';
-import { TransferVehiclesRequestEvent } from '../events';
+} from '../activities/index.js';
+import { addActivity } from '../activities/utils.js';
+import { TryToDistributeEvent } from '../events/try-to-distribute.js';
+import { nextUUID } from '../utils/randomness.js';
+import { TransferVehiclesRequestEvent } from '../events/index.js';
 import type {
     SimulationBehavior,
     SimulationBehaviorState,
-} from './simulation-behavior';
+} from './simulation-behavior.js';
 
 export class AutomaticallyDistributeVehiclesBehaviorState
     implements SimulationBehaviorState

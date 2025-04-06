@@ -1,14 +1,14 @@
 import { IsUUID } from 'class-validator';
-import { UUID } from '../../../utils/uuid';
-import { IsValue } from '../../../utils/validators/is-value';
-import { getCreate } from '../../../models/utils/get-create';
-import { getElement } from '../../../store/action-reducers/utils/get-element';
-import { sendSimulationEvent } from '../../../simulation/events/utils';
-import { ResourceRequiredEvent } from '../../../simulation/events/resources-required';
+import type { UUID } from '../../../utils/uuid.js';
+import { IsValue } from '../../../utils/validators/is-value.js';
+import { getCreate } from '../../../models/utils/get-create.js';
+import { getElement } from '../../../store/action-reducers/utils/get-element.js';
+import { sendSimulationEvent } from '../../../simulation/events/utils.js';
+import { ResourceRequiredEvent } from '../../../simulation/events/resources-required.js';
 import type {
     RequestTarget,
     RequestTargetConfiguration,
-} from './request-target';
+} from './request-target.js';
 
 export class SimulatedRegionRequestTargetConfiguration
     implements RequestTargetConfiguration

@@ -1,10 +1,10 @@
 import { Type } from 'class-transformer';
 import { IsArray, ValidateNested } from 'class-validator';
 import type { Immutable } from 'immer';
-import { cloneDeepImmutable } from '../../utils';
-import type { AllowedValues } from '../../utils/validators';
-import { IsLiteralUnion } from '../../utils/validators';
-import { getCreate } from './get-create';
+import { cloneDeepImmutable } from '../../utils/index.js';
+import type { AllowedValues } from '../../utils/validators/index.js';
+import { IsLiteralUnion } from '../../utils/validators/index.js';
+import { getCreate } from './get-create.js';
 
 /**
  * A letter that defines the color of a patient in a patient status.

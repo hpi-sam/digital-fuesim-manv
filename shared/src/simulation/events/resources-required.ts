@@ -1,13 +1,12 @@
 import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
-import { getCreate } from '../../models/utils/get-create';
-import {
-    ExerciseRescueResource,
-    rescueResourceTypeOptions,
-} from '../../models/utils/rescue-resource';
-import { UUID, uuidValidationOptions } from '../../utils';
-import { IsValue } from '../../utils/validators';
-import type { SimulationEvent } from './simulation-event';
+import { getCreate } from '../../models/utils/get-create.js';
+import type { ExerciseRescueResource } from '../../models/utils/rescue-resource.js';
+import { rescueResourceTypeOptions } from '../../models/utils/rescue-resource.js';
+import type { UUID } from '../../utils/index.js';
+import { uuidValidationOptions } from '../../utils/index.js';
+import { IsValue } from '../../utils/validators/index.js';
+import type { SimulationEvent } from './simulation-event.js';
 
 export class ResourceRequiredEvent implements SimulationEvent {
     @IsValue('resourceRequiredEvent')

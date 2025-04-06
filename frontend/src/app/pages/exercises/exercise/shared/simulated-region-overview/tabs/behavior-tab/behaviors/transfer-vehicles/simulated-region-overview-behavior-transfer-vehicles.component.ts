@@ -10,12 +10,12 @@ import type {
     UUIDSet,
     Vehicle,
 } from 'digital-fuesim-manv-shared';
+import type { UUID } from 'digital-fuesim-manv-shared';
 import {
     cloneDeepMutable,
     isInSpecificVehicle,
     isInSpecificSimulatedRegion,
     Patient,
-    UUID,
 } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { Subject, takeUntil } from 'rxjs';
@@ -33,7 +33,7 @@ import {
     selectVehicles,
 } from 'src/app/state/application/selectors/exercise.selectors';
 import { comparePatientsByVisibleStatus } from '../../../compare-patients';
-import { TransferOptions } from '../../../../start-transfer.service';
+import type { TransferOptions } from '../../../../start-transfer.service';
 
 let globalLastInformationCollapsed = true;
 let globalLastSettingsCollapsed = true;

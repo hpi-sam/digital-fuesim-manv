@@ -6,28 +6,27 @@ import {
     MaxLength,
     Min,
 } from 'class-validator';
-import type { AlarmGroupVehicle, VehicleTemplate } from '../../models';
+import type { AlarmGroupVehicle, VehicleTemplate } from '../../models/index.js';
 import {
     AlarmGroupStartPoint,
     EocLogEntry,
     MapCoordinates,
-} from '../../models';
-import type { Mutable } from '../../utils';
+} from '../../models/index.js';
+import type { Mutable, UUID } from '../../utils/index.js';
 import {
     StrictObject,
-    UUID,
     cloneDeepMutable,
     uuidValidationOptions,
-} from '../../utils';
-import { IsValue } from '../../utils/validators';
-import type { Action, ActionReducer } from '../action-reducer';
-import type { ExerciseState } from '../../state';
-import { createVehicleParameters } from '../../state-helpers';
-import { nextUUID } from '../../simulation/utils/randomness';
-import { getElement } from './utils';
-import { VehicleActionReducers } from './vehicle';
-import { TransferActionReducers } from './transfer';
-import { logAlarmGroupSent } from './utils/log';
+} from '../../utils/index.js';
+import { IsValue } from '../../utils/validators/index.js';
+import type { Action, ActionReducer } from '../action-reducer.js';
+import type { ExerciseState } from '../../state.js';
+import { createVehicleParameters } from '../../state-helpers/index.js';
+import { nextUUID } from '../../simulation/utils/randomness.js';
+import { getElement } from './utils/index.js';
+import { VehicleActionReducers } from './vehicle.js';
+import { TransferActionReducers } from './transfer.js';
+import { logAlarmGroupSent } from './utils/log.js';
 
 export class AddLogEntryAction implements Action {
     @IsValue('[Emergency Operation Center] Add Log Entry' as const)

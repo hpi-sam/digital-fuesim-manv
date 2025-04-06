@@ -1,4 +1,4 @@
-import type { AllowedValues } from '../../utils/validators';
+import type { AllowedValues } from '../../utils/validators/index.js';
 
 export type ExerciseStatus = 'notStarted' | 'paused' | 'running';
 

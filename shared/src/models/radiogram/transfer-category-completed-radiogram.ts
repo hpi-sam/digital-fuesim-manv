@@ -1,18 +1,15 @@
 import { IsBoolean, IsUUID, ValidateNested } from 'class-validator';
-import { UUID, uuidValidationOptions } from '../../utils';
-import { IsLiteralUnion, IsValue } from '../../utils/validators';
-import { IsRadiogramStatus } from '../../utils/validators/is-radiogram-status';
-import { getCreate } from '../utils/get-create';
-import {
-    PatientStatus,
-    patientStatusAllowedValues,
-} from '../utils/patient-status';
-import type { Radiogram } from './radiogram';
-import { ExerciseRadiogramStatus } from './status/exercise-radiogram-status';
-import {
-    Scope as TransferProgressScope,
-    scopeAllowedValues,
-} from './utils/transfer-progress-scope';
+import type { UUID } from '../../utils/index.js';
+import { uuidValidationOptions } from '../../utils/index.js';
+import { IsLiteralUnion, IsValue } from '../../utils/validators/index.js';
+import { IsRadiogramStatus } from '../../utils/validators/is-radiogram-status.js';
+import { getCreate } from '../utils/get-create.js';
+import type { PatientStatus } from '../utils/patient-status.js';
+import { patientStatusAllowedValues } from '../utils/patient-status.js';
+import type { Radiogram } from './radiogram.js';
+import type { ExerciseRadiogramStatus } from './status/exercise-radiogram-status.js';
+import type { Scope as TransferProgressScope } from './utils/transfer-progress-scope.js';
+import { scopeAllowedValues } from './utils/transfer-progress-scope.js';
 
 export class TransferCategoryCompletedRadiogram implements Radiogram {
     @IsUUID(4, uuidValidationOptions)

@@ -1,22 +1,19 @@
 import { Type } from 'class-transformer';
 import { IsBoolean, IsUUID, ValidateNested } from 'class-validator';
-import {
-    ExerciseRadiogram,
-    radiogramTypeOptions,
-} from '../../models/radiogram/exercise-radiogram';
-import { publishRadiogram } from '../../models/radiogram/radiogram-helpers-mutable';
-import { getCreate } from '../../models/utils/get-create';
-import { UUID, uuidValidationOptions } from '../../utils';
-import { IsValue } from '../../utils/validators';
-import {
-    ExerciseSimulationEvent,
-    simulationEventTypeOptions,
-} from '../events/exercise-simulation-event';
-import { sendSimulationEvent } from '../events/utils';
+import type { ExerciseRadiogram } from '../../models/radiogram/exercise-radiogram.js';
+import { radiogramTypeOptions } from '../../models/radiogram/exercise-radiogram.js';
+import { publishRadiogram } from '../../models/radiogram/radiogram-helpers-mutable.js';
+import { getCreate } from '../../models/utils/get-create.js';
+import type { UUID } from '../../utils/index.js';
+import { uuidValidationOptions } from '../../utils/index.js';
+import { IsValue } from '../../utils/validators/index.js';
+import type { ExerciseSimulationEvent } from '../events/exercise-simulation-event.js';
+import { simulationEventTypeOptions } from '../events/exercise-simulation-event.js';
+import { sendSimulationEvent } from '../events/utils.js';
 import type {
     SimulationActivity,
     SimulationActivityState,
-} from './simulation-activity';
+} from './simulation-activity.js';
 
 export class GenerateReportActivityState implements SimulationActivityState {
     @IsValue('generateReportActivity')

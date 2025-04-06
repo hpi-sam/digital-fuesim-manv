@@ -1,6 +1,6 @@
 import type { EntityManager } from 'typeorm';
-import { ExerciseWrapperEntity } from '../entities/exercise-wrapper.entity';
-import { BaseService } from './base-service';
+import { ExerciseWrapperEntity } from '../entities/exercise-wrapper.entity.js';
+import { BaseService } from './base-service.js';
 
 type CreateExerciseWrapper = Omit<
     ExerciseWrapperEntity,

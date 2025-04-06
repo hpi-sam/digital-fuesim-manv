@@ -19,7 +19,7 @@ import {
     selectVehicleTemplates,
 } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
-import { TransferOptions } from '../../start-transfer.service';
+import type { TransferOptions } from '../../start-transfer.service';
 
 let globalLastBehaviorType: ExerciseSimulationBehaviorType | undefined;
 

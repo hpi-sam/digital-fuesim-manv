@@ -1,9 +1,9 @@
 import { DataSource } from 'typeorm';
-import { Config } from '../config';
-import { ActionWrapperEntity } from './entities/action-wrapper.entity';
-import { ExerciseWrapperEntity } from './entities/exercise-wrapper.entity';
-import { AddExerciseAndActions1653554608164 } from './migrations/1653554608164-AddExerciseAndActions';
-import { AddStateVersion1653601072020 } from './migrations/1653601072020-AddStateVersion';
+import { Config } from '../config.js';
+import { ActionWrapperEntity } from './entities/action-wrapper.entity.js';
+import { ExerciseWrapperEntity } from './entities/exercise-wrapper.entity.js';
+import { AddExerciseAndActions1653554608164 } from './migrations/1653554608164-AddExerciseAndActions.js';
+import { AddStateVersion1653601072020 } from './migrations/1653601072020-AddStateVersion.js';
 
 export type DataSourceMode = 'baseline' | 'default' | 'testing';
 

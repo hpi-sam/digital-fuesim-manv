@@ -1,10 +1,10 @@
-import type { ExerciseState } from '../../state';
-import { getExerciseRadiogramById } from '../../store/action-reducers/utils/get-element';
-import { logRadiogram } from '../../store/action-reducers/utils/log';
-import type { Mutable, UUID } from '../../utils';
-import { createRadiogramActionTag } from '../utils/tag-helpers';
-import type { ExerciseRadiogram } from './exercise-radiogram';
-import { publishTimeOf } from './radiogram-helpers';
+import type { ExerciseState } from '../../state.js';
+import { getExerciseRadiogramById } from '../../store/action-reducers/utils/get-element.js';
+import { logRadiogram } from '../../store/action-reducers/utils/log.js';
+import type { Mutable, UUID } from '../../utils/index.js';
+import { createRadiogramActionTag } from '../utils/tag-helpers.js';
+import type { ExerciseRadiogram } from './exercise-radiogram.js';
+import { publishTimeOf } from './radiogram-helpers.js';
 
 export function publishRadiogram(
     draftState: Mutable<ExerciseState>,

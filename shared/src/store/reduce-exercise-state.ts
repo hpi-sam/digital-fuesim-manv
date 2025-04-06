@@ -1,8 +1,8 @@
 import { freeze, produce } from 'immer';
-import type { ExerciseState } from '../state';
-import type { Mutable } from '../utils';
-import type { ExerciseAction } from './action-reducers';
-import { getExerciseActionTypeDictionary } from './action-reducers';
+import type { ExerciseState } from '../state.js';
+import type { Mutable } from '../utils/index.js';
+import type { ExerciseAction } from './action-reducers/index.js';
+import { getExerciseActionTypeDictionary } from './action-reducers/index.js';
 
 const exerciseActionTypeDictionary = getExerciseActionTypeDictionary();
 

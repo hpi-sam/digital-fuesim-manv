@@ -1,6 +1,7 @@
 import type { OnChanges } from '@angular/core';
 import { Component, Input } from '@angular/core';
-import { UUID, NoOccupation } from 'digital-fuesim-manv-shared';
+import type { UUID } from 'digital-fuesim-manv-shared';
+import { NoOccupation } from 'digital-fuesim-manv-shared';
 import type {
     ExerciseOccupation,
     ExerciseOccupationType,

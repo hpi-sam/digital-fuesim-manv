@@ -1,7 +1,7 @@
-import { Viewport } from '../models';
-import type { MapCoordinates } from '../models/utils';
-import type { ExerciseAction } from './action-reducers';
-import { validateExerciseAction } from '.';
+import { Viewport } from '../models/index.js';
+import type { MapCoordinates } from '../models/utils/index.js';
+import type { ExerciseAction } from './action-reducers/index.js';
+import { validateExerciseAction } from './index.js';
 
 describe('validateExerciseAction', () => {
     it('should accept a valid action object', () => {

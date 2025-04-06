@@ -1,6 +1,6 @@
-import type { ExerciseSocket, ExerciseServer } from '../../exercise-server';
-import { clientMap } from '../client-map';
-import { secureOn } from './secure-on';
+import type { ExerciseSocket, ExerciseServer } from '../../exercise-server.js';
+import { clientMap } from '../client-map.js';
+import { secureOn } from './secure-on.js';
 
 export const registerGetStateHandler = (
     io: ExerciseServer,

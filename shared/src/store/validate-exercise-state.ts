@@ -1,8 +1,8 @@
 import { plainToInstance } from 'class-transformer';
 import type { ValidationError } from 'class-validator';
 import { validateSync } from 'class-validator';
-import { ExerciseState } from '../state';
-import { defaultValidateOptions } from './validation-options';
+import { ExerciseState } from '../state.js';
+import { defaultValidateOptions } from './validation-options.js';
 
 /**
  *

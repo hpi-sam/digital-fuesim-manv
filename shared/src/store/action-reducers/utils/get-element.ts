@@ -1,15 +1,15 @@
-import type { ExerciseRadiogram } from '../../../models/radiogram';
+import type { ExerciseRadiogram } from '../../../models/radiogram/index.js';
 import type {
     ExerciseSimulationActivityState,
     ExerciseSimulationActivityType,
     ExerciseSimulationBehaviorState,
     ExerciseSimulationBehaviorType,
-} from '../../../simulation';
-import type { ExerciseState } from '../../../state';
-import type { Mutable, UUID } from '../../../utils';
-import type { ElementTypePluralMap } from '../../../utils/element-type-plural-map';
-import { elementTypePluralMap } from '../../../utils/element-type-plural-map';
-import { ReducerError } from '../../reducer-error';
+} from '../../../simulation/index.js';
+import type { ExerciseState } from '../../../state.js';
+import type { Mutable, UUID } from '../../../utils/index.js';
+import type { ElementTypePluralMap } from '../../../utils/element-type-plural-map.js';
+import { elementTypePluralMap } from '../../../utils/element-type-plural-map.js';
+import { ReducerError } from '../../reducer-error.js';
 
 /**
  * @returns The element with the given id

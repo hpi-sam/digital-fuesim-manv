@@ -1,26 +1,27 @@
 import { IsUUID } from 'class-validator';
-import type { ResourceRequestRadiogram } from '../../models/radiogram';
+import type { ResourceRequestRadiogram } from '../../models/radiogram/index.js';
 import {
     acceptRadiogram,
     markRadiogramDone,
-} from '../../models/radiogram/radiogram-helpers-mutable';
-import { VehicleResource } from '../../models/utils/rescue-resource';
-import { VehiclesSentEvent } from '../../simulation';
-import { sendSimulationEvent } from '../../simulation/events/utils';
-import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
-import { IsValue } from '../../utils/validators';
-import type { Action, ActionReducer } from '../action-reducer';
+} from '../../models/radiogram/radiogram-helpers-mutable.js';
+import { VehicleResource } from '../../models/utils/rescue-resource.js';
+import { VehiclesSentEvent } from '../../simulation/index.js';
+import { sendSimulationEvent } from '../../simulation/events/utils.js';
+import type { UUID } from '../../utils/index.js';
+import { cloneDeepMutable, uuidValidationOptions } from '../../utils/index.js';
+import { IsValue } from '../../utils/validators/index.js';
+import type { Action, ActionReducer } from '../action-reducer.js';
 import {
     createRadiogramActionTag,
     isInSpecificSimulatedRegion,
-} from '../../models';
+} from '../../models/index.js';
 import {
     getElement,
     getElementByPredicate,
     getExerciseRadiogramById,
     getRadiogramById,
-} from './utils';
-import { logRadiogram } from './utils/log';
+} from './utils/index.js';
+import { logRadiogram } from './utils/log.js';
 
 export class AcceptRadiogramAction implements Action {
     @IsValue('[Radiogram] Accept radiogram' as const)

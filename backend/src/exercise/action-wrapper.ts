@@ -1,10 +1,10 @@
 import type { ExerciseAction, UUID } from 'digital-fuesim-manv-shared';
 import type { EntityManager } from 'typeorm';
-import { NormalType } from '../database/normal-type';
-import { ActionWrapperEntity } from '../database/entities/action-wrapper.entity';
-import type { DatabaseService } from '../database/services/database-service';
-import type { ExerciseWrapperEntity } from '../database/entities/exercise-wrapper.entity';
-import type { ExerciseWrapper } from './exercise-wrapper';
+import { NormalType } from '../database/normal-type.js';
+import { ActionWrapperEntity } from '../database/entities/action-wrapper.entity.js';
+import type { DatabaseService } from '../database/services/database-service.js';
+import type { ExerciseWrapperEntity } from '../database/entities/exercise-wrapper.entity.js';
+import type { ExerciseWrapper } from './exercise-wrapper.js';
 
 export class ActionWrapper extends NormalType<
     ActionWrapper,

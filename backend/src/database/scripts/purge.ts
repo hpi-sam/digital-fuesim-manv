@@ -1,5 +1,5 @@
-import { createNewDataSource } from '../data-source';
-import { DatabaseService } from '../services/database-service';
+import { createNewDataSource } from '../data-source.js';
+import { DatabaseService } from '../services/database-service.js';
 
 const dataSource = await createNewDataSource().initialize();
 

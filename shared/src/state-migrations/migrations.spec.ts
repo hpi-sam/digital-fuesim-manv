@@ -1,6 +1,6 @@
 import { range } from 'lodash-es';
-import { ExerciseState } from '../state';
-import { migrations } from './migration-functions';
+import { ExerciseState } from '../state.js';
+import { migrations } from './migration-functions.js';
 
 describe('migrations definition', () => {
     it('has the correct versions', () => {

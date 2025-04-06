@@ -1,6 +1,6 @@
 import type { ValidationOptions, ValidationArguments } from 'class-validator';
 import { isNumber, registerDecorator } from 'class-validator';
-import type { PatientStatus } from './patient-status';
+import type { PatientStatus } from './patient-status.js';
 
 /**
  * `100_000` healthPoints is the maximum;

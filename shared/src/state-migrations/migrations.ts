@@ -1,11 +1,11 @@
-import type { StateExport } from '../export-import/file-format';
-import { ExerciseState } from '../state';
-import type { ExerciseAction } from '../store';
-import { ReducerError, applyAction } from '../store';
-import type { Mutable, UUID } from '../utils';
-import { cloneDeepMutable } from '../utils';
-import type { Migration } from './migration-functions';
-import { migrations } from './migration-functions';
+import type { StateExport } from '../export-import/file-format/index.js';
+import { ExerciseState } from '../state.js';
+import type { ExerciseAction } from '../store/index.js';
+import { ReducerError, applyAction } from '../store/index.js';
+import type { Mutable, UUID } from '../utils/index.js';
+import { cloneDeepMutable } from '../utils/index.js';
+import type { Migration } from './migration-functions.js';
+import { migrations } from './migration-functions.js';
 
 export function migrateStateExport(
     stateExportToMigrate: StateExport

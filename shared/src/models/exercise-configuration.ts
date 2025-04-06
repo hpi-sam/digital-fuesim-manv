@@ -1,8 +1,8 @@
 import { Type } from 'class-transformer';
 import { IsBoolean, IsString, ValidateNested } from 'class-validator';
-import { IsValue } from '../utils/validators';
-import { defaultTileMapProperties } from '../data/default-state/tile-map-properties';
-import { getCreate, TileMapProperties } from './utils';
+import { IsValue } from '../utils/validators/index.js';
+import { defaultTileMapProperties } from '../data/default-state/tile-map-properties.js';
+import { getCreate, TileMapProperties } from './utils/index.js';
 
 export class ExerciseConfiguration {
     @IsValue('exerciseConfiguration' as const)

@@ -5,8 +5,8 @@ import type {
     RecurringEventActivityState,
     RequestBehaviorState,
 } from 'digital-fuesim-manv-shared';
+import type { UUID } from 'digital-fuesim-manv-shared';
 import {
-    UUID,
     SimulatedRegionRequestTargetConfiguration,
     TraineesRequestTargetConfiguration,
 } from 'digital-fuesim-manv-shared';

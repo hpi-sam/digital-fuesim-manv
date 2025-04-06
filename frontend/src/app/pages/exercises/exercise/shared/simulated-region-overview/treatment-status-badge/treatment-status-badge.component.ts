@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { TreatmentProgress } from 'digital-fuesim-manv-shared';
+import type { TreatmentProgress } from 'digital-fuesim-manv-shared';
 
 @Component({
     selector: 'app-treatment-status-badge',

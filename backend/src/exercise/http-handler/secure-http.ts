@@ -1,5 +1,5 @@
 import type { Response as ExpressResponse } from 'express';
-import type { HttpResponse } from './utils';
+import type { HttpResponse } from './utils.js';
 
 export type HttpMethod =
     | 'delete'

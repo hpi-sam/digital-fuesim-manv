@@ -6,9 +6,9 @@ import {
     StateExport,
     validateExerciseExport,
 } from 'digital-fuesim-manv-shared';
-import type { DatabaseService } from '../database/services/database-service';
-import { ExerciseWrapper } from '../exercise/exercise-wrapper';
-import type { HttpResponse } from '../exercise/http-handler/utils';
+import type { DatabaseService } from '../database/services/database-service.js';
+import { ExerciseWrapper } from '../exercise/exercise-wrapper.js';
+import type { HttpResponse } from '../exercise/http-handler/utils.js';
 
 export async function importExercise(
     importObject: StateExport,

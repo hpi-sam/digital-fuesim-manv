@@ -4,9 +4,9 @@ import {
     MapImageTemplate,
     PatientTemplate,
     VehicleTemplate,
-} from '../../models';
-import { IsValue } from '../../utils/validators';
-import { BaseExportImportFile } from './base-file';
+} from '../../models/index.js';
+import { IsValue } from '../../utils/validators/index.js';
+import { BaseExportImportFile } from './base-file.js';
 
 export class PartialExport extends BaseExportImportFile {
     @IsValue('partial' as const)

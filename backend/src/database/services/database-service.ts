@@ -1,6 +1,6 @@
 import type { DataSource, EntityManager } from 'typeorm';
-import { ActionWrapperService } from './action-wrapper.service';
-import { ExerciseWrapperService } from './exercise-wrapper.service';
+import { ActionWrapperService } from './action-wrapper.service.js';
+import { ExerciseWrapperService } from './exercise-wrapper.service.js';
 
 export class DatabaseService {
     public readonly actionWrapperService: ActionWrapperService;

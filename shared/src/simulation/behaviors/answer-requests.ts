@@ -4,24 +4,27 @@ import {
     VehicleResource,
     getCreate,
     isInSpecificSimulatedRegion,
-} from '../../models/utils';
-import { getElementByPredicate } from '../../store/action-reducers/utils';
+} from '../../models/utils/index.js';
+import { getElementByPredicate } from '../../store/action-reducers/utils/index.js';
+import type { UUID } from '../../utils/index.js';
 import {
-    UUID,
     cloneDeepMutable,
     uuid,
     uuidValidationOptions,
-} from '../../utils';
-import { IsValue } from '../../utils/validators';
-import { addActivity } from '../activities/utils';
-import { nextUUID } from '../utils/randomness';
-import { DelayEventActivityState } from '../activities';
-import { ResourceRequiredEvent, TransferVehiclesRequestEvent } from '../events';
-import type { ResourceDescription } from '../../models/utils/resource-description';
+} from '../../utils/index.js';
+import { IsValue } from '../../utils/validators/index.js';
+import { addActivity } from '../activities/utils.js';
+import { nextUUID } from '../utils/randomness.js';
+import { DelayEventActivityState } from '../activities/index.js';
+import {
+    ResourceRequiredEvent,
+    TransferVehiclesRequestEvent,
+} from '../events/index.js';
+import type { ResourceDescription } from '../../models/utils/resource-description.js';
 import type {
     SimulationBehavior,
     SimulationBehaviorState,
-} from './simulation-behavior';
+} from './simulation-behavior.js';
 
 export class AnswerRequestsBehaviorState implements SimulationBehaviorState {
     @IsValue('answerRequestsBehavior')

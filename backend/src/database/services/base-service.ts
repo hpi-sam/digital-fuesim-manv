@@ -9,8 +9,8 @@ import type {
     FindOptionsWhere,
 } from 'typeorm';
 import { EntityNotFoundError } from 'typeorm';
-import { DatabaseError } from '../database-error';
-import type { BaseEntity } from '../entities/base-entity';
+import { DatabaseError } from '../database-error.js';
+import type { BaseEntity } from '../entities/base-entity.js';
 
 /**
  * Provides the general API for interacting with the database for a specific {@link BaseEntity}

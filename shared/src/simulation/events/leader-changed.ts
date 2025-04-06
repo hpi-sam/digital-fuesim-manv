@@ -1,9 +1,9 @@
 import { IsUUID, ValidateIf } from 'class-validator';
-import type { UUID } from '../../utils';
-import { uuidValidationOptions } from '../../utils';
-import { IsValue } from '../../utils/validators';
-import { getCreate } from '../../models/utils/get-create';
-import type { SimulationEvent } from './simulation-event';
+import type { UUID } from '../../utils/index.js';
+import { uuidValidationOptions } from '../../utils/index.js';
+import { IsValue } from '../../utils/validators/index.js';
+import { getCreate } from '../../models/utils/get-create.js';
+import type { SimulationEvent } from './simulation-event.js';
 
 export class LeaderChangedEvent implements SimulationEvent {
     @IsValue('leaderChangedEvent')

@@ -1,6 +1,6 @@
-import type { Hospital } from '../../models';
-import type { UUID } from '../../utils';
-import { cloneDeepMutable } from '../../utils';
+import type { Hospital } from '../../models/index.js';
+import type { UUID } from '../../utils/index.js';
+import { cloneDeepMutable } from '../../utils/index.js';
 
 export const catchAllHospitalId: UUID = '00000000-0000-4000-8000-000000000000';
 

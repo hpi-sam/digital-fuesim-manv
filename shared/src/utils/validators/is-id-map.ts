@@ -1,9 +1,9 @@
 import type { ValidationOptions } from 'class-validator';
 import { isUUID } from 'class-validator';
-import type { Constructor } from '../constructor';
-import type { UUID } from '../uuid';
-import type { GenericPropertyDecorator } from './generic-property-decorator';
-import { IsMultiTypedStringMap } from './is-string-map';
+import type { Constructor } from '../constructor.js';
+import type { UUID } from '../uuid.js';
+import type { GenericPropertyDecorator } from './generic-property-decorator.js';
+import { IsMultiTypedStringMap } from './is-string-map.js';
 
 // An `isIdMap` function is omitted.
 // It's currently not used and it's not trivial to migrate the decorator approach below

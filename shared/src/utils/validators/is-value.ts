@@ -1,7 +1,7 @@
 import type { ValidationOptions, ValidationArguments } from 'class-validator';
 import { isIn } from 'class-validator';
-import type { GenericPropertyDecorator } from './generic-property-decorator';
-import { makeValidator } from './make-validator';
+import type { GenericPropertyDecorator } from './generic-property-decorator.js';
+import { makeValidator } from './make-validator.js';
 
 /**
  * Check whether two values are identical, using {@link isIn} from `class-validator`.

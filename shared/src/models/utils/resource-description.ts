@@ -1,4 +1,4 @@
-import { StrictObject } from '../../utils';
+import { StrictObject } from '../../utils/index.js';
 
 export const addResourceDescription = createCombine((a, b) => a + b);
 export const subtractResourceDescription = createCombine((a, b) => a - b);

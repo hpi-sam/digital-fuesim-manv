@@ -6,10 +6,10 @@ import type {
     ReportableInformation,
     ReportBehaviorState,
 } from 'digital-fuesim-manv-shared';
+import type { UUID } from 'digital-fuesim-manv-shared';
 import {
     reportableInformationTypeToGermanNameDictionary,
     reportableInformations,
-    UUID,
 } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { combineLatest, map } from 'rxjs';

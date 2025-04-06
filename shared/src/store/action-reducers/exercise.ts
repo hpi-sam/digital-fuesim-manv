@@ -6,38 +6,38 @@ import {
     IsPositive,
     ValidateNested,
 } from 'class-validator';
-import type { Personnel, PersonnelType, Vehicle } from '../../models';
+import type { Personnel, PersonnelType, Vehicle } from '../../models/index.js';
 import {
     createPersonnelTypeTag,
     personnelTypeAllowedValues,
     personnelTypeNames,
     Patient,
-} from '../../models';
+} from '../../models/index.js';
 import {
     getStatus,
     isNotInTransfer,
     currentTransferOf,
     TransferPosition,
-} from '../../models/utils';
-import { changePosition } from '../../models/utils/position/position-helpers-mutable';
-import { simulateAllRegions } from '../../simulation/utils/simulation';
-import type { ExerciseState } from '../../state';
-import type { Mutable, UUID } from '../../utils';
-import { cloneDeepMutable, StrictObject } from '../../utils';
-import type { ElementTypePluralMap } from '../../utils/element-type-plural-map';
-import { elementTypePluralMap } from '../../utils/element-type-plural-map';
-import { IsValue } from '../../utils/validators';
-import type { Action, ActionReducer } from '../action-reducer';
-import { ReducerError } from '../reducer-error';
-import type { TransferableElementType } from './transfer';
-import { letElementArrive } from './transfer';
-import { updateTreatments } from './utils/calculate-treatments';
-import { PatientUpdate } from './utils/patient-updates';
+} from '../../models/utils/index.js';
+import { changePosition } from '../../models/utils/position/position-helpers-mutable.js';
+import { simulateAllRegions } from '../../simulation/utils/simulation.js';
+import type { ExerciseState } from '../../state.js';
+import type { Mutable, UUID } from '../../utils/index.js';
+import { cloneDeepMutable, StrictObject } from '../../utils/index.js';
+import type { ElementTypePluralMap } from '../../utils/element-type-plural-map.js';
+import { elementTypePluralMap } from '../../utils/element-type-plural-map.js';
+import { IsValue } from '../../utils/validators/index.js';
+import type { Action, ActionReducer } from '../action-reducer.js';
+import { ReducerError } from '../reducer-error.js';
+import type { TransferableElementType } from './transfer.js';
+import { letElementArrive } from './transfer.js';
+import { updateTreatments } from './utils/calculate-treatments.js';
+import { PatientUpdate } from './utils/patient-updates.js';
 import {
     logPatientVisibleStatusChanged,
     logActive,
     logPatient,
-} from './utils/log';
+} from './utils/log.js';
 
 export class PauseExerciseAction implements Action {
     @IsValue('[Exercise] Pause' as const)

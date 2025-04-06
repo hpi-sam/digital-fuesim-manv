@@ -1,27 +1,31 @@
 import { produce } from 'immer';
-import { Personnel, SimulatedRegion, TransferPoint } from '../../models';
-import type { PatientStatus, PersonnelType } from '../../models/utils';
+import {
+    Personnel,
+    SimulatedRegion,
+    TransferPoint,
+} from '../../models/index.js';
+import type { PatientStatus, PersonnelType } from '../../models/utils/index.js';
 import {
     CanCaterFor,
     MapCoordinates,
     SimulatedRegionPosition,
     Size,
-} from '../../models/utils';
-import { ExerciseState } from '../../state';
-import type { Mutable, UUID } from '../../utils';
-import { cloneDeepMutable, uuid } from '../../utils';
-import { AssignLeaderBehaviorState } from '../behaviors/assign-leader';
-import { addPatient } from '../../../tests/utils/patients.spec';
-import { addPersonnel } from '../../../tests/utils/personnel.spec';
-import { defaultPersonnelTemplates } from '../../data/default-state/personnel-templates';
-import { TreatmentProgressChangedEvent } from '../events';
-import { assertCatering } from '../../../tests/utils/catering.spec';
-import { addMaterial } from '../../../tests/utils/materials.spec';
-import { sendSimulationEvent } from '../events/utils';
+} from '../../models/utils/index.js';
+import { ExerciseState } from '../../state.js';
+import type { Mutable, UUID } from '../../utils/index.js';
+import { cloneDeepMutable, uuid } from '../../utils/index.js';
+import { AssignLeaderBehaviorState } from '../behaviors/assign-leader.js';
+import { addPatient } from '../../../tests/utils/patients.spec.js';
+import { addPersonnel } from '../../../tests/utils/personnel.spec.js';
+import { defaultPersonnelTemplates } from '../../data/default-state/personnel-templates.js';
+import { TreatmentProgressChangedEvent } from '../events/index.js';
+import { assertCatering } from '../../../tests/utils/catering.spec.js';
+import { addMaterial } from '../../../tests/utils/materials.spec.js';
+import { sendSimulationEvent } from '../events/utils.js';
 import {
     reassignTreatmentsActivity,
     ReassignTreatmentsActivityState,
-} from './reassign-treatments';
+} from './reassign-treatments.js';
 
 const emptyState = ExerciseState.create('123456');
 

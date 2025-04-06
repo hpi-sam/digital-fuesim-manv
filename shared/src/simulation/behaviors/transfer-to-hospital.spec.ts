@@ -1,5 +1,5 @@
 import { produce } from 'immer';
-import type { Patient } from '../../models';
+import type { Patient } from '../../models/index.js';
 import {
     ImageProperties,
     IntermediateOccupation,
@@ -14,19 +14,19 @@ import {
     UnloadingOccupation,
     Vehicle,
     WaitForTransferOccupation,
-} from '../../models';
-import { ExerciseState } from '../../state';
-import type { Mutable, UUIDSet } from '../../utils';
-import { cloneDeepMutable, uuid } from '../../utils';
-import { handleSimulationEvents } from '../utils/simulation';
-import type { PatientCategoryTransferToHospitalFinishedEvent } from '../events';
-import { TickEvent, VehicleArrivedEvent } from '../events';
-import { addPatient } from '../../../tests/utils/patients.spec';
+} from '../../models/index.js';
+import { ExerciseState } from '../../state.js';
+import type { Mutable, UUIDSet } from '../../utils/index.js';
+import { cloneDeepMutable, uuid } from '../../utils/index.js';
+import { handleSimulationEvents } from '../utils/simulation.js';
+import type { PatientCategoryTransferToHospitalFinishedEvent } from '../events/index.js';
+import { TickEvent, VehicleArrivedEvent } from '../events/index.js';
+import { addPatient } from '../../../tests/utils/patients.spec.js';
 import type {
     DelayEventActivityState,
     TransferPatientToHospitalActivityState,
-} from '../activities';
-import { TransferToHospitalBehaviorState } from './transfer-to-hospital';
+} from '../activities/index.js';
+import { TransferToHospitalBehaviorState } from './transfer-to-hospital.js';
 
 const emptyState = ExerciseState.create('123456');
 const currentTime = 10_000;

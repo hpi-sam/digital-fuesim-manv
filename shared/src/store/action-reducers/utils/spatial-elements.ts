@@ -1,18 +1,18 @@
-import type { MapCoordinates } from '../../../models/utils';
+import type { MapCoordinates } from '../../../models/utils/index.js';
 import {
     currentCoordinatesOf,
     isNotOnMap,
     isOnMap,
-} from '../../../models/utils/position/position-helpers';
-import { SpatialTree } from '../../../models/utils/spatial-tree';
-import type { ExerciseState } from '../../../state';
-import { cloneDeepMutable } from '../../../utils/clone-deep';
-import type { ElementTypePluralMap } from '../../../utils/element-type-plural-map';
-import { elementTypePluralMap } from '../../../utils/element-type-plural-map';
-import type { Mutable } from '../../../utils/immutability';
-import type { UUID } from '../../../utils/uuid';
-import { removeTreatmentsOfElement } from './calculate-treatments';
-import { getElement } from './get-element';
+} from '../../../models/utils/position/position-helpers.js';
+import { SpatialTree } from '../../../models/utils/spatial-tree.js';
+import type { ExerciseState } from '../../../state.js';
+import { cloneDeepMutable } from '../../../utils/clone-deep.js';
+import type { ElementTypePluralMap } from '../../../utils/element-type-plural-map.js';
+import { elementTypePluralMap } from '../../../utils/element-type-plural-map.js';
+import type { Mutable } from '../../../utils/immutability.js';
+import type { UUID } from '../../../utils/uuid.js';
+import { removeTreatmentsOfElement } from './calculate-treatments.js';
+import { getElement } from './get-element.js';
 
 /**
  * The element types for which a spatial tree exists in the state to improve the performance (see {@link SpatialTree}).

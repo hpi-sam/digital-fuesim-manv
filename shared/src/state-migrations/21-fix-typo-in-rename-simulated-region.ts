@@ -1,4 +1,4 @@
-import type { Migration } from './migration-functions';
+import type { Migration } from './migration-functions.js';
 
 export const fixTypoInRenameSimulatedRegion21: Migration = {
     action: (_intermediaryState, action) => {

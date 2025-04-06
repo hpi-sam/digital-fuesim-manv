@@ -1,13 +1,13 @@
 import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
-import { MapImageTemplate } from '../../models';
-import { ImageProperties } from '../../models/utils';
-import type { ExerciseState } from '../../state';
-import type { Mutable } from '../../utils';
-import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
-import { IsValue } from '../../utils/validators';
-import type { Action, ActionReducer } from '../action-reducer';
-import { ReducerError } from '../reducer-error';
+import { MapImageTemplate } from '../../models/index.js';
+import { ImageProperties } from '../../models/utils/index.js';
+import type { ExerciseState } from '../../state.js';
+import type { Mutable, UUID } from '../../utils/index.js';
+import { cloneDeepMutable, uuidValidationOptions } from '../../utils/index.js';
+import { IsValue } from '../../utils/validators/index.js';
+import type { Action, ActionReducer } from '../action-reducer.js';
+import { ReducerError } from '../reducer-error.js';
 
 export class AddMapImageTemplateAction implements Action {
     @IsValue('[MapImageTemplate] Add mapImageTemplate' as const)

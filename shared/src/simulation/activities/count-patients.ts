@@ -1,19 +1,20 @@
 import { IsUUID } from 'class-validator';
 import { groupBy } from 'lodash-es';
-import { IsValue } from '../../utils/validators/is-value';
-import { StrictObject, UUID, uuidValidationOptions } from '../../utils';
-import { getCreate } from '../../models/utils/get-create';
-import { isInSpecificSimulatedRegion } from '../../models/utils/position/position-helpers';
-import { Patient } from '../../models/patient';
-import { sendSimulationEvent } from '../events/utils';
-import { PatientsCountedEvent } from '../events/patients-counted';
-import type { PatientStatus } from '../../models/utils/patient-status';
-import { patientStatusAllowedValues } from '../../models/utils/patient-status';
-import type { ResourceDescription } from '../../models/utils/resource-description';
+import { IsValue } from '../../utils/validators/is-value.js';
+import type { UUID } from '../../utils/index.js';
+import { StrictObject, uuidValidationOptions } from '../../utils/index.js';
+import { getCreate } from '../../models/utils/get-create.js';
+import { isInSpecificSimulatedRegion } from '../../models/utils/position/position-helpers.js';
+import { Patient } from '../../models/patient.js';
+import { sendSimulationEvent } from '../events/utils.js';
+import { PatientsCountedEvent } from '../events/patients-counted.js';
+import type { PatientStatus } from '../../models/utils/patient-status.js';
+import { patientStatusAllowedValues } from '../../models/utils/patient-status.js';
+import type { ResourceDescription } from '../../models/utils/resource-description.js';
 import type {
     SimulationActivity,
     SimulationActivityState,
-} from './simulation-activity';
+} from './simulation-activity.js';
 
 export class CountPatientsActivityState implements SimulationActivityState {
     @IsValue('countPatientsActivity' as const)

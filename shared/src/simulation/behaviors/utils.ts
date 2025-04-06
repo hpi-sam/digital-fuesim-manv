@@ -1,15 +1,15 @@
-import { TransferCountsRadiogram } from '../../models/radiogram';
-import type { ExerciseRadiogram } from '../../models/radiogram/exercise-radiogram';
-import { MaterialCountRadiogram } from '../../models/radiogram/material-count-radiogram';
-import { PatientCountRadiogram } from '../../models/radiogram/patient-count-radiogram';
-import { PersonnelCountRadiogram } from '../../models/radiogram/personnel-count-radiogram';
-import type { ExerciseRadiogramStatus } from '../../models/radiogram/status/exercise-radiogram-status';
-import { TreatmentStatusRadiogram } from '../../models/radiogram/treatment-status-radiogram';
-import { VehicleCountRadiogram } from '../../models/radiogram/vehicle-count-radiogram';
-import type { UUID } from '../../utils';
-import { StrictObject } from '../../utils';
-import type { AllowedValues } from '../../utils/validators';
-import type { ExerciseSimulationBehaviorType } from './exercise-simulation-behavior';
+import { TransferCountsRadiogram } from '../../models/radiogram/index.js';
+import type { ExerciseRadiogram } from '../../models/radiogram/exercise-radiogram.js';
+import { MaterialCountRadiogram } from '../../models/radiogram/material-count-radiogram.js';
+import { PatientCountRadiogram } from '../../models/radiogram/patient-count-radiogram.js';
+import { PersonnelCountRadiogram } from '../../models/radiogram/personnel-count-radiogram.js';
+import type { ExerciseRadiogramStatus } from '../../models/radiogram/status/exercise-radiogram-status.js';
+import { TreatmentStatusRadiogram } from '../../models/radiogram/treatment-status-radiogram.js';
+import { VehicleCountRadiogram } from '../../models/radiogram/vehicle-count-radiogram.js';
+import type { UUID } from '../../utils/index.js';
+import { StrictObject } from '../../utils/index.js';
+import type { AllowedValues } from '../../utils/validators/index.js';
+import type { ExerciseSimulationBehaviorType } from './exercise-simulation-behavior.js';
 
 export const reportableInformationAllowedValues: AllowedValues<ReportableInformation> =
     {
