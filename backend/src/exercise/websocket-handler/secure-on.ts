@@ -1,5 +1,5 @@
 import type { ClientToServerEvents } from 'digital-fuesim-manv-shared';
-import type { SocketReservedEventsMap } from '../../../node_modules/socket.io/dist/socket.js';
+import type { SocketReservedEventsMap } from '../../../node_modules/socket.io/dist/socket-types.js';
 import type {
     ReservedOrUserEventNames,
     ReservedOrUserListener,

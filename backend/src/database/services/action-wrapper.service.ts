@@ -30,10 +30,7 @@ export class ActionWrapperService extends BaseService<
         manager: EntityManager
     ): Promise<ActionWrapperEntity> {
         const { exerciseId, ...rest } = dto;
-        const actionWrapper = manager.create<ActionWrapperEntity>(
-            this.entityTarget,
-            rest
-        );
+        const actionWrapper = manager.create(this.entityTarget, rest);
         actionWrapper.exercise =
             await this.exerciseWrapperService.getFindById(exerciseId)(manager);
         return actionWrapper;

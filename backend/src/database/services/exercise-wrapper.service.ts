@@ -23,7 +23,7 @@ export class ExerciseWrapperService extends BaseService<
         dto: CreateExerciseWrapper,
         manager: EntityManager
     ): ExerciseWrapperEntity | Promise<ExerciseWrapperEntity> {
-        return manager.create<ExerciseWrapperEntity>(this.entityTarget, dto);
+        return manager.create(this.entityTarget, dto);
     }
 
     protected getUpdateEntityObject(
