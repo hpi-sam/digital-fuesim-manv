@@ -12,14 +12,14 @@ import {
     StrictObject,
     validateExerciseExport,
 } from 'digital-fuesim-manv-shared';
-import produce, { freeze } from 'immer';
+import { produce, freeze } from 'immer';
 import { isEqual } from 'lodash-es';
-import type { BenchmarkValue } from './benchmark';
-import { benchmark } from './benchmark';
-import { BenchmarkStep } from './benchmark-step';
-import { CalculationStep } from './calculation-step';
-import { print } from './print';
-import type { Step } from './step';
+import type { BenchmarkValue } from './benchmark.js';
+import { benchmark } from './benchmark.js';
+import { BenchmarkStep } from './benchmark-step.js';
+import { CalculationStep } from './calculation-step.js';
+import { print } from './print.js';
+import type { Step } from './step.js';
 
 export class StepState {
     /**

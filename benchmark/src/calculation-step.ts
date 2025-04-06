@@ -1,4 +1,4 @@
-import { Step } from './step';
+import { Step } from './step.js';
 
 /**
  * A calculation step can be used to calculate new values from the state.
