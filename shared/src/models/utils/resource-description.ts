@@ -50,11 +50,9 @@ export function addPartialResourceDescriptions<K extends string>(
 ): Partial<ResourceDescription<K>> {
     return resourceDescriptions.reduce<Partial<ResourceDescription<K>>>(
         (total, current) => {
-            StrictObject.entries(current)
-                .filter((entry) => entry !== undefined)
-                .forEach(([key, value]) => {
-                    total[key] = (total[key] ?? 0) + (value ?? 0);
-                });
+            StrictObject.entries(current).forEach(([key, value]) => {
+                total[key] = (total[key] ?? 0) + (value ?? 0);
+            });
             return total;
         },
         {}
@@ -73,7 +71,6 @@ export function subtractPartialResourceDescriptions<K extends string>(
         ) as ResourceDescription<K>,
     ]);
     StrictObject.entries(result)
-        .filter((entry) => entry !== undefined)
         .filter(([_, value]) => (value ?? 0) <= 0)
         .forEach(([key]) => delete result[key]);
     return result;
