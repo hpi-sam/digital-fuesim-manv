@@ -13,6 +13,10 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
     - the software includes a file with third party acknoledgments, a license.html and the docker container will include a git archive of the source code downloadable in zip format
     - new npm run commands for licensing (third party acknowledgements) and creating source code archive
 
+### Changed
+
+- Updated dependencies for further development. This change does not affect the behavior of the software.
+
 ## [0.7.1] - 2023-07-10
 
 ### Added
