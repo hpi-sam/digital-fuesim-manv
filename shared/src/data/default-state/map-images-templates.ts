@@ -1,5 +1,5 @@
-import { MapImageTemplate } from '../../models/map-image-template';
-import { ImageProperties } from '../../models/utils';
+import { MapImageTemplate } from '../../models/map-image-template.js';
+import { ImageProperties } from '../../models/utils/index.js';
 
 const fireMapImageTemplate = MapImageTemplate.create(
     'Feuer',

@@ -1,9 +1,9 @@
-import produce from 'immer';
-import type { ExerciseState } from '../state';
-import type { Mutable } from '../utils';
-import { sleep } from '../utils';
-import type { ExerciseAction } from './action-reducers';
-import { applyAction } from './reduce-exercise-state';
+import { produce } from 'immer';
+import type { ExerciseState } from '../state.js';
+import type { Mutable } from '../utils/index.js';
+import { sleep } from '../utils/index.js';
+import type { ExerciseAction } from './action-reducers/index.js';
+import { applyAction } from './reduce-exercise-state.js';
 
 /**
  * @param callback a function that is called at the end of every second in the exerciseState with the respective state at this time. The time itself can be get via `state.currentTime`. If this function returns true, the loop breaks.

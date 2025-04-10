@@ -1,11 +1,11 @@
-export * from './client';
-export * from './exercise';
-export * from './material';
-export * from './patient';
-export * from './personnel';
-export * from './vehicle';
-export * from './viewport';
-export * from './map-images';
-export * from './action-reducers';
+export * from './client.js';
+export * from './exercise.js';
+export * from './material.js';
+export * from './patient.js';
+export * from './personnel.js';
+export * from './vehicle.js';
+export * from './viewport.js';
+export * from './map-images.js';
+export * from './action-reducers.js';
 
 // Don't forget to register the actionReducer in `action-reducers.ts`

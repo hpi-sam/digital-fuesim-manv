@@ -14,6 +14,7 @@ const personnelTypeToGermanAbbreviationDictionary: {
 
 @Pipe({
     name: 'personnelTypeToGermanAbbreviation',
+    standalone: false,
 })
 export class PersonnelTypeToGermanAbbreviationPipe implements PipeTransform {
     transform(value: PersonnelType): string {

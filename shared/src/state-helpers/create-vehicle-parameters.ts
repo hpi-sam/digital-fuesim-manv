@@ -1,15 +1,15 @@
-import type { Vehicle, VehicleTemplate } from '../models';
-import { Material, Personnel } from '../models';
-import type { MaterialTemplate } from '../models/material-template';
-import type { PersonnelTemplate } from '../models/personnel-template';
-import type { PersonnelType, MapCoordinates } from '../models/utils';
-import { MapPosition } from '../models/utils/position/map-position';
-import type { MaterialType } from '../models/utils/material-type';
-import { VehiclePosition } from '../models/utils/position/vehicle-position';
+import type { Vehicle, VehicleTemplate } from '../models/index.js';
+import { Material, Personnel } from '../models/index.js';
+import type { MaterialTemplate } from '../models/material-template.js';
+import type { PersonnelTemplate } from '../models/personnel-template.js';
+import type { PersonnelType, MapCoordinates } from '../models/utils/index.js';
+import { MapPosition } from '../models/utils/position/map-position.js';
+import type { MaterialType } from '../models/utils/material-type.js';
+import { VehiclePosition } from '../models/utils/position/vehicle-position.js';
 
-import { arrayToUUIDSet } from '../utils/array-to-uuid-set';
-import { NoOccupation } from '../models/utils/occupations/no-occupation';
-import type { UUID } from '../utils';
+import { arrayToUUIDSet } from '../utils/array-to-uuid-set.js';
+import { NoOccupation } from '../models/utils/occupations/no-occupation.js';
+import type { UUID } from '../utils/index.js';
 
 /**
  * @returns a vehicle with personnel and materials to be added to the map

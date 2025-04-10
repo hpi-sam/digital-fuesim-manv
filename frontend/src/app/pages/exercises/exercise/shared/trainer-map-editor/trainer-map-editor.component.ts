@@ -23,6 +23,7 @@ import { simulatedRegionDragTemplates } from '../editor-panel/templates/simulate
     selector: 'app-trainer-map-editor',
     templateUrl: './trainer-map-editor.component.html',
     styleUrls: ['./trainer-map-editor.component.scss'],
+    standalone: false,
 })
 /**
  * A wrapper around the map that provides trainers with more options and tools.

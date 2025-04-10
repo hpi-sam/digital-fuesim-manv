@@ -24,6 +24,7 @@ import { openTransferOverviewModal } from '../transfer-overview/open-transfer-ov
     selector: 'app-trainer-toolbar',
     templateUrl: './trainer-toolbar.component.html',
     styleUrls: ['./trainer-toolbar.component.scss'],
+    standalone: false,
 })
 export class TrainerToolbarComponent {
     public exerciseStatus$ = this.store.select(selectExerciseStatus);

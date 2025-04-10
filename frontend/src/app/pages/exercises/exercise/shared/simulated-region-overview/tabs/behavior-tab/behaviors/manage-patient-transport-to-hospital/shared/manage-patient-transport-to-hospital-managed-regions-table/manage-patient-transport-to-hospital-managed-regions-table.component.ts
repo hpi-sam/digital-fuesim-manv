@@ -6,7 +6,7 @@ import type {
     SimulatedRegion,
     PatientStatus,
 } from 'digital-fuesim-manv-shared';
-import { UUID } from 'digital-fuesim-manv-shared';
+import type { UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { combineLatest, map } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
@@ -24,6 +24,7 @@ import {
     styleUrls: [
         './manage-patient-transport-to-hospital-managed-regions-table.component.scss',
     ],
+    standalone: false,
 })
 export class ManagePatientTransportToHospitalManagedRegionsTableComponent
     implements OnChanges

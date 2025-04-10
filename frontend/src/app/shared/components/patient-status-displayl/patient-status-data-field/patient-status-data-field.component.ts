@@ -6,6 +6,7 @@ import { rgbColorPalette } from 'src/app/shared/functions/colors';
     selector: 'app-patient-status-data-field',
     templateUrl: './patient-status-data-field.component.html',
     styleUrls: ['./patient-status-data-field.component.scss'],
+    standalone: false,
 })
 export class PatientStatusDataFieldComponent {
     @Input() patientStatusDataField!: PatientStatusDataField;

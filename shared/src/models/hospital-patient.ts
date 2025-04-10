@@ -6,21 +6,20 @@ import {
     Min,
     ValidateNested,
 } from 'class-validator';
-import type { Mutable } from '../utils';
-import { cloneDeepMutable, UUID, uuidValidationOptions } from '../utils';
-import { IsIdMap, IsLiteralUnion, IsValue } from '../utils/validators';
+import type { Mutable, UUID } from '../utils/index.js';
+import { cloneDeepMutable, uuidValidationOptions } from '../utils/index.js';
+import { IsIdMap, IsLiteralUnion, IsValue } from '../utils/validators/index.js';
+import type { HealthPoints, PatientStatus } from './utils/index.js';
 import {
     getCreate,
-    HealthPoints,
     ImageProperties,
     IsValidHealthPoint,
-    PatientStatus,
     patientStatusAllowedValues,
-} from './utils';
-import { BiometricInformation } from './utils/biometric-information';
-import { PersonalInformation } from './utils/personal-information';
-import { PatientHealthState } from './patient-health-state';
-import type { Patient } from '.';
+} from './utils/index.js';
+import { BiometricInformation } from './utils/biometric-information.js';
+import { PersonalInformation } from './utils/personal-information.js';
+import { PatientHealthState } from './patient-health-state.js';
+import type { Patient } from './index.js';
 
 export class HospitalPatient {
     /**

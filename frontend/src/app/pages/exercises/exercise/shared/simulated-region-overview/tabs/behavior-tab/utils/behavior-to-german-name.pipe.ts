@@ -5,6 +5,7 @@ import { behaviorTypeToGermanNameDictionary } from 'digital-fuesim-manv-shared';
 
 @Pipe({
     name: 'behaviorTypeToGermanName',
+    standalone: false,
 })
 export class BehaviorTypeToGermanNamePipe implements PipeTransform {
     transform(value: ExerciseSimulationBehaviorType): string {

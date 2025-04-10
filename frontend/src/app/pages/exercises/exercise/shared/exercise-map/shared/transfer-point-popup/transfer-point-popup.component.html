@@ -26,7 +26,7 @@
                             [ngModel]="transferPoint.internalName"
                             (appSaveOnTyping)="
                                 renameTransferPoint({
-                                    internalName: $event
+                                    internalName: $event,
                                 })
                             "
                             [maxlength]="16"
@@ -47,7 +47,7 @@
                             [ngModel]="transferPoint.externalName"
                             (appSaveOnTyping)="
                                 renameTransferPoint({
-                                    externalName: $event
+                                    externalName: $event,
                                 })
                             "
                             [maxlength]="30"

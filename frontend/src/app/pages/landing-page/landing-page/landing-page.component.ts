@@ -11,6 +11,7 @@ import { MessageService } from 'src/app/core/messages/message.service';
     selector: 'app-landing-page',
     templateUrl: './landing-page.component.html',
     styleUrls: ['./landing-page.component.scss'],
+    standalone: false,
 })
 export class LandingPageComponent {
     public exerciseId = '';
@@ -78,9 +79,8 @@ export class LandingPageComponent {
             );
             switch (importInstance.type) {
                 case 'complete': {
-                    const ids = await this.apiService.importExercise(
-                        importInstance
-                    );
+                    const ids =
+                        await this.apiService.importExercise(importInstance);
                     this.trainerId = ids.trainerId;
                     this.exerciseId = this.trainerId;
                     this.participantId = ids.participantId;

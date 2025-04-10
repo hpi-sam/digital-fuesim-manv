@@ -65,10 +65,10 @@
                                                   .distributedRounds[
                                                   vehicleLimit.vehicleType
                                               ]
-                                                  ? automaticallyDistributeVehiclesBehaviorState
+                                                  ? (automaticallyDistributeVehiclesBehaviorState
                                                         .distributedRounds[
                                                         vehicleLimit.vehicleType
-                                                    ] ?? 1
+                                                    ] ?? 1)
                                                   : 1
                                           )
                                         : unlimitedLimitOfVehicle(
@@ -107,10 +107,10 @@
                                         .distributedRounds[
                                         vehicleLimit.vehicleType
                                     ]
-                                        ? automaticallyDistributeVehiclesBehaviorState
+                                        ? (automaticallyDistributeVehiclesBehaviorState
                                               .distributedRounds[
                                               vehicleLimit.vehicleType
-                                          ] ?? 1
+                                          ] ?? 1)
                                         : 1
                                 "
                                 required
@@ -164,7 +164,7 @@
             <button
                 *ngFor="
                     let transferPoint of addableTransferPoints
-                        | orderBy : getTransferPointOrderByValue;
+                        | orderBy: getTransferPointOrderByValue;
                     trackBy: 'id' | appTrackByProperty
                 "
                 ngbDropdownItem

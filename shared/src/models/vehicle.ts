@@ -1,15 +1,14 @@
 import { Type } from 'class-transformer';
 import { IsNumber, IsString, IsUUID, ValidateNested } from 'class-validator';
-import { uuid, uuidValidationOptions, UUID, UUIDSet } from '../utils';
-import { IsUUIDSet, IsValue } from '../utils/validators';
-import { IsPosition } from '../utils/validators/is-position';
-import { getCreate } from './utils';
-import { ImageProperties } from './utils/image-properties';
-import { Position } from './utils/position/position';
-import {
-    ExerciseOccupation,
-    occupationTypeOptions,
-} from './utils/occupations/exercise-occupation';
+import type { UUID, UUIDSet } from '../utils/index.js';
+import { uuid, uuidValidationOptions } from '../utils/index.js';
+import { IsUUIDSet, IsValue } from '../utils/validators/index.js';
+import { IsPosition } from '../utils/validators/is-position.js';
+import { getCreate } from './utils/index.js';
+import { ImageProperties } from './utils/image-properties.js';
+import type { Position } from './utils/position/position.js';
+import type { ExerciseOccupation } from './utils/occupations/exercise-occupation.js';
+import { occupationTypeOptions } from './utils/occupations/exercise-occupation.js';
 
 export class Vehicle {
     @IsUUID(4, uuidValidationOptions)

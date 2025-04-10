@@ -5,12 +5,12 @@ import type {
 } from 'digital-fuesim-manv-shared';
 import { ExerciseState } from 'digital-fuesim-manv-shared';
 import { isEmpty } from 'lodash-es';
-import { importExercise } from '../../../utils/import-exercise';
-import type { DatabaseService } from '../../../database/services/database-service';
-import { UserReadableIdGenerator } from '../../../utils/user-readable-id-generator';
-import { exerciseMap } from '../../exercise-map';
-import { ExerciseWrapper } from '../../exercise-wrapper';
-import type { HttpResponse } from '../utils';
+import { importExercise } from '../../../utils/import-exercise.js';
+import type { DatabaseService } from '../../../database/services/database-service.js';
+import { UserReadableIdGenerator } from '../../../utils/user-readable-id-generator.js';
+import { exerciseMap } from '../../exercise-map.js';
+import { ExerciseWrapper } from '../../exercise-wrapper.js';
+import type { HttpResponse } from '../utils.js';
 
 export async function postExercise(
     databaseService: DatabaseService,

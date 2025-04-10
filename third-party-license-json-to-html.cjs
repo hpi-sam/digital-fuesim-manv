@@ -37,8 +37,8 @@ let inspired_by_or_copied_from =
                 <a>If you want to know, where these where used search inside the source code for this specific URL <a href="assets/source-code/digital-fuesim-manv.zip">here</a>.</a>
                 ` + inspired_by_or_copied_from_data;
 
-let table_header = json2html.transform(data[0], template_table_header);
-let table_body = json2html.transform(data, template_table_body);
+let table_header = json2html.render(data[0], template_table_header);
+let table_body = json2html.render(data, template_table_body);
 
 let style = `<style>
             table {

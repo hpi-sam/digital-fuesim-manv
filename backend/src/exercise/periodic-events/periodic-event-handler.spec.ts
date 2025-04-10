@@ -1,5 +1,5 @@
 import { sleep } from 'digital-fuesim-manv-shared';
-import { PeriodicEventHandler } from './periodic-event-handler';
+import { PeriodicEventHandler } from './periodic-event-handler.js';
 
 describe('Periodic Event Handler', () => {
     it('correctly aborts async ticks', async () => {

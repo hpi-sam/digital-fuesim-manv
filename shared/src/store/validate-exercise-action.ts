@@ -5,12 +5,12 @@ import type {
     ValidationOptions,
 } from 'class-validator';
 import { validateSync } from 'class-validator';
-import type { Constructor } from '../utils';
-import type { GenericPropertyDecorator } from '../utils/validators/generic-property-decorator';
-import { makeValidator } from '../utils/validators/make-validator';
-import type { ExerciseAction } from './action-reducers';
-import { getExerciseActionTypeDictionary } from './action-reducers';
-import { defaultValidateOptions } from './validation-options';
+import type { Constructor } from '../utils/index.js';
+import type { GenericPropertyDecorator } from '../utils/validators/generic-property-decorator.js';
+import { makeValidator } from '../utils/validators/make-validator.js';
+import type { ExerciseAction } from './action-reducers/index.js';
+import { getExerciseActionTypeDictionary } from './action-reducers/index.js';
+import { defaultValidateOptions } from './validation-options.js';
 
 /**
  *

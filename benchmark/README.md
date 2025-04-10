@@ -2,10 +2,10 @@
 
 This package contains benchmarks that can be used to
 
--   track and compare the performance of different exerciseExports
--   check different exerciseExports and the current reducers for correctness
--   test migrations on different exerciseExports
--   run custom benchmarks and tests - good for fast prototyping
+- track and compare the performance of different exerciseExports
+- check different exerciseExports and the current reducers for correctness
+- test migrations on different exerciseExports
+- run custom benchmarks and tests - good for fast prototyping
 
 ## Running the benchmarks
 

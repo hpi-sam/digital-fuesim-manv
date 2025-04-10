@@ -1,11 +1,11 @@
-import type { ExerciseState } from '../../../state';
-import { logVehicle } from '../../../store/action-reducers/utils/log';
-import type { Mutable } from '../../../utils';
-import { cloneDeepMutable } from '../../../utils';
-import type { Vehicle } from '../../vehicle';
-import { createOccupationTag } from '../tag-helpers';
-import type { ExerciseOccupation } from './exercise-occupation';
-import { NoOccupation } from './no-occupation';
+import type { ExerciseState } from '../../../state.js';
+import { logVehicle } from '../../../store/action-reducers/utils/log.js';
+import type { Mutable } from '../../../utils/index.js';
+import { cloneDeepMutable } from '../../../utils/index.js';
+import type { Vehicle } from '../../vehicle.js';
+import { createOccupationTag } from '../tag-helpers.js';
+import type { ExerciseOccupation } from './exercise-occupation.js';
+import { NoOccupation } from './no-occupation.js';
 
 export function isUnoccupied(
     draftState: Mutable<ExerciseState>,

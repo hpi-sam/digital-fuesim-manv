@@ -14,6 +14,7 @@ import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
     selector: 'app-exercise-settings-modal',
     templateUrl: './exercise-settings-modal.component.html',
     styleUrls: ['./exercise-settings-modal.component.scss'],
+    standalone: false,
 })
 export class ExerciseSettingsModalComponent {
     public tileMapProperties = cloneDeepMutable(

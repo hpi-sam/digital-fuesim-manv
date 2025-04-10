@@ -1,10 +1,10 @@
 import { Type } from 'class-transformer';
 import { IsString, IsUUID, MaxLength, ValidateNested } from 'class-validator';
-import { Patient } from '../../models/patient';
+import { Patient } from '../../models/patient.js';
+import type { PatientStatus } from '../../models/utils/index.js';
 import {
     isOnMap,
     MapPosition,
-    PatientStatus,
     patientStatusAllowedValues,
     MapCoordinates,
     isNotInSimulatedRegion,
@@ -12,28 +12,27 @@ import {
     currentCoordinatesOf,
     isInSimulatedRegion,
     currentSimulatedRegionOf,
-} from '../../models/utils';
+} from '../../models/utils/index.js';
 import {
     changePosition,
     changePositionWithId,
-} from '../../models/utils/position/position-helpers-mutable';
-import type { ExerciseState } from '../../state';
-import type { Mutable } from '../../utils';
+} from '../../models/utils/position/position-helpers-mutable.js';
+import type { ExerciseState } from '../../state.js';
+import type { Mutable, UUID } from '../../utils/index.js';
 import {
     cloneDeepMutable,
     StrictObject,
-    UUID,
     uuidValidationOptions,
-} from '../../utils';
-import { IsLiteralUnion, IsValue } from '../../utils/validators';
-import type { Action, ActionReducer } from '../action-reducer';
-import { ReducerError } from '../reducer-error';
-import { PatientRemovedEvent } from '../../simulation/events';
-import { sendSimulationEvent } from '../../simulation/events/utils';
-import { updateTreatments } from './utils/calculate-treatments';
-import { getElement } from './utils/get-element';
-import { removeElementPosition } from './utils/spatial-elements';
-import { logPatientAdded, logPatientRemoved } from './utils/log';
+} from '../../utils/index.js';
+import { IsLiteralUnion, IsValue } from '../../utils/validators/index.js';
+import type { Action, ActionReducer } from '../action-reducer.js';
+import { ReducerError } from '../reducer-error.js';
+import { PatientRemovedEvent } from '../../simulation/events/index.js';
+import { sendSimulationEvent } from '../../simulation/events/utils.js';
+import { updateTreatments } from './utils/calculate-treatments.js';
+import { getElement } from './utils/get-element.js';
+import { removeElementPosition } from './utils/spatial-elements.js';
+import { logPatientAdded, logPatientRemoved } from './utils/log.js';
 
 /**
  * Performs all necessary actions to remove a patient from the state.

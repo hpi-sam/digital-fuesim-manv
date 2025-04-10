@@ -12,10 +12,14 @@ export namespace StrictObject {
      */
     export function entries<T extends { [key: string]: any }>(
         object: T
-    ): {
-        [Key in keyof T]: [Key, T[Key]];
-    }[keyof T][] {
-        return Object.entries(object);
+    ): Exclude<
+        {
+            [Key in keyof T]: [Key, T[Key]];
+        }[keyof T],
+        undefined
+    >[] {
+        // eslint-disable-next-line total-functions/no-unsafe-readonly-mutable-assignment
+        return Object.entries(object) as any;
     }
 
     /**
@@ -26,6 +30,7 @@ export namespace StrictObject {
     export function values<T extends { [key: string]: any }>(
         object: T
     ): T[keyof T][] {
+        // eslint-disable-next-line total-functions/no-unsafe-readonly-mutable-assignment
         return Object.values(object);
     }
 

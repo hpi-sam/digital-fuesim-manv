@@ -18,6 +18,7 @@ import type { ChangedImageTemplateValues } from '../image-template-form/image-te
     selector: 'app-edit-image-template-modal',
     templateUrl: './edit-image-template-modal.component.html',
     styleUrls: ['./edit-image-template-modal.component.scss'],
+    standalone: false,
 })
 export class EditImageTemplateModalComponent implements OnInit {
     // This is set after the modal creation and therefore accessible in ngOnInit

@@ -4,24 +4,31 @@ import type {
     MaterialCountRadiogram,
     PersonnelCountRadiogram,
     VehicleCountRadiogram,
-} from '../../models/radiogram';
-import { getActivityById, getElement } from '../../store/action-reducers/utils';
-import type { Mutable } from '../../utils';
-import { StrictObject, UUID, uuid, uuidValidationOptions } from '../../utils';
-import { IsValue } from '../../utils/validators';
-import { LeaderChangedEvent } from '../events/leader-changed';
-import type { ExerciseState } from '../../state';
-import { nextUUID } from '../utils/randomness';
-import { getCreate } from '../../models/utils/get-create';
-import type { PersonnelType } from '../../models/utils/personnel-type';
-import { isInSpecificSimulatedRegion } from '../../models/utils/position/position-helpers';
-import type { SimulatedRegion } from '../../models/simulated-region';
-import { addActivity } from '../activities/utils';
-import { DelayEventActivityState } from '../activities/delay-event';
+} from '../../models/radiogram/index.js';
+import {
+    getActivityById,
+    getElement,
+} from '../../store/action-reducers/utils/index.js';
+import type { Mutable, UUID } from '../../utils/index.js';
+import {
+    StrictObject,
+    uuid,
+    uuidValidationOptions,
+} from '../../utils/index.js';
+import { IsValue } from '../../utils/validators/index.js';
+import { LeaderChangedEvent } from '../events/leader-changed.js';
+import type { ExerciseState } from '../../state.js';
+import { nextUUID } from '../utils/randomness.js';
+import { getCreate } from '../../models/utils/get-create.js';
+import type { PersonnelType } from '../../models/utils/personnel-type.js';
+import { isInSpecificSimulatedRegion } from '../../models/utils/position/position-helpers.js';
+import type { SimulatedRegion } from '../../models/simulated-region.js';
+import { addActivity } from '../activities/utils.js';
+import { DelayEventActivityState } from '../activities/delay-event.js';
 import type {
     SimulationBehavior,
     SimulationBehaviorState,
-} from './simulation-behavior';
+} from './simulation-behavior.js';
 
 export class AssignLeaderBehaviorState implements SimulationBehaviorState {
     @IsValue('assignLeaderBehavior' as const)

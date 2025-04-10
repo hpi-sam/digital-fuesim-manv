@@ -1,5 +1,5 @@
-import type { UUID } from '../../utils';
-import type { ExerciseRadiogramStatus } from './status/exercise-radiogram-status';
+import type { UUID } from '../../utils/index.js';
+import type { ExerciseRadiogramStatus } from './status/exercise-radiogram-status.js';
 
 export class Radiogram {
     readonly id!: UUID;

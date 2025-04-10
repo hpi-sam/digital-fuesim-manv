@@ -10,6 +10,7 @@ import { selectTransferPoints } from 'src/app/state/application/selectors/exerci
     selector: 'app-transfer-target-dropdown',
     templateUrl: './transfer-target-dropdown.component.html',
     styleUrls: ['./transfer-target-dropdown.component.scss'],
+    standalone: false,
 })
 export class TransferTargetDropdownComponent implements OnInit {
     private _selectedTransferPointId: UUID | undefined;

@@ -1,6 +1,6 @@
-import type { SimulatedRegion } from '../../models';
-import type { ExerciseState } from '../../state';
-import type { Constructor, Mutable, UUID } from '../../utils';
+import type { SimulatedRegion } from '../../models/index.js';
+import type { ExerciseState } from '../../state.js';
+import type { Constructor, Mutable, UUID } from '../../utils/index.js';
 
 export class SimulationActivityState {
     readonly type!: `${string}Activity`;

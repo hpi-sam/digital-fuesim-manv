@@ -1,7 +1,7 @@
 import type { Type } from 'class-transformer';
-import { simulatedRegionRequestTarget } from './simulated-region';
-import { traineesRequestTarget } from './trainees';
-import { RequestTargetConfiguration } from './request-target';
+import { simulatedRegionRequestTarget } from './simulated-region.js';
+import { traineesRequestTarget } from './trainees.js';
+import { RequestTargetConfiguration } from './request-target.js';
 
 export const requestTargets = {
     simulatedRegionRequestTarget,
@@ -22,7 +22,7 @@ type ExerciseRequestTargetDictionary = {
 };
 
 export type ExerciseRequestTargetConfiguration<
-    T extends ExerciseRequestTargetType = ExerciseRequestTargetType
+    T extends ExerciseRequestTargetType = ExerciseRequestTargetType,
 > = InstanceType<ExerciseRequestTargetDictionary[T]['configuration']>;
 
 export const requestTargetDictionary = Object.fromEntries(

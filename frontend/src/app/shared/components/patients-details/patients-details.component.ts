@@ -2,7 +2,8 @@ import type { OnChanges } from '@angular/core';
 import { Component, Input } from '@angular/core';
 import { createSelector, Store } from '@ngrx/store';
 import type { PatientStatus } from 'digital-fuesim-manv-shared';
-import { Patient, UUID } from 'digital-fuesim-manv-shared';
+import type { UUID } from 'digital-fuesim-manv-shared';
+import { Patient } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { map } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
@@ -17,6 +18,7 @@ import { selectCurrentRole } from 'src/app/state/application/selectors/shared.se
     selector: 'app-patients-details',
     templateUrl: './patients-details.component.html',
     styleUrls: ['./patients-details.component.scss'],
+    standalone: false,
 })
 export class PatientsDetailsComponent implements OnChanges {
     @Input() patientId!: UUID;

@@ -1,6 +1,6 @@
 /* eslint-disable require-unicode-regexp */
 import { IsInt, IsPositive, IsUrl, Matches } from 'class-validator';
-import { getCreate } from './get-create';
+import { getCreate } from './get-create.js';
 
 export class TileMapProperties {
     /**

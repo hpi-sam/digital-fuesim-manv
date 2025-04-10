@@ -8,62 +8,64 @@ import {
     ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import type { PatientStatus } from '../../models/utils';
-import {
+import type {
+    PatientStatus,
     PatientStatusForTransport,
+} from '../../models/utils/index.js';
+import {
     PatientTransferOccupation,
     currentSimulatedRegionOf,
     getCreate,
     isInSpecificSimulatedRegion,
     patientStatusAllowedValues,
-} from '../../models/utils';
-import type { Mutable } from '../../utils';
+} from '../../models/utils/index.js';
+import type { Mutable, UUID, UUIDSet } from '../../utils/index.js';
 import {
     StrictObject,
-    UUID,
-    UUIDSet,
     cloneDeepMutable,
     uuid,
     uuidValidationOptions,
-} from '../../utils';
-import { IsLiteralUnion, IsUUIDSet, IsValue } from '../../utils/validators';
-import { addActivity, terminateActivity } from '../activities/utils';
-import { nextUUID } from '../utils/randomness';
+} from '../../utils/index.js';
+import {
+    IsLiteralUnion,
+    IsUUIDSet,
+    IsValue,
+} from '../../utils/validators/index.js';
+import { addActivity, terminateActivity } from '../activities/utils.js';
+import { nextUUID } from '../utils/randomness.js';
 import {
     DelayEventActivityState,
     PublishRadiogramActivityState,
     RecurringEventActivityState,
     SendRemoteEventActivityState,
-} from '../activities';
+} from '../activities/index.js';
 import {
     AskForPatientDataEvent,
     PatientCategoryTransferToHospitalFinishedEvent,
     TransferVehiclesRequestEvent,
     TryToSendToHospitalEvent,
-} from '../events';
-import type { TransferCountsRadiogram } from '../../models/radiogram';
-import { RadiogramUnpublishedStatus } from '../../models/radiogram';
-import { IsPatientsPerUUID } from '../../utils/validators/is-patients-per-uuid';
-import { NewPatientDataRequestedRadiogram } from '../../models/radiogram/new-patient-data-requested-radiogram';
-import { CountPatientsActivityState } from '../activities/count-patients';
-import type { ExerciseState } from '../../state';
+} from '../events/index.js';
+import type { TransferCountsRadiogram } from '../../models/radiogram/index.js';
+import { RadiogramUnpublishedStatus } from '../../models/radiogram/index.js';
+import { IsPatientsPerUUID } from '../../utils/validators/is-patients-per-uuid.js';
+import { NewPatientDataRequestedRadiogram } from '../../models/radiogram/new-patient-data-requested-radiogram.js';
+import { CountPatientsActivityState } from '../activities/count-patients.js';
+import type { ExerciseState } from '../../state.js';
 import {
     getActivityById,
     getElement,
     getElementByPredicate,
-} from '../../store/action-reducers/utils';
-import { PatientsTransportPromise } from '../utils/patients-transported-promise';
-import {
-    ResourceDescription,
-    addResourceDescription,
-} from '../../models/utils/resource-description';
-import type { SimulatedRegion } from '../../models/simulated-region';
-import { IsResourceDescription } from '../../utils/validators/is-resource-description';
-import { logLastPatientTransportedInMultipleSimulatedRegions } from '../../store/action-reducers/utils/log';
+} from '../../store/action-reducers/utils/index.js';
+import { PatientsTransportPromise } from '../utils/patients-transported-promise.js';
+import type { ResourceDescription } from '../../models/utils/resource-description.js';
+import { addResourceDescription } from '../../models/utils/resource-description.js';
+import type { SimulatedRegion } from '../../models/simulated-region.js';
+import { IsResourceDescription } from '../../utils/validators/is-resource-description.js';
+import { logLastPatientTransportedInMultipleSimulatedRegions } from '../../store/action-reducers/utils/log.js';
 import type {
     SimulationBehavior,
     SimulationBehaviorState,
-} from './simulation-behavior';
+} from './simulation-behavior.js';
 
 interface PatientsPerRegion {
     [simulatedRegionId: UUID]: ResourceDescription<PatientStatus>;

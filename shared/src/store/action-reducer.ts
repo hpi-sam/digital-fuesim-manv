@@ -1,6 +1,6 @@
-import type { Role } from '../models/utils';
-import type { ExerciseState } from '../state';
-import type { Constructor, Mutable } from '../utils';
+import type { Role } from '../models/utils/index.js';
+import type { ExerciseState } from '../state.js';
+import type { Constructor, Mutable } from '../utils/index.js';
 
 export interface ActionReducer<A extends Action = Action> {
     readonly action: Constructor<A>;

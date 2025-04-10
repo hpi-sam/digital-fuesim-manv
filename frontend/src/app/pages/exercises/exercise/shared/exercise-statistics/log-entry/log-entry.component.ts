@@ -6,6 +6,7 @@ import { StatisticsTimeSelectionService } from '../statistics-time-selection.ser
     selector: 'app-log-entry',
     templateUrl: './log-entry.component.html',
     styleUrls: ['./log-entry.component.scss'],
+    standalone: false,
 })
 export class LogEntryComponent {
     @Input() logEntry!: LogEntry;

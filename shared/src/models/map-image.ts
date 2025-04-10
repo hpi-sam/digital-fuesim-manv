@@ -1,10 +1,12 @@
 import { Type } from 'class-transformer';
 import { IsBoolean, IsInt, IsUUID, ValidateNested } from 'class-validator';
-import { uuid, UUID, uuidValidationOptions } from '../utils';
-import { IsValue } from '../utils/validators';
-import { IsPosition } from '../utils/validators/is-position';
-import type { MapCoordinates } from './utils';
-import { MapPosition, getCreate, ImageProperties, Position } from './utils';
+import type { UUID } from '../utils/index.js';
+import { uuid, uuidValidationOptions } from '../utils/index.js';
+import { IsValue } from '../utils/validators/index.js';
+import { IsPosition } from '../utils/validators/is-position.js';
+import type { MapCoordinates } from './utils/index.js';
+import type { Position } from './utils/index.js';
+import { MapPosition, getCreate, ImageProperties } from './utils/index.js';
 
 export class MapImage {
     @IsUUID(4, uuidValidationOptions)

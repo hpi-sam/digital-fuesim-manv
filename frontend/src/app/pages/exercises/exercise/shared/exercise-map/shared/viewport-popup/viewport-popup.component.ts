@@ -13,6 +13,7 @@ import { PopupService } from '../../utility/popup.service';
     selector: 'app-viewport-popup',
     templateUrl: './viewport-popup.component.html',
     styleUrls: ['./viewport-popup.component.scss'],
+    standalone: false,
 })
 export class ViewportPopupComponent implements OnInit {
     // These properties are only set after OnInit

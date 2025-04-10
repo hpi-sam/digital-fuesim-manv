@@ -15,6 +15,7 @@ import { fade } from '../animations/fade';
     styleUrls: ['./display-messages.component.scss'],
     animations: [fade()],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class DisplayMessagesComponent {
     constructor(public readonly messageService: MessageService) {}

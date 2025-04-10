@@ -1,6 +1,6 @@
 import type { ValidationArguments, ValidationOptions } from 'class-validator';
 import { registerDecorator } from 'class-validator';
-import type { GenericPropertyDecorator } from './generic-property-decorator';
+import type { GenericPropertyDecorator } from './generic-property-decorator.js';
 
 export function makeValidator<T, Each extends boolean = false>(
     name: `is${string}`,
@@ -11,7 +11,7 @@ export function makeValidator<T, Each extends boolean = false>(
     validationOptions?: ValidationOptions & { each?: Each }
 ): GenericPropertyDecorator<T, Each> {
     // Disabled as this is the suggested way for [class-validator](https://github.com/typestack/class-validator#custom-validation-decorators)
-    // eslint-disable-next-line @typescript-eslint/ban-types
+    // eslint-disable-next-line @typescript-eslint/no-wrapper-object-types
     return function (object: Object, propertyName: string) {
         registerDecorator({
             name,

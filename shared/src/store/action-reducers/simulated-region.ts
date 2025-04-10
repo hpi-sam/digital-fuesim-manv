@@ -1,41 +1,42 @@
 import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
-import { SimulatedRegion } from '../../models/simulated-region';
-import { TransferPoint } from '../../models/transfer-point';
+import { SimulatedRegion } from '../../models/simulated-region.js';
+import { TransferPoint } from '../../models/transfer-point.js';
 import {
     isInSpecificSimulatedRegion,
     MapCoordinates,
     MapPosition,
     SimulatedRegionPosition,
     Size,
-} from '../../models/utils';
+} from '../../models/utils/index.js';
 import {
     changePosition,
     changePositionWithId,
-} from '../../models/utils/position/position-helpers-mutable';
+} from '../../models/utils/position/position-helpers-mutable.js';
+import type { ExerciseSimulationBehaviorState } from '../../simulation/index.js';
 import {
-    ExerciseSimulationBehaviorState,
     simulationBehaviorTypeOptions,
     VehicleArrivedEvent,
     PersonnelAvailableEvent,
     NewPatientEvent,
     MaterialAvailableEvent,
     simulationBehaviorDictionary,
-} from '../../simulation';
-import { sendSimulationEvent } from '../../simulation/events/utils';
-import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
-import { IsLiteralUnion, IsValue } from '../../utils/validators';
-import type { Action, ActionReducer } from '../action-reducer';
-import { ExpectedReducerError, ReducerError } from '../reducer-error';
-import { TransferPointActionReducers } from './transfer-point';
-import { isCompletelyLoaded } from './utils/completely-load-vehicle';
-import { getElement, getElementByPredicate } from './utils/get-element';
+} from '../../simulation/index.js';
+import { sendSimulationEvent } from '../../simulation/events/utils.js';
+import type { UUID } from '../../utils/index.js';
+import { cloneDeepMutable, uuidValidationOptions } from '../../utils/index.js';
+import { IsLiteralUnion, IsValue } from '../../utils/validators/index.js';
+import type { Action, ActionReducer } from '../action-reducer.js';
+import { ExpectedReducerError, ReducerError } from '../reducer-error.js';
+import { TransferPointActionReducers } from './transfer-point.js';
+import { isCompletelyLoaded } from './utils/completely-load-vehicle.js';
+import { getElement, getElementByPredicate } from './utils/get-element.js';
 import {
     logBehaviorAdded,
     logBehaviorRemoved,
     logSimulatedRegionAddElement,
     logSimulatedRegionNameChange,
-} from './utils/log';
+} from './utils/log.js';
 
 export class AddSimulatedRegionAction implements Action {
     @IsValue('[SimulatedRegion] Add simulated region' as const)

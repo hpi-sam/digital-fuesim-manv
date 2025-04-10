@@ -3,6 +3,7 @@ import { Pipe } from '@angular/core';
 
 @Pipe({
     name: 'keys',
+    standalone: false,
 })
 export class KeysPipe implements PipeTransform {
     /**

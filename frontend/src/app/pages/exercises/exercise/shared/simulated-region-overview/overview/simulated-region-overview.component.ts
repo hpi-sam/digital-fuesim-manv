@@ -2,7 +2,8 @@ import type { OnDestroy, OnInit } from '@angular/core';
 import { Component, Input, ViewEncapsulation } from '@angular/core';
 import { createSelector, Store } from '@ngrx/store';
 import type { SimulatedRegion } from 'digital-fuesim-manv-shared';
-import { UUID, isInSpecificSimulatedRegion } from 'digital-fuesim-manv-shared';
+import type { UUID } from 'digital-fuesim-manv-shared';
+import { isInSpecificSimulatedRegion } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { Subject, takeUntil } from 'rxjs';
 import type { AppState } from 'src/app/state/app.state';
@@ -31,6 +32,7 @@ let activeNavId: NavIds = 'general';
     templateUrl: './simulated-region-overview.component.html',
     styleUrls: ['./simulated-region-overview.component.scss'],
     encapsulation: ViewEncapsulation.None,
+    standalone: false,
 })
 export class SimulatedRegionOverviewGeneralComponent
     implements OnInit, OnDestroy

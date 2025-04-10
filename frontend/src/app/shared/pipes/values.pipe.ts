@@ -3,6 +3,7 @@ import { Pipe } from '@angular/core';
 
 @Pipe({
     name: 'values',
+    standalone: false,
 })
 export class ValuesPipe implements PipeTransform {
     /**
@@ -13,7 +14,7 @@ export class ValuesPipe implements PipeTransform {
     transform<
         Value extends { [key: string]: Item } | null | undefined,
         // When the `:` side is used, `Item` is unused
-        Item = Value extends { [key: string]: infer T } ? T : never
+        Item = Value extends { [key: string]: infer T } ? T : never,
     >(object: Value): Value extends null | undefined ? Value : Item[] {
         if (!object) {
             return object as any;

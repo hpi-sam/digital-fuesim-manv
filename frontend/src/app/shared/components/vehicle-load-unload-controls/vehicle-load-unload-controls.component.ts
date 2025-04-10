@@ -2,7 +2,8 @@ import type { OnChanges } from '@angular/core';
 import { Component, Input } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type { Role } from 'digital-fuesim-manv-shared';
-import { UUID, isInSpecificVehicle } from 'digital-fuesim-manv-shared';
+import type { UUID } from 'digital-fuesim-manv-shared';
+import { isInSpecificVehicle } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { combineLatest, map, startWith, switchMap } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
@@ -19,6 +20,7 @@ import { selectCurrentRole } from 'src/app/state/application/selectors/shared.se
     selector: 'app-vehicle-load-unload-controls',
     templateUrl: './vehicle-load-unload-controls.component.html',
     styleUrls: ['./vehicle-load-unload-controls.component.scss'],
+    standalone: false,
 })
 export class VehicleLoadUnloadControlsComponent implements OnChanges {
     @Input()

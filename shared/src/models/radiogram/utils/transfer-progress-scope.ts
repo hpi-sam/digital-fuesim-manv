@@ -1,4 +1,4 @@
-import type { AllowedValues } from '../../../utils/validators';
+import type { AllowedValues } from '../../../utils/validators/index.js';
 
 /**
  * Defines the scope of the radiogram on the transfer progress.

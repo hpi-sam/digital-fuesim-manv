@@ -29,6 +29,7 @@ import Package from 'package.json';
     selector: 'app-exercise',
     templateUrl: './exercise.component.html',
     styleUrls: ['./exercise.component.scss'],
+    standalone: false,
 })
 export class ExerciseComponent implements OnDestroy {
     private readonly destroy = new Subject<void>();

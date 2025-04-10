@@ -11,6 +11,7 @@ import { Directive, EventEmitter, HostListener, Output } from '@angular/core';
  */
 @Directive({
     selector: 'input[appFileInput]',
+    standalone: false,
 })
 export class FileInputDirective {
     @Output() readonly appFileInput = new EventEmitter<FileList>();

@@ -1,7 +1,7 @@
 import { IsNumber, Min } from 'class-validator';
-import type { AllowedValues } from '../../utils/validators';
-import { IsLiteralUnion } from '../../utils/validators';
-import { getCreate } from './get-create';
+import type { AllowedValues } from '../../utils/validators/index.js';
+import { IsLiteralUnion } from '../../utils/validators/index.js';
+import { getCreate } from './get-create.js';
 
 type LogicalOperator = 'and' | 'or';
 const logicalOperatorAllowedValues: AllowedValues<LogicalOperator> = {

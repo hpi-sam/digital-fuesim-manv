@@ -7,38 +7,37 @@ import {
     ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { IsStringMap } from '../../utils/validators/is-string-map';
-import { cloneDeepMutable, StrictObject, uuid, UUID } from '../../utils';
-import type { Mutable } from '../../utils';
-import { IsValue } from '../../utils/validators';
+import { IsStringMap } from '../../utils/validators/is-string-map.js';
+import type { UUID } from '../../utils/index.js';
+import { cloneDeepMutable, StrictObject, uuid } from '../../utils/index.js';
+import type { Mutable } from '../../utils/index.js';
+import { IsValue } from '../../utils/validators/index.js';
 import {
     getActivityById,
     tryGetElement,
-} from '../../store/action-reducers/utils';
-import type { ExerciseState } from '../../state';
-import { addActivity } from '../activities/utils';
-import { nextUUID } from '../utils/randomness';
-import { RecurringEventActivityState } from '../activities';
-import { SendRequestEvent } from '../events/send-request';
-import { CreateRequestActivityState } from '../activities/create-request';
-import { VehicleResource } from '../../models/utils/rescue-resource';
-import {
-    ExerciseRequestTargetConfiguration,
-    requestTargetTypeOptions,
-} from '../../models/utils/request-target/exercise-request-target';
-import { TraineesRequestTargetConfiguration } from '../../models/utils/request-target/trainees';
-import { getCreate } from '../../models/utils/get-create';
-import type { SimulatedRegion } from '../../models';
-import { ResourcePromise } from '../utils/resource-promise';
-import type { ResourceDescription } from '../../models/utils/resource-description';
+} from '../../store/action-reducers/utils/index.js';
+import type { ExerciseState } from '../../state.js';
+import { addActivity } from '../activities/utils.js';
+import { nextUUID } from '../utils/randomness.js';
+import { RecurringEventActivityState } from '../activities/index.js';
+import { SendRequestEvent } from '../events/send-request.js';
+import { CreateRequestActivityState } from '../activities/create-request.js';
+import { VehicleResource } from '../../models/utils/rescue-resource.js';
+import type { ExerciseRequestTargetConfiguration } from '../../models/utils/request-target/exercise-request-target.js';
+import { requestTargetTypeOptions } from '../../models/utils/request-target/exercise-request-target.js';
+import { TraineesRequestTargetConfiguration } from '../../models/utils/request-target/trainees.js';
+import { getCreate } from '../../models/utils/get-create.js';
+import type { SimulatedRegion } from '../../models/index.js';
+import { ResourcePromise } from '../utils/resource-promise.js';
+import type { ResourceDescription } from '../../models/utils/resource-description.js';
 import {
     addPartialResourceDescriptions,
     subtractPartialResourceDescriptions,
-} from '../../models/utils/resource-description';
+} from '../../models/utils/resource-description.js';
 import type {
     SimulationBehavior,
     SimulationBehaviorState,
-} from './simulation-behavior';
+} from './simulation-behavior.js';
 
 export class RequestBehaviorState implements SimulationBehaviorState {
     @IsValue('requestBehavior')

@@ -24,7 +24,7 @@
                             (mousedown)="
                                 dragElementService.onMouseDown($event, {
                                     type: 'viewport',
-                                    template: viewportTemplate
+                                    template: viewportTemplate,
                                 })
                             "
                             data-cy="draggableViewportDiv"
@@ -50,7 +50,7 @@
                             (mousedown)="
                                 dragElementService.onMouseDown($event, {
                                     type: 'transferPoint',
-                                    template: transferPointTemplate
+                                    template: transferPointTemplate,
                                 })
                             "
                             data-cy="draggableTransferPointDiv"
@@ -104,7 +104,7 @@
                             (mousedown)="
                                 dragElementService.onMouseDown($event, {
                                     type: 'simulatedRegion',
-                                    template: simulatedRegionTemplate
+                                    template: simulatedRegionTemplate,
                                 })
                             "
                             data-cy="draggableSimulatedRegionDiv"
@@ -199,7 +199,7 @@
                                 (mousedown)="
                                     dragElementService.onMouseDown($event, {
                                         type: 'patient',
-                                        template: patientCategory
+                                        template: patientCategory,
                                     })
                                 "
                                 data-cy="draggablePatientDiv"
@@ -298,7 +298,7 @@
                             (mousedown)="
                                 dragElementService.onMouseDown($event, {
                                     type: 'mapImage',
-                                    template: mapImageTemplate
+                                    template: mapImageTemplate,
                                 })
                             "
                             data-cy="draggableMapImageDiv"

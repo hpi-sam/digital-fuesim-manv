@@ -14,6 +14,7 @@ import { createSelectPersonnel } from 'src/app/state/application/selectors/exerc
     styleUrls: [
         './simulated-region-overview-behavior-assign-leader.component.scss',
     ],
+    standalone: false,
 })
 export class SimulatedRegionOverviewBehaviorAssignLeaderComponent
     implements OnChanges

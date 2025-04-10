@@ -1,44 +1,44 @@
 import { Type } from 'class-transformer';
 import { IsInt, IsOptional, IsUUID, ValidateNested } from 'class-validator';
+import type { StartPoint } from '../../models/utils/index.js';
 import {
     isPositionOnMap,
     isInTransfer,
     isNotInTransfer,
     currentTransferOf,
     TransferPosition,
-    StartPoint,
     startPointTypeOptions,
     isPositionInSimulatedRegion,
     simulatedRegionIdOfPosition,
     createVehicleActionTag,
     createTransferPointTag,
-} from '../../models/utils';
-import type { MapPosition } from '../../models/utils';
+} from '../../models/utils/index.js';
+import type { MapPosition } from '../../models/utils/index.js';
 import {
     changePosition,
     offsetMapPositionBy,
-} from '../../models/utils/position/position-helpers-mutable';
-import type { ExerciseState } from '../../state';
-import type { Mutable } from '../../utils';
-import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
-import type { AllowedValues } from '../../utils/validators';
-import { IsLiteralUnion, IsValue } from '../../utils/validators';
-import type { Action, ActionReducer } from '../action-reducer';
-import { ReducerError } from '../reducer-error';
-import { sendSimulationEvent } from '../../simulation/events/utils';
-import { TransferPoint } from '../../models/transfer-point';
-import { PersonnelAvailableEvent } from '../../simulation/events/personnel-available';
-import { VehicleArrivedEvent } from '../../simulation/events/vehicle-arrived';
-import { imageSizeToPosition } from '../../state-helpers/image-size-to-position';
-import type { Vehicle } from '../../models/vehicle';
-import { getElement } from './utils';
+} from '../../models/utils/position/position-helpers-mutable.js';
+import type { ExerciseState } from '../../state.js';
+import type { Mutable, UUID } from '../../utils/index.js';
+import { cloneDeepMutable, uuidValidationOptions } from '../../utils/index.js';
+import type { AllowedValues } from '../../utils/validators/index.js';
+import { IsLiteralUnion, IsValue } from '../../utils/validators/index.js';
+import type { Action, ActionReducer } from '../action-reducer.js';
+import { ReducerError } from '../reducer-error.js';
+import { sendSimulationEvent } from '../../simulation/events/utils.js';
+import { TransferPoint } from '../../models/transfer-point.js';
+import { PersonnelAvailableEvent } from '../../simulation/events/personnel-available.js';
+import { VehicleArrivedEvent } from '../../simulation/events/vehicle-arrived.js';
+import { imageSizeToPosition } from '../../state-helpers/image-size-to-position.js';
+import type { Vehicle } from '../../models/vehicle.js';
+import { getElement } from './utils/index.js';
 import {
     logElementAddedToTransfer,
     logTransferEdited,
     logTransferFinished,
     logTransferPause,
     logVehicle,
-} from './utils/log';
+} from './utils/log.js';
 
 export type TransferableElementType = 'personnel' | 'vehicle';
 const transferableElementTypeAllowedValues: AllowedValues<TransferableElementType> =

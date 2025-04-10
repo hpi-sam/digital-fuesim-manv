@@ -25,6 +25,7 @@ import { isBeingTestedByCypress } from '../functions/cypress';
  */
 @Directive({
     selector: '[appSaveOnTyping][ngModel]',
+    standalone: false,
 })
 export class AppSaveOnTypingDirective implements OnDestroy {
     destroy$ = new Subject<void>();

@@ -1,10 +1,10 @@
 import type { ValidationOptions, ValidationArguments } from 'class-validator';
 import { isUUID, isString } from 'class-validator';
-import type { UUID } from '../uuid';
-import type { UUIDSet } from '../uuid-set';
-import { createMapValidator } from './create-map-validator';
-import type { GenericPropertyDecorator } from './generic-property-decorator';
-import { makeValidator } from './make-validator';
+import type { UUID } from '../uuid.js';
+import type { UUIDSet } from '../uuid-set.js';
+import { createMapValidator } from './create-map-validator.js';
+import type { GenericPropertyDecorator } from './generic-property-decorator.js';
+import { makeValidator } from './make-validator.js';
 
 export const isUUIDSet = createMapValidator<UUID, true>({
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions

@@ -1,4 +1,4 @@
-import { UserReadableIdGenerator } from './user-readable-id-generator';
+import { UserReadableIdGenerator } from './user-readable-id-generator.js';
 
 describe('user-readable-id-generator', () => {
     let generatedIds = new Array<string>();

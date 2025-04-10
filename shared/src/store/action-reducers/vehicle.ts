@@ -1,12 +1,12 @@
 import { Type } from 'class-transformer';
 import { IsArray, IsString, IsUUID, ValidateNested } from 'class-validator';
-import { Material } from '../../models/material';
+import { Material } from '../../models/material.js';
+import type { ExerciseOccupation } from '../../models/utils/index.js';
 import {
     changeOccupation,
     currentCoordinatesOf,
     currentSimulatedRegionIdOf,
     currentSimulatedRegionOf,
-    ExerciseOccupation,
     isInSimulatedRegion,
     isInSpecificSimulatedRegion,
     isInTransfer,
@@ -17,24 +17,23 @@ import {
     occupationTypeOptions,
     SimulatedRegionPosition,
     VehiclePosition,
-} from '../../models/utils';
+} from '../../models/utils/index.js';
 import {
     changePosition,
     changePositionWithId,
-} from '../../models/utils/position/position-helpers-mutable';
-import type { ExerciseState } from '../../state';
-import { imageSizeToPosition } from '../../state-helpers/image-size-to-position';
-import type { Mutable } from '../../utils';
+} from '../../models/utils/position/position-helpers-mutable.js';
+import type { ExerciseState } from '../../state.js';
+import { imageSizeToPosition } from '../../state-helpers/image-size-to-position.js';
+import type { Mutable, UUID } from '../../utils/index.js';
 import {
     cloneDeepMutable,
     StrictObject,
-    UUID,
     uuidValidationOptions,
-} from '../../utils';
-import { IsLiteralUnion, IsValue } from '../../utils/validators';
-import type { Action, ActionReducer } from '../action-reducer';
-import { ReducerError } from '../reducer-error';
-import { sendSimulationEvent } from '../../simulation/events/utils';
+} from '../../utils/index.js';
+import { IsLiteralUnion, IsValue } from '../../utils/validators/index.js';
+import type { Action, ActionReducer } from '../action-reducer.js';
+import { ReducerError } from '../reducer-error.js';
+import { sendSimulationEvent } from '../../simulation/events/utils.js';
 import {
     MaterialAvailableEvent,
     MaterialRemovedEvent,
@@ -42,14 +41,14 @@ import {
     PersonnelAvailableEvent,
     PersonnelRemovedEvent,
     VehicleRemovedEvent,
-} from '../../simulation/events';
-import { Vehicle } from '../../models/vehicle';
-import { Personnel } from '../../models/personnel';
-import { deletePatient } from './patient';
-import { completelyLoadVehicle as completelyLoadVehicleHelper } from './utils/completely-load-vehicle';
-import { getElement } from './utils/get-element';
-import { removeElementPosition } from './utils/spatial-elements';
-import { logVehicleAdded, logVehicleRemoved } from './utils/log';
+} from '../../simulation/events/index.js';
+import { Vehicle } from '../../models/vehicle.js';
+import { Personnel } from '../../models/personnel.js';
+import { deletePatient } from './patient.js';
+import { completelyLoadVehicle as completelyLoadVehicleHelper } from './utils/completely-load-vehicle.js';
+import { getElement } from './utils/get-element.js';
+import { removeElementPosition } from './utils/spatial-elements.js';
+import { logVehicleAdded, logVehicleRemoved } from './utils/log.js';
 
 /**
  * Performs all necessary actions to remove a vehicle from the state.

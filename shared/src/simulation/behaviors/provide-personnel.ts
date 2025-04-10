@@ -1,19 +1,19 @@
 import { IsUUID } from 'class-validator';
-import { getCreate } from '../../models/utils/get-create';
+import { getCreate } from '../../models/utils/get-create.js';
+import type { UUID } from '../../utils/index.js';
 import {
-    UUID,
     uuid,
     uuidArrayValidationOptions,
     uuidValidationOptions,
-} from '../../utils';
-import { IsValue } from '../../utils/validators';
-import { ProvidePersonnelFromVehiclesActivityState } from '../activities/provide-personnel-from-vehicles';
-import { addActivity } from '../activities/utils';
-import { nextUUID } from '../utils/randomness';
+} from '../../utils/index.js';
+import { IsValue } from '../../utils/validators/index.js';
+import { ProvidePersonnelFromVehiclesActivityState } from '../activities/provide-personnel-from-vehicles.js';
+import { addActivity } from '../activities/utils.js';
+import { nextUUID } from '../utils/randomness.js';
 import type {
     SimulationBehavior,
     SimulationBehaviorState,
-} from './simulation-behavior';
+} from './simulation-behavior.js';
 
 export class ProvidePersonnelBehaviorState implements SimulationBehaviorState {
     @IsValue('providePersonnelBehavior' as const)

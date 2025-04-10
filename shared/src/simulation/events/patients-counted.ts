@@ -1,10 +1,10 @@
-import { getCreate } from '../../models/utils/get-create';
-import type { PatientStatus } from '../../models/utils/patient-status';
-import { patientStatusAllowedValues } from '../../models/utils/patient-status';
-import { ResourceDescription } from '../../models/utils/resource-description';
-import { IsValue } from '../../utils/validators';
-import { IsResourceDescription } from '../../utils/validators/is-resource-description';
-import type { SimulationEvent } from './simulation-event';
+import { getCreate } from '../../models/utils/get-create.js';
+import type { PatientStatus } from '../../models/utils/patient-status.js';
+import { patientStatusAllowedValues } from '../../models/utils/patient-status.js';
+import type { ResourceDescription } from '../../models/utils/resource-description.js';
+import { IsValue } from '../../utils/validators/index.js';
+import { IsResourceDescription } from '../../utils/validators/is-resource-description.js';
+import type { SimulationEvent } from './simulation-event.js';
 
 export class PatientsCountedEvent implements SimulationEvent {
     @IsValue('patientsCountedEvent')

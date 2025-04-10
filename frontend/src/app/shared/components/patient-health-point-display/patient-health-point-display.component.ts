@@ -2,11 +2,11 @@ import type { OnInit } from '@angular/core';
 import { Component, Input } from '@angular/core';
 import { createSelector, Store } from '@ngrx/store';
 import type { PatientStatus } from 'digital-fuesim-manv-shared';
+import type { UUID } from 'digital-fuesim-manv-shared';
 import {
     healthPointsDefaults,
     Patient,
     statusNames,
-    UUID,
 } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import type { AppState } from 'src/app/state/app.state';
@@ -20,6 +20,7 @@ import { selectCurrentRole } from 'src/app/state/application/selectors/shared.se
     selector: 'app-patient-health-point-display',
     templateUrl: './patient-health-point-display.component.html',
     styleUrls: ['./patient-health-point-display.component.scss'],
+    standalone: false,
 })
 export class PatientHealthPointDisplayComponent implements OnInit {
     @Input() patientId!: UUID;

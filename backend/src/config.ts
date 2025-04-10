@@ -1,4 +1,4 @@
-import './utils/dotenv-config';
+import './utils/dotenv-config.js';
 import dotenv from 'dotenv';
 import { bool, cleanEnv, makeValidator, num, str } from 'envalid';
 

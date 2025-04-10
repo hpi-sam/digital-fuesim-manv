@@ -22,6 +22,7 @@ import { RadiogramListService } from './radiogram-list.service';
     selector: 'app-radiogram-list',
     templateUrl: './radiogram-list.component.html',
     styleUrls: ['./radiogram-list.component.scss'],
+    standalone: false,
 })
 export class RadiogramListComponent implements OnInit {
     ownClientId!: UUID;

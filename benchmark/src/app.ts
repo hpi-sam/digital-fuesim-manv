@@ -1,8 +1,10 @@
+/// <reference types="@types/node" />
+
 import { promises as fs } from 'node:fs';
 import os from 'node:os';
 import { countBy } from 'lodash-es';
-import { print } from './print';
-import { steps, StepState } from './steps';
+import { print } from './print.js';
+import { steps, StepState } from './steps.js';
 
 // Print some information about the system
 console.log(`

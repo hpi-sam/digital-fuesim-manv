@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { UUID } from 'digital-fuesim-manv-shared';
+import type { UUID } from 'digital-fuesim-manv-shared';
 
 @Component({
     selector:
@@ -9,6 +9,7 @@ import { UUID } from 'digital-fuesim-manv-shared';
     styleUrls: [
         './simulated-region-overview-behavior-manage-patient-transport-to-hospital.component.scss',
     ],
+    standalone: false,
 })
 export class SimulatedRegionOverviewBehaviorManagePatientTransportToHospitalComponent {
     @Input() simulatedRegionId!: UUID;

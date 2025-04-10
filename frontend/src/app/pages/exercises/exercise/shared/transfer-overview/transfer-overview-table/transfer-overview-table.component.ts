@@ -12,6 +12,7 @@ import {
     selector: 'app-transfer-overview-table',
     templateUrl: './transfer-overview-table.component.html',
     styleUrls: ['./transfer-overview-table.component.scss'],
+    standalone: false,
 })
 export class TransferOverviewTableComponent {
     public readonly vehiclesInTransfer$ = this.store.select(

@@ -28,14 +28,14 @@ export class AreaStatisticsService {
                                 areaSpec.type === 'all'
                                     ? statisticEntry.exercise
                                     : areaSpec.type === 'viewport'
-                                    ? statisticEntry.viewports[areaSpec.id]
-                                    : // Safeguard for when new types are added
-                                    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-                                    areaSpec.type === 'simulatedRegion'
-                                    ? statisticEntry.simulatedRegions[
-                                          areaSpec.id
-                                      ]
-                                    : undefined,
+                                      ? statisticEntry.viewports[areaSpec.id]
+                                      : // Safeguard for when new types are added
+                                        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+                                        areaSpec.type === 'simulatedRegion'
+                                        ? statisticEntry.simulatedRegions[
+                                              areaSpec.id
+                                          ]
+                                        : undefined,
                             exerciseTime: statisticEntry.exerciseTime,
                         }))
                         .filter(

@@ -1,9 +1,9 @@
 import type { ValidationArguments, ValidationOptions } from 'class-validator';
 import { isUUID } from 'class-validator';
-import type { UUID } from '../uuid';
-import { createMapValidator } from './create-map-validator';
-import type { GenericPropertyDecorator } from './generic-property-decorator';
-import { makeValidator } from './make-validator';
+import type { UUID } from '../uuid.js';
+import { createMapValidator } from './create-map-validator.js';
+import type { GenericPropertyDecorator } from './generic-property-decorator.js';
+import { makeValidator } from './make-validator.js';
 
 export type UUIDSquaredMap = { [key in UUID]: UUID };
 

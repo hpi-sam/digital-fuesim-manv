@@ -17,7 +17,10 @@ export class CustomTimer {
     public readonly state$ = this._state$.asObservable();
     private isPaused = false;
 
-    constructor(public readonly callback: () => void, public time: number) {
+    constructor(
+        public readonly callback: () => void,
+        public time: number
+    ) {
         this.timeUntilCallbackIfNotPaused = time;
         this.start();
     }

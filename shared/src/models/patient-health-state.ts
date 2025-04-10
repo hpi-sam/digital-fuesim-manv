@@ -6,10 +6,12 @@ import {
     IsUUID,
     ValidateNested,
 } from 'class-validator';
-import { uuid, UUID, uuidValidationOptions } from '../utils';
-import { IsValue } from '../utils/validators';
-import { getCreate } from './utils/get-create';
-import { HealthPoints, IsValidHealthPoint } from './utils/health-points';
+import type { UUID } from '../utils/index.js';
+import { uuid, uuidValidationOptions } from '../utils/index.js';
+import { IsValue } from '../utils/validators/index.js';
+import { getCreate } from './utils/get-create.js';
+import type { HealthPoints } from './utils/health-points.js';
+import { IsValidHealthPoint } from './utils/health-points.js';
 
 /**
  * These parameters determine the increase or decrease of a patients health every second

@@ -5,8 +5,8 @@ import type {
     RecurringEventActivityState,
     RequestBehaviorState,
 } from 'digital-fuesim-manv-shared';
+import type { UUID } from 'digital-fuesim-manv-shared';
 import {
-    UUID,
     SimulatedRegionRequestTargetConfiguration,
     TraineesRequestTargetConfiguration,
 } from 'digital-fuesim-manv-shared';
@@ -30,6 +30,7 @@ type RequestTargetOption = UUID | 'trainees';
     styleUrls: [
         './simulated-region-overview-behavior-request-vehicles.component.scss',
     ],
+    standalone: false,
 })
 export class RequestVehiclesComponent implements OnChanges {
     @Input() simulatedRegionId!: UUID;

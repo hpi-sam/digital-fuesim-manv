@@ -1,8 +1,8 @@
 import { jest } from '@jest/globals';
 import { sleep } from 'digital-fuesim-manv-shared';
-import { createTestEnvironment } from '../../test/utils';
-import { clientMap } from './client-map';
-import { ExerciseWrapper } from './exercise-wrapper';
+import { createTestEnvironment } from '../../test/utils.js';
+import { clientMap } from './client-map.js';
+import { ExerciseWrapper } from './exercise-wrapper.js';
 
 describe('Exercise Wrapper', () => {
     const environment = createTestEnvironment();
@@ -29,12 +29,13 @@ describe('Exercise Wrapper', () => {
             // Sleep a bit to allow the socket to connect.
             await sleep(100);
             const client = clientMap.values().next().value;
+            expect(client).toBeDefined();
 
             const applySpy = jest.spyOn(
                 ExerciseWrapper.prototype,
                 'applyAction'
             );
-            exercise.addClient(client);
+            exercise.addClient(client!);
 
             expect(applySpy).not.toHaveBeenCalled();
         });
@@ -48,14 +49,17 @@ describe('Exercise Wrapper', () => {
         );
         // Use a websocket in order to have a ClientWrapper set up
         await environment.withWebsocket(async () => {
+            // Sleep a bit to allow the socket to connect.
+            await sleep(100);
             const client = clientMap.values().next().value;
+            expect(client).toBeDefined();
 
             const applySpy = jest.spyOn(
                 ExerciseWrapper.prototype,
                 'applyAction'
             );
             applySpy.mockClear();
-            exercise.removeClient(client);
+            exercise.removeClient(client!);
 
             expect(applySpy).not.toHaveBeenCalled();
         });

@@ -3,8 +3,8 @@ import { Config } from 'config';
 import { uuid } from 'digital-fuesim-manv-shared';
 import { exerciseMap } from 'exercise/exercise-map';
 import { EntityManager } from 'typeorm';
-import { createExercise, createTestEnvironment } from '../test/utils';
-import { pushAll } from './utils/array';
+import { createExercise, createTestEnvironment } from '../test/utils.js';
+import { pushAll } from './utils/array.js';
 
 describe('Exercise saving', () => {
     const environment = createTestEnvironment();

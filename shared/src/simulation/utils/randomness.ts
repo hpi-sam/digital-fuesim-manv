@@ -2,10 +2,10 @@
 import { IsInt, Min, ValidateIf } from 'class-validator';
 import { sha256 } from '@noble/hashes/sha256';
 import { v4 } from 'uuid';
-import { getCreate } from '../../models/utils/get-create';
-import type { ExerciseState } from '../../state';
-import type { Mutable, UUID } from '../../utils';
-import { IsLiteralUnion, IsValue } from '../../utils/validators';
+import { getCreate } from '../../models/utils/get-create.js';
+import type { ExerciseState } from '../../state.js';
+import type { Mutable, UUID } from '../../utils/index.js';
+import { IsLiteralUnion, IsValue } from '../../utils/validators/index.js';
 
 export class RandomState {
     @IsValue('randomState' as const)

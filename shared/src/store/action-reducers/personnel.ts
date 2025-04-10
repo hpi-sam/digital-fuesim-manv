@@ -1,10 +1,11 @@
 import { Type } from 'class-transformer';
 import { IsUUID, ValidateNested } from 'class-validator';
-import { MapPosition, MapCoordinates } from '../../models/utils';
-import { changePositionWithId } from '../../models/utils/position/position-helpers-mutable';
-import { UUID, uuidValidationOptions } from '../../utils';
-import { IsValue } from '../../utils/validators';
-import type { Action, ActionReducer } from '../action-reducer';
+import { MapPosition, MapCoordinates } from '../../models/utils/index.js';
+import { changePositionWithId } from '../../models/utils/position/position-helpers-mutable.js';
+import type { UUID } from '../../utils/index.js';
+import { uuidValidationOptions } from '../../utils/index.js';
+import { IsValue } from '../../utils/validators/index.js';
+import type { Action, ActionReducer } from '../action-reducer.js';
 
 export class MovePersonnelAction implements Action {
     @IsValue('[Personnel] Move personnel' as const)

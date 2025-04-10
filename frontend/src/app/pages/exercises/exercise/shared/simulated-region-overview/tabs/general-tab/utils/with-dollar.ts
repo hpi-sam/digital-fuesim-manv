@@ -7,6 +7,7 @@ import type {
 
 @Pipe({
     name: 'withDollar',
+    standalone: false,
 })
 export class WithDollarPipe implements PipeTransform {
     transform<Category extends PatientCategory | PersonnelCategory>(

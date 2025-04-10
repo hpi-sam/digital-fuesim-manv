@@ -1,10 +1,8 @@
-import { getCreate } from '../../models/utils/get-create';
-import { IsLiteralUnion, IsValue } from '../../utils/validators';
-import {
-    ReportableInformation,
-    reportableInformationAllowedValues,
-} from '../behaviors/utils';
-import type { SimulationEvent } from './simulation-event';
+import { getCreate } from '../../models/utils/get-create.js';
+import { IsLiteralUnion, IsValue } from '../../utils/validators/index.js';
+import type { ReportableInformation } from '../behaviors/utils.js';
+import { reportableInformationAllowedValues } from '../behaviors/utils.js';
+import type { SimulationEvent } from './simulation-event.js';
 
 export class StartCollectingInformationEvent implements SimulationEvent {
     @IsValue('startCollectingInformationEvent')

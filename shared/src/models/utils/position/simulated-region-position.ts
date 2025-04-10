@@ -1,7 +1,8 @@
 import { IsUUID } from 'class-validator';
-import { UUID, uuidValidationOptions } from '../../../utils';
-import { IsValue } from '../../../utils/validators';
-import { getCreate } from '../get-create';
+import type { UUID } from '../../../utils/index.js';
+import { uuidValidationOptions } from '../../../utils/index.js';
+import { IsValue } from '../../../utils/validators/index.js';
+import { getCreate } from '../get-create.js';
 import {
     // import needed to display @link Links in Comments
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -12,7 +13,7 @@ import {
     // import needed to display @link Links in Comments
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     currentSimulatedRegionIdOf,
-} from './position-helpers';
+} from './position-helpers.js';
 
 export class SimulatedRegionPosition {
     /**

@@ -10,12 +10,12 @@ import type {
     UUIDSet,
     Vehicle,
 } from 'digital-fuesim-manv-shared';
+import type { UUID } from 'digital-fuesim-manv-shared';
 import {
     cloneDeepMutable,
     isInSpecificVehicle,
     isInSpecificSimulatedRegion,
     Patient,
-    UUID,
 } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { Subject, takeUntil } from 'rxjs';
@@ -33,7 +33,7 @@ import {
     selectVehicles,
 } from 'src/app/state/application/selectors/exercise.selectors';
 import { comparePatientsByVisibleStatus } from '../../../compare-patients';
-import { TransferOptions } from '../../../../start-transfer.service';
+import type { TransferOptions } from '../../../../start-transfer.service';
 
 let globalLastInformationCollapsed = true;
 let globalLastSettingsCollapsed = true;
@@ -46,6 +46,7 @@ let globalLastTransferCollapsed = true;
     styleUrls: [
         './simulated-region-overview-behavior-transfer-vehicles.component.scss',
     ],
+    standalone: false,
 })
 export class SimulatedRegionOverviewBehaviorTransferVehiclesComponent
     implements OnInit, OnDestroy
@@ -181,12 +182,12 @@ export class SimulatedRegionOverviewBehaviorTransferVehiclesComponent
                     destination:
                         bufferedTransferEvent.transferDestinationType ===
                         'hospital'
-                            ? hospitals[
+                            ? (hospitals[
                                   bufferedTransferEvent.transferDestinationId
-                              ]?.name ?? 'Gelöschtes Krankenhaus'
-                            : transferPoints[
+                              ]?.name ?? 'Gelöschtes Krankenhaus')
+                            : (transferPoints[
                                   bufferedTransferEvent.transferDestinationId
-                              ]?.externalName ?? 'Gelöschtes Transferziel',
+                              ]?.externalName ?? 'Gelöschtes Transferziel'),
                     numberOfPatients: Object.keys(
                         vehicles[bufferedTransferEvent.vehicleId]?.patientIds ??
                             {}
@@ -255,12 +256,12 @@ export class SimulatedRegionOverviewBehaviorTransferVehiclesComponent
                     destination:
                         activeActivityState.transferDestinationType ===
                         'hospital'
-                            ? hospitals[
+                            ? (hospitals[
                                   activeActivityState.transferDestinationId
-                              ]?.name ?? 'Gelöschtes Krankenhaus'
-                            : transferPoints[
+                              ]?.name ?? 'Gelöschtes Krankenhaus')
+                            : (transferPoints[
                                   activeActivityState.transferDestinationId
-                              ]?.externalName ?? 'Gelöschtes Transferziel',
+                              ]?.externalName ?? 'Gelöschtes Transferziel'),
                     numberOfPatients: Object.keys(
                         activeActivityState.patientsToBeLoaded
                     ).length,

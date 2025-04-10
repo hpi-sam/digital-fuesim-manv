@@ -5,6 +5,7 @@ import { PatientStatusCode } from 'digital-fuesim-manv-shared';
     selector: 'app-patient-status-display',
     templateUrl: './patient-status-display.component.html',
     styleUrls: ['./patient-status-display.component.scss'],
+    standalone: false,
 })
 export class PatientStatusDisplayComponent {
     @Input() patientStatus!: PatientStatusCode;

@@ -1,4 +1,4 @@
-import { Step } from './step';
+import { Step } from './step.js';
 
 /**
  * A calculation step can be used to calculate new values from the state.
@@ -9,7 +9,7 @@ export class CalculationStep<
         [StepName: string]: any | undefined;
     },
     Name extends keyof State = keyof State,
-    Value extends State[Name] = State[Name]
+    Value extends State[Name] = State[Name],
 > extends Step<State> {
     constructor(
         name: Name,
