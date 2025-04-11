@@ -12,8 +12,8 @@ import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import { createSelectVehicleTemplate } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
-import type { ChangedVehicleTemplateValues } from '../vehicle-template-form/vehicle-template-form.component';
 import { ConfirmationModalService } from 'src/app/core/confirmation-modal/confirmation-modal.service';
+import type { ChangedVehicleTemplateValues } from '../vehicle-template-form/vehicle-template-form.component';
 
 @Component({
     selector: 'app-edit-vehicle-template-modal',
@@ -46,7 +46,7 @@ export class EditVehicleTemplateModalComponent implements OnInit {
     public async deleteVehicleTemplate(): Promise<void> {
         const confirmDelete = await this.confirmationModalService.confirm({
             title: 'Fahrzeug-Vorlage löschen',
-            description: `Möchten Sie die Fahrzeug-Vorlage "${this.vehicleTemplate?.vehicleType}" wirklich löschen? Diese Vorlage wird auch aus allen Alarmgruppen gelöscht werden. Bereit auf der Karte existierende Fahrzeuge sind davon nicht betroffen.`,
+            description: `Möchten Sie die Fahrzeug-Vorlage "${this.vehicleTemplate?.vehicleType}" wirklich löschen? Diese Vorlage wird auch aus allen Alarmgruppen gelöscht werden. Bereit auf der Karte existierende Fahrzeuge, Fahrzeuge im Transfer und bereits alarmierte Fahrzeuge sind davon nicht betroffen.`,
         });
         if (!confirmDelete) {
             return;
@@ -58,15 +58,6 @@ export class EditVehicleTemplateModalComponent implements OnInit {
             })
             .then((response) => {
                 if (response.success) {
-                    console.log(
-                        'after deleting',
-                        JSON.stringify(
-                            selectStateSnapshot(
-                                (state) => state.application.exerciseState,
-                                this.store
-                            )
-                        )
-                    );
                     this.close();
                 }
             });
@@ -98,7 +89,7 @@ export class EditVehicleTemplateModalComponent implements OnInit {
                 },
                 materials: materialTypes,
                 patientCapacity,
-                personnelTypes: personnelTypes,
+                personnelTypes,
                 vehicleType: type,
             })
             .then((response) => {
