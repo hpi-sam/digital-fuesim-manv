@@ -14,7 +14,7 @@ import { MessageService } from 'src/app/core/messages/message.service';
 export class PartialImportModalComponent {
     public importingPartialExport = false;
     constructor(
-        public activeModal: NgbActiveModal,
+        private readonly activeModal: NgbActiveModal,
         private readonly messageService: MessageService,
         private readonly exerciseService: ExerciseService
     ) {}

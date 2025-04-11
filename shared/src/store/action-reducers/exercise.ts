@@ -265,12 +265,20 @@ export function preparePartialExportForImport(
     partialExport: PartialExport
 ): PartialExport {
     const copy = cloneDeepMutable(partialExport);
-    // `patientCategories` don't have an `id`
+    // `patientCategories` don't have an `id`...
     const templateTypes = ['mapImageTemplates', 'vehicleTemplates'] as const;
     for (const templateType of templateTypes) {
         const templates = copy[templateType];
         if (templates !== undefined) {
             for (const template of templates) {
+                template.id = uuid();
+            }
+        }
+    }
+    // ...but the contained `PatientTemplate`s do
+    if (copy.patientCategories !== undefined) {
+        for (const category of copy.patientCategories) {
+            for (const template of category.patientTemplates) {
                 template.id = uuid();
             }
         }

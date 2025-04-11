@@ -63,6 +63,9 @@ export function migratePartialExport(
     stateExport.fileVersion = mutablePartialExport.fileVersion;
     stateExport.dataVersion = mutablePartialExport.dataVersion;
     const migratedStateExport = migrateStateExport(stateExport as StateExport);
+    // Check for `undefined` in the original partial export here as `undefined` has the meaning of `no changes`
+    // compared to `[]` with the meaning of `nothing`. If later choosing to override using this partial export,
+    // `undefined` will be ignored while `[]` would remove all existing entries.
     const mapImageTemplates =
         mutablePartialExport.mapImageTemplates !== undefined
             ? (migratedStateExport.currentState
