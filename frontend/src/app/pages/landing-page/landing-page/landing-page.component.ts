@@ -96,9 +96,12 @@ export class LandingPageComponent {
                     break;
                 }
                 case 'partial': {
-                    throw new Error(
-                        'Dieser Typ kann nur innerhalb einer Übung importiert werden.'
-                    );
+                    this.messageService.postMessage({
+                        color: 'danger',
+                        title: 'Unerlaubter Importtyp',
+                        body: 'Dieser Typ kann nur innerhalb einer Übung importiert werden.',
+                    });
+                    break;
                 }
             }
         } catch (error: unknown) {
