@@ -26,11 +26,11 @@ export class CreateVehicleTemplateModalComponent {
         };
 
     constructor(
-        public readonly activeModal: NgbActiveModal,
+        private readonly activeModal: NgbActiveModal,
         private readonly exerciseService: ExerciseService
     ) {}
 
-    public createImageTemplate({
+    public createVehicleTemplate({
         url,
         height,
         name,

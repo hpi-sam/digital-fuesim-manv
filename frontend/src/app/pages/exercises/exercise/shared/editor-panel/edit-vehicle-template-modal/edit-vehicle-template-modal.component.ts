@@ -13,6 +13,7 @@ import type { AppState } from 'src/app/state/app.state';
 import { createSelectVehicleTemplate } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import type { ChangedVehicleTemplateValues } from '../vehicle-template-form/vehicle-template-form.component';
+import { ConfirmationModalService } from 'src/app/core/confirmation-modal/confirmation-modal.service';
 
 @Component({
     selector: 'app-edit-vehicle-template-modal',
@@ -29,7 +30,8 @@ export class EditVehicleTemplateModalComponent implements OnInit {
     constructor(
         private readonly exerciseService: ExerciseService,
         private readonly store: Store<AppState>,
-        public readonly activeModal: NgbActiveModal
+        public readonly activeModal: NgbActiveModal,
+        private readonly confirmationModalService: ConfirmationModalService
     ) {}
 
     ngOnInit(): void {
@@ -41,14 +43,30 @@ export class EditVehicleTemplateModalComponent implements OnInit {
         );
     }
 
-    public deleteVehicleTemplate(): void {
+    public async deleteVehicleTemplate(): Promise<void> {
+        const confirmDelete = await this.confirmationModalService.confirm({
+            title: 'Fahrzeug-Vorlage löschen',
+            description: `Möchten Sie die Fahrzeug-Vorlage "${this.vehicleTemplate?.vehicleType}" wirklich löschen? Diese Vorlage wird auch aus allen Alarmgruppen gelöscht werden. Bereit auf der Karte existierende Fahrzeuge sind davon nicht betroffen.`,
+        });
+        if (!confirmDelete) {
+            return;
+        }
         this.exerciseService
             .proposeAction({
-                type: '[VehicleTemplate] Delete vehicleTemplates',
+                type: '[VehicleTemplate] Delete vehicleTemplate',
                 id: this.vehicleTemplateId,
             })
             .then((response) => {
                 if (response.success) {
+                    console.log(
+                        'after deleting',
+                        JSON.stringify(
+                            selectStateSnapshot(
+                                (state) => state.application.exerciseState,
+                                this.store
+                            )
+                        )
+                    );
                     this.close();
                 }
             });
@@ -61,6 +79,8 @@ export class EditVehicleTemplateModalComponent implements OnInit {
         aspectRatio,
         patientCapacity,
         type,
+        materialTypes,
+        personnelTypes,
     }: ChangedVehicleTemplateValues): void {
         if (!this.vehicleTemplate) {
             console.error("VehicleTemplate wasn't initialized yet");
@@ -76,9 +96,9 @@ export class EditVehicleTemplateModalComponent implements OnInit {
                     height,
                     aspectRatio,
                 },
-                materials: this.vehicleTemplate.materials,
+                materials: materialTypes,
                 patientCapacity,
-                personnelTypes: this.vehicleTemplate.personnel,
+                personnelTypes: personnelTypes,
                 vehicleType: type,
             })
             .then((response) => {

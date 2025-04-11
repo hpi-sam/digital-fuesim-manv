@@ -15,9 +15,10 @@ import type { Mutable, UUID } from '../../utils/index.js';
 import { uuidValidationOptions, cloneDeepMutable } from '../../utils/index.js';
 import type { Action, ActionReducer } from '../action-reducer.js';
 import { ReducerError } from '../reducer-error.js';
+import { IsValue } from '../../utils/validators/is-value.js';
 
 export class AddVehicleTemplateAction implements Action {
-    @IsString()
+    @IsValue('[VehicleTemplate] Add vehicleTemplate')
     public readonly type = '[VehicleTemplate] Add vehicleTemplate';
 
     @ValidateNested()
@@ -26,7 +27,7 @@ export class AddVehicleTemplateAction implements Action {
 }
 
 export class EditVehicleTemplateAction implements Action {
-    @IsString()
+    @IsValue('[VehicleTemplate] Edit vehicleTemplate')
     public readonly type = '[VehicleTemplate] Edit vehicleTemplate';
 
     @IsUUID(4, uuidValidationOptions)
@@ -55,8 +56,8 @@ export class EditVehicleTemplateAction implements Action {
 }
 
 export class DeleteVehicleTemplateAction implements Action {
-    @IsString()
-    public readonly type = '[VehicleTemplate] Delete vehicleTemplates';
+    @IsValue('[VehicleTemplate] Delete vehicleTemplate')
+    public readonly type = '[VehicleTemplate] Delete vehicleTemplate';
 
     @IsUUID(4, uuidValidationOptions)
     public readonly id!: UUID;
@@ -118,16 +119,16 @@ export namespace VehicleTemplateActionReducers {
                     draftState.vehicleTemplates.filter(
                         (template) => template.id !== id
                     );
-                // Delete every alarm group that uses this template
-                draftState.alarmGroups = Object.fromEntries(
-                    Object.entries(draftState.alarmGroups).filter(
-                        ([_, alarmGroup]) =>
-                            !Object.values(alarmGroup.alarmGroupVehicles).some(
-                                (alarmGroupVehicle) =>
-                                    alarmGroupVehicle.vehicleTemplateId === id
-                            )
-                    )
-                );
+                // Delete this template from every alarm group
+                for (const alarmGroup of Object.values(
+                    draftState.alarmGroups
+                )) {
+                    alarmGroup.alarmGroupVehicles = Object.fromEntries(
+                        Object.entries(alarmGroup.alarmGroupVehicles).filter(
+                            ([_, vehicle]) => vehicle.vehicleTemplateId !== id
+                        )
+                    );
+                }
                 return draftState;
             },
             rights: 'trainer',

@@ -20,7 +20,11 @@ export function reduceExerciseState(
     // Make sure that the state isn't mutated in the reducer (short circuits if the state is already frozen)
     freeze(state, true);
     // use immer to convert mutating operations to immutable ones (https://immerjs.github.io/immer/produce)
-    return produce(state, (draftState) => applyAction(draftState, action));
+    const result = produce(state, (draftState) =>
+        applyAction(draftState, action)
+    );
+    console.log('after', action, JSON.stringify(result));
+    return result;
 }
 
 /**

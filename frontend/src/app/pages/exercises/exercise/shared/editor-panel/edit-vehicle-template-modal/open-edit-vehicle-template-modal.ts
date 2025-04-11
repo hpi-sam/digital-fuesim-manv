@@ -6,7 +6,9 @@ export async function openEditVehicleTemplateModal(
     ngbModalService: NgbModal,
     vehicleTemplateId: UUID
 ) {
-    const modalRef = ngbModalService.open(EditVehicleTemplateModalComponent);
+    const modalRef = ngbModalService.open(EditVehicleTemplateModalComponent, {
+        size: 'lg',
+    });
     const componentInstance =
         modalRef.componentInstance as EditVehicleTemplateModalComponent;
     componentInstance.vehicleTemplateId = vehicleTemplateId;

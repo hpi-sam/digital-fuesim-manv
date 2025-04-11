@@ -4,5 +4,5 @@ import { CreateVehicleTemplateModalComponent } from './create-vehicle-template-m
 export async function openCreateVehicleTemplateModal(
     ngbModalService: NgbModal
 ) {
-    ngbModalService.open(CreateVehicleTemplateModalComponent);
+    ngbModalService.open(CreateVehicleTemplateModalComponent, { size: 'lg' });
 }
