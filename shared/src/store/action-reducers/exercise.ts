@@ -1,12 +1,14 @@
 import { Type } from 'class-transformer';
 import {
     IsArray,
+    ValidateNested,
     IsBoolean,
     IsInt,
     IsPositive,
-    ValidateNested,
 } from 'class-validator';
 import type { Personnel, PersonnelType, Vehicle } from '../../models/index.js';
+import { PartialExport } from '../../export-import/file-format/index.js';
+import { IsLiteralUnion, IsValue } from '../../utils/validators/index.js';
 import {
     createPersonnelTypeTag,
     personnelTypeAllowedValues,
@@ -23,10 +25,9 @@ import { changePosition } from '../../models/utils/position/position-helpers-mut
 import { simulateAllRegions } from '../../simulation/utils/simulation.js';
 import type { ExerciseState } from '../../state.js';
 import type { Mutable, UUID } from '../../utils/index.js';
-import { cloneDeepMutable, StrictObject } from '../../utils/index.js';
+import { cloneDeepMutable, StrictObject, uuid } from '../../utils/index.js';
 import type { ElementTypePluralMap } from '../../utils/element-type-plural-map.js';
 import { elementTypePluralMap } from '../../utils/element-type-plural-map.js';
-import { IsValue } from '../../utils/validators/index.js';
 import type { Action, ActionReducer } from '../action-reducer.js';
 import { ReducerError } from '../reducer-error.js';
 import type { TransferableElementType } from './transfer.js';
@@ -73,6 +74,18 @@ export class ExerciseTickAction implements Action {
     @IsInt()
     @IsPositive()
     public readonly tickInterval!: number;
+}
+
+export class ImportTemplatesAction implements Action {
+    @IsValue('[Exercise] Import Templates' as const)
+    public readonly type = '[Exercise] Import Templates';
+
+    @IsLiteralUnion({ append: true, overwrite: true })
+    public readonly mode!: 'append' | 'overwrite';
+
+    @ValidateNested()
+    @Type(() => PartialExport)
+    public readonly partialExport!: PartialExport;
 }
 
 export namespace ExerciseActionReducers {
@@ -162,6 +175,51 @@ export namespace ExerciseActionReducers {
         },
         rights: 'server',
     };
+
+    export const templateImport: ActionReducer<ImportTemplatesAction> = {
+        action: ImportTemplatesAction,
+        reducer: (draftState, { mode, partialExport }) => {
+            const mutablePartialExport = cloneDeepMutable(partialExport);
+            if (mutablePartialExport.mapImageTemplates !== undefined) {
+                if (mode === 'append') {
+                    draftState.mapImageTemplates.push(
+                        ...mutablePartialExport.mapImageTemplates
+                    );
+                } else {
+                    draftState.mapImageTemplates =
+                        mutablePartialExport.mapImageTemplates;
+                }
+            }
+            if (mutablePartialExport.patientCategories !== undefined) {
+                if (mode === 'append') {
+                    draftState.patientCategories.push(
+                        ...mutablePartialExport.patientCategories
+                    );
+                } else {
+                    draftState.patientCategories =
+                        mutablePartialExport.patientCategories;
+                }
+            }
+            if (mutablePartialExport.vehicleTemplates !== undefined) {
+                if (mode === 'append') {
+                    draftState.vehicleTemplates.push(
+                        ...mutablePartialExport.vehicleTemplates
+                    );
+                } else {
+                    // Remove all vehicles from all alarm groups as all existing vehicle templates are being removed
+                    for (const alarmGroup of Object.values(
+                        draftState.alarmGroups
+                    )) {
+                        alarmGroup.alarmGroupVehicles = {};
+                    }
+                    draftState.vehicleTemplates =
+                        mutablePartialExport.vehicleTemplates;
+                }
+            }
+            return draftState;
+        },
+        rights: 'trainer',
+    };
 }
 
 type TransferTypePluralMap = Pick<
@@ -195,6 +253,37 @@ function refreshTransfer(
         }
         letElementArrive(draftState, type, element.id);
     });
+}
+
+/**
+ * Prepare a {@link PartialExport} for import.
+ *
+ * This includes resetting UUIDs as this cannot be done in the reducer.
+ * @param partialExport The {@link PartialExport} to prepare.
+ */
+export function preparePartialExportForImport(
+    partialExport: PartialExport
+): PartialExport {
+    const copy = cloneDeepMutable(partialExport);
+    // `patientCategories` don't have an `id`...
+    const templateTypes = ['mapImageTemplates', 'vehicleTemplates'] as const;
+    for (const templateType of templateTypes) {
+        const templates = copy[templateType];
+        if (templates !== undefined) {
+            for (const template of templates) {
+                template.id = uuid();
+            }
+        }
+    }
+    // ...but the contained `PatientTemplate`s do
+    if (copy.patientCategories !== undefined) {
+        for (const category of copy.patientCategories) {
+            for (const template of category.patientTemplates) {
+                template.id = uuid();
+            }
+        }
+    }
+    return copy;
 }
 
 export interface TreatmentAssignment {

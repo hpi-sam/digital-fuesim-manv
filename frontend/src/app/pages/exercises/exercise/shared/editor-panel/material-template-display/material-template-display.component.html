@@ -1,0 +1,6 @@
+<ng-container *ngIf="materialTemplate$ | async as materialTemplate">
+    <div class="preview-image-container pb-0">
+        <img [src]="materialTemplate.image.url" />
+    </div>
+    {{ materialTypeNames[materialTemplate.materialType] }}
+</ng-container>
