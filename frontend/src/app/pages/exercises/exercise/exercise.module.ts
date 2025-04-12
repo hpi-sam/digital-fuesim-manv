@@ -22,6 +22,8 @@ import { ExerciseSettingsModalComponent } from './shared/exercise-settings/exerc
 import { ExerciseStateBadgeComponent } from './shared/exercise-state-badge/exercise-state-badge.component';
 import { ExerciseStatisticsModule } from './shared/exercise-statistics/exercise-statistics.module';
 import { HospitalEditorModule } from './shared/hospital-editor/hospital-editor.module';
+import { PartialExportModalComponent } from './shared/partial-export/partial-export-modal/partial-export-modal.component';
+import { PartialImportModalComponent } from './shared/partial-import/partial-import-modal/partial-import-modal.component';
 import { TimeTravelComponent } from './shared/time-travel/time-travel.component';
 import { TrainerMapEditorComponent } from './shared/trainer-map-editor/trainer-map-editor.component';
 import { TrainerToolbarComponent } from './shared/trainer-toolbar/trainer-toolbar.component';
@@ -39,6 +41,8 @@ import { CoordinatePickerModule } from './shared/coordinate-picker/coordinate-pi
         CreateImageTemplateModalComponent,
         EditImageTemplateModalComponent,
         ImageTemplateFormComponent,
+        PartialExportModalComponent,
+        PartialImportModalComponent,
     ],
     exports: [ExerciseComponent],
     imports: [
