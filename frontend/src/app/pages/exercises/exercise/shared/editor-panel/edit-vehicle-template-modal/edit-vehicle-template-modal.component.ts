@@ -30,7 +30,7 @@ export class EditVehicleTemplateModalComponent implements OnInit {
     constructor(
         private readonly exerciseService: ExerciseService,
         private readonly store: Store<AppState>,
-        public readonly activeModal: NgbActiveModal,
+        private readonly activeModal: NgbActiveModal,
         private readonly confirmationModalService: ConfirmationModalService
     ) {}
 
