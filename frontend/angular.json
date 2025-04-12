@@ -149,6 +149,17 @@
                             "buildTarget": "digital-fuesim-manv:build:development"
                         }
                     },
+                    "options": {
+                        "prebundle": {
+                            "exclude": [
+                                "digital-fuesim-manv-shared",
+                                "@noble/hashes/sha256",
+                                "@noble/hashes/crypto",
+                                "rbush-knn",
+                                "tinyqueue"
+                            ]
+                        }
+                    },
                     "defaultConfiguration": "development"
                 },
                 "extract-i18n": {
