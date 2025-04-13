@@ -1,0 +1,30 @@
+name: Test Self-Hosted Runner
+
+on:
+  workflow_dispatch:  # Allows manual triggering
+
+jobs:
+  test-runner:
+    runs-on: self-hosted  # Use your self-hosted runner
+    
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+        
+      - name: List files
+        run: ls -la
+        
+      - name: Test Docker
+        run: docker --version
+        
+      - name: Test environment
+        run: |
+          echo "Runner name: $RUNNER_NAME"
+          echo "OS information:"
+          cat /etc/os-release
+          
+      - name: Test long-running process
+        run: |
+          echo "Starting a 30-second sleep..."
+          sleep 30
+          echo "Done!"
