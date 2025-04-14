@@ -1,8 +1,12 @@
-import { FunctionParameters, Patient, PatientHealthState } from '../../models';
-import { MapCoordinates } from '../../models/utils/position/map-coordinates';
-import { MapPosition } from '../../models/utils/position/map-position';
-import { PatientStatusCode } from '../../models/utils/patient-status-code';
-import { defaultPatientCategories } from '../default-state/patient-templates';
+import {
+    FunctionParameters,
+    Patient,
+    PatientHealthState,
+} from '../../models/index.js';
+import { MapCoordinates } from '../../models/utils/position/map-coordinates.js';
+import { MapPosition } from '../../models/utils/position/map-position.js';
+import { PatientStatusCode } from '../../models/utils/patient-status-code.js';
+import { defaultPatientCategories } from '../default-state/patient-templates.js';
 
 export function generateDummyPatient(): Patient {
     const template = defaultPatientCategories[0]!.patientTemplates[0]!;

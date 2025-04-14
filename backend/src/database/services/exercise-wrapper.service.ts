@@ -1,6 +1,6 @@
 import type { EntityManager } from 'typeorm';
-import { ExerciseWrapperEntity } from '../entities/exercise-wrapper.entity';
-import { BaseService } from './base-service';
+import { ExerciseWrapperEntity } from '../entities/exercise-wrapper.entity.js';
+import { BaseService } from './base-service.js';
 
 type CreateExerciseWrapper = Omit<
     ExerciseWrapperEntity,
@@ -23,7 +23,7 @@ export class ExerciseWrapperService extends BaseService<
         dto: CreateExerciseWrapper,
         manager: EntityManager
     ): ExerciseWrapperEntity | Promise<ExerciseWrapperEntity> {
-        return manager.create<ExerciseWrapperEntity>(this.entityTarget, dto);
+        return manager.create(this.entityTarget, dto);
     }
 
     protected getUpdateEntityObject(

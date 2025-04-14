@@ -2,15 +2,15 @@ import { createServer } from 'node:http';
 import type * as core from 'express-serve-static-core';
 import { Server } from 'socket.io';
 import { socketIoTransports } from 'digital-fuesim-manv-shared';
-import { Config } from '../config';
-import type { ExerciseSocket, ExerciseServer } from '../exercise-server';
-import { clientMap } from './client-map';
-import { ClientWrapper } from './client-wrapper';
+import { Config } from '../config.js';
+import type { ExerciseSocket, ExerciseServer } from '../exercise-server.js';
+import { clientMap } from './client-map.js';
+import { ClientWrapper } from './client-wrapper.js';
 import {
     registerGetStateHandler,
     registerJoinExerciseHandler,
     registerProposeActionHandler,
-} from './websocket-handler';
+} from './websocket-handler/index.js';
 
 export class ExerciseWebsocketServer {
     public readonly exerciseServer: ExerciseServer;

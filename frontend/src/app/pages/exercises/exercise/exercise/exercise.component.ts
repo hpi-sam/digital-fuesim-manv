@@ -1,9 +1,10 @@
 import type { OnDestroy } from '@angular/core';
 import { Component } from '@angular/core';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
 import {
-    cloneDeepMutable,
     StateExport,
+    cloneDeepMutable,
     StateHistoryCompound,
 } from 'digital-fuesim-manv-shared';
 import { Subject } from 'rxjs';
@@ -13,22 +14,24 @@ import { MessageService } from 'src/app/core/messages/message.service';
 import { saveBlob } from 'src/app/shared/functions/save-blob';
 import type { AppState } from 'src/app/state/app.state';
 import {
-    selectExerciseId,
     selectExerciseStateMode,
     selectTimeConstraints,
+    selectExerciseId,
 } from 'src/app/state/application/selectors/application.selectors';
 import {
-    selectExerciseState,
     selectParticipantId,
+    selectExerciseState,
 } from 'src/app/state/application/selectors/exercise.selectors';
-import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { selectOwnClient } from 'src/app/state/application/selectors/shared.selectors';
+import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import Package from 'package.json';
+import { openPartialExportModal } from '../shared/partial-export/open-partial-export-selection-modal';
 
 @Component({
     selector: 'app-exercise',
     templateUrl: './exercise.component.html',
     styleUrls: ['./exercise.component.scss'],
+    standalone: false,
 })
 export class ExerciseComponent implements OnDestroy {
     private readonly destroy = new Subject<void>();
@@ -46,7 +49,8 @@ export class ExerciseComponent implements OnDestroy {
         private readonly store: Store<AppState>,
         private readonly apiService: ApiService,
         private readonly applicationService: ApplicationService,
-        private readonly messageService: MessageService
+        private readonly messageService: MessageService,
+        private readonly modalService: NgbModal
     ) {}
 
     public shareExercise(type: 'participantId' | 'trainerId') {
@@ -106,6 +110,10 @@ export class ExerciseComponent implements OnDestroy {
             ),
         ]);
         saveBlob(blob, `exercise-state-${currentState.participantId}.json`);
+    }
+
+    public partialExport() {
+        openPartialExportModal(this.modalService);
     }
 
     public exportExerciseState() {

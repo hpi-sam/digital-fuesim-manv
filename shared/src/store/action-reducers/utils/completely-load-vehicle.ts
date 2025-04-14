@@ -1,23 +1,23 @@
-import type { Vehicle } from '../../../models';
+import type { Vehicle } from '../../../models/index.js';
 import {
     currentSimulatedRegionIdOf,
     isInSimulatedRegion,
     isInSpecificVehicle,
     isNotInTransfer,
     VehiclePosition,
-} from '../../../models/utils';
+} from '../../../models/utils/index.js';
 import {
     changePosition,
     changePositionWithId,
-} from '../../../models/utils/position/position-helpers-mutable';
+} from '../../../models/utils/position/position-helpers-mutable.js';
 import {
     MaterialRemovedEvent,
     PersonnelRemovedEvent,
-} from '../../../simulation/events';
-import { sendSimulationEvent } from '../../../simulation/events/utils';
-import type { ExerciseState } from '../../../state';
-import type { Mutable } from '../../../utils';
-import { getElement } from './get-element';
+} from '../../../simulation/events/index.js';
+import { sendSimulationEvent } from '../../../simulation/events/utils.js';
+import type { ExerciseState } from '../../../state.js';
+import type { Mutable } from '../../../utils/index.js';
+import { getElement } from './get-element.js';
 
 /**
  * Checks whether all materials and personnel belonging to a vehicle are in it.

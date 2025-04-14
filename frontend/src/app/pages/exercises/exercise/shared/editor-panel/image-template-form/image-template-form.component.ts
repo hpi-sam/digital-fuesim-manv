@@ -9,6 +9,7 @@ import type { SimpleChangesGeneric } from 'src/app/shared/types/simple-changes-g
     selector: 'app-image-template-form',
     templateUrl: './image-template-form.component.html',
     styleUrls: ['./image-template-form.component.scss'],
+    standalone: false,
 })
 export class ImageTemplateFormComponent implements OnChanges {
     @Input() initialValues!: EditableImageTemplateValues;

@@ -14,6 +14,7 @@ import { CustomValidators } from './custom-validators';
             multi: true,
         },
     ],
+    standalone: false,
 })
 export class ExactMatchValidatorDirective implements Validator, OnChanges {
     private validator!: ValidatorFn;

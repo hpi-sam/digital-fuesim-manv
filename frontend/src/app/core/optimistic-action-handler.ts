@@ -16,7 +16,7 @@ import { isEqual } from 'lodash-es';
 export class OptimisticActionHandler<
     Action extends JsonObject,
     State extends JsonObject,
-    ServerResponse extends SocketResponse
+    ServerResponse extends SocketResponse,
 > {
     constructor(
         /**

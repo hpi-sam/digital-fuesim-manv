@@ -1,6 +1,7 @@
 {
     "compilerOptions": {
-        "module": "ES2022",
+        "module": "nodenext",
+        "moduleResolution": "nodenext",
         "target": "ES2022",
         // Strictness
         "strict": true,
@@ -11,11 +12,11 @@
         "noImplicitReturns": true,
         "noFallthroughCasesInSwitch": true,
         // Compatibility
-        "moduleResolution": "node", // To import CommonJS and esm modules
         "skipLibCheck": true,
         "esModuleInterop": true,
         "resolveJsonModule": true,
         "experimentalDecorators": true,
-        "emitDecoratorMetadata": true // Needed for eslint consistent-type-imports https://github.com/typescript-eslint/typescript-eslint/issues/2559#issuecomment-692882427
+        "emitDecoratorMetadata": true, // Needed for eslint consistent-type-imports https://github.com/typescript-eslint/typescript-eslint/issues/2559#issuecomment-692882427
+        "isolatedModules": true // For ts-jest
     }
 }

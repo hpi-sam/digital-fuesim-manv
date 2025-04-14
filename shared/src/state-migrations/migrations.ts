@@ -1,11 +1,16 @@
-import type { StateExport } from '../export-import/file-format';
-import { ExerciseState } from '../state';
-import type { ExerciseAction } from '../store';
-import { ReducerError, applyAction } from '../store';
-import type { Mutable, UUID } from '../utils';
-import { cloneDeepMutable } from '../utils';
-import type { Migration } from './migration-functions';
-import { migrations } from './migration-functions';
+import { ExerciseState } from '../state.js';
+import type { ExerciseAction } from '../store/index.js';
+import { ReducerError, applyAction } from '../store/index.js';
+import type { Mutable, UUID } from '../utils/index.js';
+import { cloneDeepMutable } from '../utils/index.js';
+import {
+    PartialExport,
+    StateExport,
+} from '../export-import/file-format/index.js';
+import type { MapImageTemplate, VehicleTemplate } from '../models/index.js';
+import type { PatientCategory } from '../models/patient-category.js';
+import type { Migration } from './migration-functions.js';
+import { migrations } from './migration-functions.js';
 
 export function migrateStateExport(
     stateExportToMigrate: StateExport
@@ -42,6 +47,47 @@ export function migrateStateExport(
     }
     return stateExport;
 }
+export function migratePartialExport(
+    partialExportToMigrate: PartialExport
+): Mutable<PartialExport> {
+    // Encapsulate the partial export in a state export and migrate it
+    const mutablePartialExport = cloneDeepMutable(partialExportToMigrate);
+    const stateExport = cloneDeepMutable(
+        new StateExport({
+            ...cloneDeepMutable(ExerciseState.create('123456')),
+            mapImageTemplates: mutablePartialExport.mapImageTemplates ?? [],
+            patientCategories: mutablePartialExport.patientCategories ?? [],
+            vehicleTemplates: mutablePartialExport.vehicleTemplates ?? [],
+        })
+    );
+    stateExport.fileVersion = mutablePartialExport.fileVersion;
+    stateExport.dataVersion = mutablePartialExport.dataVersion;
+    const migratedStateExport = migrateStateExport(stateExport as StateExport);
+    // Check for `undefined` in the original partial export here as `undefined` has the meaning of `no changes`
+    // compared to `[]` with the meaning of `nothing`. If later choosing to override using this partial export,
+    // `undefined` will be ignored while `[]` would remove all existing entries.
+    const mapImageTemplates =
+        mutablePartialExport.mapImageTemplates !== undefined
+            ? (migratedStateExport.currentState
+                  .mapImageTemplates as MapImageTemplate[])
+            : undefined;
+    const patientCategories =
+        mutablePartialExport.patientCategories !== undefined
+            ? (migratedStateExport.currentState
+                  .patientCategories as PatientCategory[])
+            : undefined;
+    const vehicleTemplates =
+        mutablePartialExport.vehicleTemplates !== undefined
+            ? (migratedStateExport.currentState
+                  .vehicleTemplates as VehicleTemplate[])
+            : undefined;
+    const migratedPartialExport = new PartialExport(
+        patientCategories,
+        vehicleTemplates,
+        mapImageTemplates
+    );
+    return cloneDeepMutable(migratedPartialExport);
+}
 
 /**
  * Migrates {@link propertiesToMigrate} to the newest version ({@link ExerciseState.currentStateVersion})
@@ -49,7 +95,7 @@ export function migrateStateExport(
  * @returns The new state version
  */
 export function applyMigrations<
-    H extends { initialState: object; actions: (object | null)[] } | undefined
+    H extends { initialState: object; actions: (object | null)[] } | undefined,
 >(
     currentStateVersion: number,
     propertiesToMigrate: {

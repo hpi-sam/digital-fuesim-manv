@@ -1,19 +1,19 @@
-import type { SimulatedRegion, Vehicle } from '../../models';
-import { createVehicleActionTag } from '../../models/utils/tag-helpers';
+import type { SimulatedRegion, Vehicle } from '../../models/index.js';
+import { createVehicleActionTag } from '../../models/utils/tag-helpers.js';
 import {
     isInSpecificSimulatedRegion,
     isInSpecificVehicle,
     SimulatedRegionPosition,
-} from '../../models/utils';
-import { changePositionWithId } from '../../models/utils/position/position-helpers-mutable';
-import type { ExerciseState } from '../../state';
-import { getElement } from '../../store/action-reducers/utils';
-import { logVehicle } from '../../store/action-reducers/utils/log';
-import type { Mutable } from '../../utils';
-import { NewPatientEvent } from '../events';
-import { MaterialAvailableEvent } from '../events/material-available';
-import { PersonnelAvailableEvent } from '../events/personnel-available';
-import { sendSimulationEvent } from '../events/utils';
+} from '../../models/utils/index.js';
+import { changePositionWithId } from '../../models/utils/position/position-helpers-mutable.js';
+import type { ExerciseState } from '../../state.js';
+import { getElement } from '../../store/action-reducers/utils/index.js';
+import { logVehicle } from '../../store/action-reducers/utils/log.js';
+import type { Mutable } from '../../utils/index.js';
+import { NewPatientEvent } from '../events/index.js';
+import { MaterialAvailableEvent } from '../events/material-available.js';
+import { PersonnelAvailableEvent } from '../events/personnel-available.js';
+import { sendSimulationEvent } from '../events/utils.js';
 
 export function unloadVehicle(
     draftState: Mutable<ExerciseState>,

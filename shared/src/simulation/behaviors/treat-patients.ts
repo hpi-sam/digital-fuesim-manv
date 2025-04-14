@@ -10,28 +10,29 @@ import { groupBy } from 'lodash-es';
 import type {
     PatientCountRadiogram,
     TreatmentStatusRadiogram,
-} from '../../models/radiogram';
-import { getCreate, isInSpecificSimulatedRegion } from '../../models/utils';
-import type { ExerciseState } from '../../state';
-import { getActivityById } from '../../store/action-reducers/utils';
-import type { Mutable } from '../../utils';
-import { uuid, UUID, uuidValidationOptions } from '../../utils';
-import { IsLiteralUnion, IsValue } from '../../utils/validators';
-import { DelayEventActivityState } from '../activities';
-import { ReassignTreatmentsActivityState } from '../activities/reassign-treatments';
-import { addActivity, terminateActivity } from '../activities/utils';
-import { TreatmentsTimerEvent } from '../events/treatments-timer-event';
-import { nextUUID } from '../utils/randomness';
+} from '../../models/radiogram/index.js';
 import {
-    TreatmentProgress,
-    treatmentProgressAllowedValues,
-} from '../utils/treatment';
-import { Patient } from '../../models/patient';
-import type { SimulatedRegion } from '../../models/simulated-region';
+    getCreate,
+    isInSpecificSimulatedRegion,
+} from '../../models/utils/index.js';
+import type { ExerciseState } from '../../state.js';
+import { getActivityById } from '../../store/action-reducers/utils/index.js';
+import type { Mutable, UUID } from '../../utils/index.js';
+import { uuid, uuidValidationOptions } from '../../utils/index.js';
+import { IsLiteralUnion, IsValue } from '../../utils/validators/index.js';
+import { DelayEventActivityState } from '../activities/index.js';
+import { ReassignTreatmentsActivityState } from '../activities/reassign-treatments.js';
+import { addActivity, terminateActivity } from '../activities/utils.js';
+import { TreatmentsTimerEvent } from '../events/treatments-timer-event.js';
+import { nextUUID } from '../utils/randomness.js';
+import type { TreatmentProgress } from '../utils/treatment.js';
+import { treatmentProgressAllowedValues } from '../utils/treatment.js';
+import { Patient } from '../../models/patient.js';
+import type { SimulatedRegion } from '../../models/simulated-region.js';
 import type {
     SimulationBehavior,
     SimulationBehaviorState,
-} from './simulation-behavior';
+} from './simulation-behavior.js';
 
 export class TreatPatientsIntervals {
     /**

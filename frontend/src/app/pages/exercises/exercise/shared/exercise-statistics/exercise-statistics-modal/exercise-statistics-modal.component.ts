@@ -31,6 +31,7 @@ import { StackedBarChart } from '../stacked-bar-chart/time-line-area-chart';
     templateUrl: './exercise-statistics-modal.component.html',
     styleUrls: ['./exercise-statistics-modal.component.scss'],
     encapsulation: ViewEncapsulation.None,
+    standalone: false,
 })
 export class ExerciseStatisticsModalComponent implements OnInit {
     public viewportIds$!: Observable<UUID[]>;

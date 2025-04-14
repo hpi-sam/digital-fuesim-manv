@@ -23,19 +23,19 @@ Keep in mind that it is also possible to add a [proxy](https://angular.io/guide/
 
 ### CSS
 
--   We are using [Bootstrap](https://getbootstrap.com) as a style framework.
--   Where should I put my CSS? (Guideline)
+- We are using [Bootstrap](https://getbootstrap.com) as a style framework.
+- Where should I put my CSS? (Guideline)
     1. Use Bootstrap classes whenever possible (look at the [utility classes](https://getbootstrap.com/docs/5.0/utilities/api/)).
     2. If you can reuse the styling, add a class to the [style.scss](./src/styles.scss) (or the components SCSS if it's only used there).
     3. If the styling is custom and only applicable to one specific element, use inline CSS.
     4. If the inline styling is very big, complicated, or makes use of any SCSS or advanced CSS not applicable to inline styles, put it into the components SCSS file.
-    -   See also [Bootstraps best practices](https://getbootstrap.com/docs/5.0/extend/approach/#summary).
+    - See also [Bootstraps best practices](https://getbootstrap.com/docs/5.0/extend/approach/#summary).
 
 ### Templates
 
--   Order of attributes in the Angular templates
+- Order of attributes in the Angular templates
 
-    -   As long as eslint doesn't have [a lint rule for it](https://github.com/angular-eslint/angular-eslint/pull/605) it is just encouraged to use the following order of attributes.
+    - As long as eslint doesn't have [a lint rule for it](https://github.com/angular-eslint/angular-eslint/pull/605) it is just encouraged to use the following order of attributes.
 
     1. Structural directive (e.g. `*ngIf`)
     2. Template reference (e.g. `#myId`)
@@ -49,25 +49,25 @@ Keep in mind that it is also possible to add a [proxy](https://angular.io/guide/
 
 ## Libraries
 
--   [Bootstrap](https://getbootstrap.com) - A styling framework
-    -   [Documentation](https://getbootstrap.com/docs)
-    -   [Cheatsheet](https://getbootstrap.com/docs/5.1/examples/cheatsheet/)
--   [Bootstrap-icons](https://icons.getbootstrap.com/) - the icons we use in the application
-    -   [List of all icons](https://icons.getbootstrap.com/#icons)
-    -   We import the `.css`. Use it like `<i class="bi-alarm"></i>`
--   [ngBootstrap](https://ng-bootstrap.github.io/) - Angular components for bootstrap
-    -   [Documentation](https://ng-bootstrap.github.io/#/components/accordion/examples)
--   [openlayers](https://openlayers.org/) - A library for displaying maps
-    -   [Introduction](https://openlayers.org/workshop/en/)
-    -   [API docs](https://openlayers.org/en/latest/apidoc/)
-    -   [Examples](https://openlayers.org/en/latest/examples/)
--   [lodash-es](https://lodash.com/) - A utility library for common JS tasks
-    -   [Documentation](https://lodash.com/docs)
--   [rxjs](https://rxjs-dev.firebaseapp.com/) - A library for reactive programming (= observer pattern on steroids)
-    -   [Glossar](https://rxjs-dev.firebaseapp.com/guide/glossary-and-semantics)
-    -   [Operator Decision Tree](https://rxjs-dev.firebaseapp.com/operator-decision-tree)
-    -   [Operators](https://rxjs.dev/api?query=operators)
--   [NGRX](https://ngrx.io/) - A library for state management
+- [Bootstrap](https://getbootstrap.com) - A styling framework
+    - [Documentation](https://getbootstrap.com/docs)
+    - [Cheatsheet](https://getbootstrap.com/docs/5.1/examples/cheatsheet/)
+- [Bootstrap-icons](https://icons.getbootstrap.com/) - the icons we use in the application
+    - [List of all icons](https://icons.getbootstrap.com/#icons)
+    - We import the `.css`. Use it like `<i class="bi-alarm"></i>`
+- [ngBootstrap](https://ng-bootstrap.github.io/) - Angular components for bootstrap
+    - [Documentation](https://ng-bootstrap.github.io/#/components/accordion/examples)
+- [openlayers](https://openlayers.org/) - A library for displaying maps
+    - [Introduction](https://openlayers.org/workshop/en/)
+    - [API docs](https://openlayers.org/en/latest/apidoc/)
+    - [Examples](https://openlayers.org/en/latest/examples/)
+- [lodash-es](https://lodash.com/) - A utility library for common JS tasks
+    - [Documentation](https://lodash.com/docs)
+- [rxjs](https://rxjs-dev.firebaseapp.com/) - A library for reactive programming (= observer pattern on steroids)
+    - [Glossar](https://rxjs-dev.firebaseapp.com/guide/glossary-and-semantics)
+    - [Operator Decision Tree](https://rxjs-dev.firebaseapp.com/operator-decision-tree)
+    - [Operators](https://rxjs.dev/api?query=operators)
+- [NGRX](https://ngrx.io/) - A library for state management
 
 ## Architecture
 
@@ -79,15 +79,15 @@ In [src/app/state](./src/app/state) are all actions, reducers, selectors and sta
 
 In `src/app` and every descending folder, the following guidelines apply:
 
--   `/core`:
-    -   Singleton-services and route guards that can be used by all other Angular elements that are direct or indirect children of the `core`'s parent-folder
--   `/shared`:
-    -   Utility Angular elements as well as classes, functions, types, etc. that (can) have multiple instances and can be used by all other Angular elements that are direct or indirect children of the `shared`'s parent-folder
-    -   Every folder with Angular components, pipes, or directives in a `shared`-folder should have its own module, that exports these Angular elements
--   `/features`
-    -   Components/pipes/directives that should only be used in the `/pages`-folder at the same level (in opposite to `/shared` no nested folders)
--   `/pages`:
-    -   All Angular elements and utilities that are only used according to the route (-> lazy loading)
+- `/core`:
+    - Singleton-services and route guards that can be used by all other Angular elements that are direct or indirect children of the `core`'s parent-folder
+- `/shared`:
+    - Utility Angular elements as well as classes, functions, types, etc. that (can) have multiple instances and can be used by all other Angular elements that are direct or indirect children of the `shared`'s parent-folder
+    - Every folder with Angular components, pipes, or directives in a `shared`-folder should have its own module, that exports these Angular elements
+- `/features`
+    - Components/pipes/directives that should only be used in the `/pages`-folder at the same level (in opposite to `/shared` no nested folders)
+- `/pages`:
+    - All Angular elements and utilities that are only used according to the route (-> lazy loading)
 
 Commonly used [selectors](https://ngrx.io/guide/store/selectors) should go in [./src/app/state/application/selectors](./src/app/state/application/selectors/).
 
@@ -104,8 +104,8 @@ For the same reason, there are also no optimizations made regarding how often th
 
 You can find the exercise map in [src/app/pages/exercises/exercise/shared/exercise-map](src/app/pages/exercises/exercise/shared/exercise-map).
 
--   `element`: The data that represents a `Material`, `Personnel`, `Vehicle`, etc. that is saved in the state.
--   `feature`: The OpenLayers feature representing an element and is rendered on the map canvas.
+- `element`: The data that represents a `Material`, `Personnel`, `Vehicle`, etc. that is saved in the state.
+- `feature`: The OpenLayers feature representing an element and is rendered on the map canvas.
 
 The [ExerciseMapComponent](src/app/pages/exercises/exercise/shared/exercise-map/exercise-map.component.ts) is the Angular component that provides the canvas on which the map should be rendered.
 

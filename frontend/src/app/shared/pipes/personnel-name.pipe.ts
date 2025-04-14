@@ -5,6 +5,7 @@ import { personnelTypeNames } from 'digital-fuesim-manv-shared';
 
 @Pipe({
     name: 'personnelName',
+    standalone: false,
 })
 export class PersonnelNamePipe implements PipeTransform {
     transform(personnelType: PersonnelType | undefined): string {

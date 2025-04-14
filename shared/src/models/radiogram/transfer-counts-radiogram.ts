@@ -1,15 +1,17 @@
 import { IsBoolean, IsUUID, ValidateNested } from 'class-validator';
-import { UUID, uuidValidationOptions } from '../../utils';
-import { IsLiteralUnion, IsValue } from '../../utils/validators';
-import { IsRadiogramStatus } from '../../utils/validators/is-radiogram-status';
-import type { PatientStatus } from '../utils';
-import { getCreate } from '../utils/get-create';
-import { patientStatusAllowedValues } from '../utils/patient-status';
-import { ResourceDescription } from '../utils/resource-description';
-import { IsResourceDescription } from '../../utils/validators/is-resource-description';
-import type { Radiogram } from './radiogram';
-import { ExerciseRadiogramStatus } from './status/exercise-radiogram-status';
-import { Scope, scopeAllowedValues } from './utils/transfer-progress-scope';
+import type { UUID } from '../../utils/index.js';
+import { uuidValidationOptions } from '../../utils/index.js';
+import { IsLiteralUnion, IsValue } from '../../utils/validators/index.js';
+import { IsRadiogramStatus } from '../../utils/validators/is-radiogram-status.js';
+import type { PatientStatus } from '../utils/index.js';
+import { getCreate } from '../utils/get-create.js';
+import { patientStatusAllowedValues } from '../utils/patient-status.js';
+import type { ResourceDescription } from '../utils/resource-description.js';
+import { IsResourceDescription } from '../../utils/validators/is-resource-description.js';
+import type { Radiogram } from './radiogram.js';
+import type { ExerciseRadiogramStatus } from './status/exercise-radiogram-status.js';
+import type { Scope } from './utils/transfer-progress-scope.js';
+import { scopeAllowedValues } from './utils/transfer-progress-scope.js';
 
 export class TransferCountsRadiogram implements Radiogram {
     @IsUUID(4, uuidValidationOptions)

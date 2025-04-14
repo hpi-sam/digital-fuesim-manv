@@ -49,7 +49,7 @@ export class StackedBarChart {
         } else {
             const index =
                 this.chart.data.labels?.findIndex(
-                    (label) => this.markedTime! <= (label as number)
+                    (label) => this.markedTime! <= label
                 ) ?? -1;
             this.lineMarkerIndex = index < 0 ? undefined : index;
         }

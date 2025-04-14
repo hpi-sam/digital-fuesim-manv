@@ -1,12 +1,12 @@
-import type { Personnel } from '../../src/models';
+import type { Personnel } from '../../src/models/index.js';
 import {
     currentCoordinatesOf,
     isOnMap,
     SpatialTree,
-} from '../../src/models/utils';
-import type { ExerciseState } from '../../src/state';
-import type { Mutable } from '../../src/utils';
-import { cloneDeepMutable } from '../../src/utils';
+} from '../../src/models/utils/index.js';
+import type { ExerciseState } from '../../src/state.js';
+import type { Mutable } from '../../src/utils/index.js';
+import { cloneDeepMutable } from '../../src/utils/index.js';
 
 export function addPersonnel(
     state: Mutable<ExerciseState>,

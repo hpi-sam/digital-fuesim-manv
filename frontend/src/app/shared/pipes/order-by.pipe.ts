@@ -4,6 +4,7 @@ import type { Immutable } from 'digital-fuesim-manv-shared';
 
 @Pipe({
     name: 'orderBy',
+    standalone: false,
 })
 export class OrderByPipe implements PipeTransform {
     public transform<Item extends object>(

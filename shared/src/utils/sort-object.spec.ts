@@ -1,5 +1,5 @@
 import { cloneDeep } from 'lodash-es';
-import { sortObject } from './sort-object';
+import { sortObject } from './sort-object.js';
 
 const tests: SortObjectTest<any>[] = [
     {

@@ -12,6 +12,7 @@ import {
     selector: 'app-client-overview-table',
     templateUrl: './client-overview-table.component.html',
     styleUrls: ['./client-overview-table.component.scss'],
+    standalone: false,
 })
 export class ClientOverviewTableComponent {
     public readonly clients$ = this.store.select(selectClients);

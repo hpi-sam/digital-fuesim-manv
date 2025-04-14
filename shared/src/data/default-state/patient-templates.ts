@@ -1,11 +1,11 @@
-import { PatientCategory } from '../../models/patient-category';
+import { PatientCategory } from '../../models/patient-category.js';
 import {
     FunctionParameters,
     PatientHealthState,
-} from '../../models/patient-health-state';
-import { PatientTemplate } from '../../models/patient-template';
-import type { ImageProperties } from '../../models/utils';
-import { healthPointsDefaults } from '../../models/utils';
+} from '../../models/patient-health-state.js';
+import { PatientTemplate } from '../../models/patient-template.js';
+import type { ImageProperties } from '../../models/utils/index.js';
+import { healthPointsDefaults } from '../../models/utils/index.js';
 
 const defaultPatientImage: ImageProperties = {
     url: '/assets/patient.svg',

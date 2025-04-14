@@ -1,7 +1,7 @@
-import type { ExerciseState } from '../../state';
-import { getElement } from '../../store/action-reducers/utils';
-import type { Mutable, UUID } from '../../utils';
-import { isInSpecificVehicle } from './position/position-helpers';
+import type { ExerciseState } from '../../state.js';
+import { getElement } from '../../store/action-reducers/utils/index.js';
+import type { Mutable, UUID } from '../../utils/index.js';
+import { isInSpecificVehicle } from './position/position-helpers.js';
 
 export function amountOfResourcesInVehicle(
     state: Mutable<ExerciseState>,

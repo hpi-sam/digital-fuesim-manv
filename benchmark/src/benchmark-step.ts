@@ -1,7 +1,7 @@
-import type { BenchmarkValue } from './benchmark';
-import { benchmark } from './benchmark';
-import { print } from './print';
-import { Step } from './step';
+import type { BenchmarkValue } from './benchmark.js';
+import { benchmark } from './benchmark.js';
+import { print } from './print.js';
+import { Step } from './step.js';
 
 /**
  * A benchmark step is time measured and run multiple times
@@ -15,7 +15,7 @@ export class BenchmarkStep<
         ? T
         : never = NonNullable<State[Name]> extends BenchmarkValue<infer T>
         ? T
-        : never
+        : never,
 > extends Step<State, Name, State[Name]> {
     constructor(
         name: Name,

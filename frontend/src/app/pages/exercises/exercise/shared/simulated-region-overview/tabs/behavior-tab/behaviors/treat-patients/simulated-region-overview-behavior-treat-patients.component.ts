@@ -1,7 +1,7 @@
 import type { OnInit } from '@angular/core';
 import { Component, Input } from '@angular/core';
 import { createSelector, Store } from '@ngrx/store';
-import { UUID } from 'digital-fuesim-manv-shared';
+import type { UUID } from 'digital-fuesim-manv-shared';
 import type {
     TreatPatientsBehaviorState,
     DelayEventActivityState,
@@ -31,6 +31,7 @@ let globalLastInformationCollapsed = true;
     styleUrls: [
         './simulated-region-overview-behavior-treat-patients.component.scss',
     ],
+    standalone: false,
 })
 export class SimulatedRegionOverviewBehaviorTreatPatientsComponent
     implements OnInit

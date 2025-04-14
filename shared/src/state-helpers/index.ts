@@ -1,3 +1,3 @@
-export * from './create-vehicle-parameters';
-export * from './image-size-to-position';
-export * from './normal-zoom';
+export * from './create-vehicle-parameters.js';
+export * from './image-size-to-position.js';
+export * from './normal-zoom.js';

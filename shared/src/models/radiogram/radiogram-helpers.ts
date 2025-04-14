@@ -1,4 +1,4 @@
-import type { ExerciseRadiogram } from './exercise-radiogram';
+import type { ExerciseRadiogram } from './exercise-radiogram.js';
 import {
     isUnreadRadiogramStatus,
     isAcceptedRadiogramStatus,
@@ -6,7 +6,7 @@ import {
     isUnpublishedRadiogramStatus,
     participantIdOfRadiogramStatus,
     publishTimeOfRadiogramStatus,
-} from './status/radiogram-status-helpers';
+} from './status/radiogram-status-helpers.js';
 
 export function isUnread(radiogram: ExerciseRadiogram) {
     return isUnreadRadiogramStatus(radiogram.status);

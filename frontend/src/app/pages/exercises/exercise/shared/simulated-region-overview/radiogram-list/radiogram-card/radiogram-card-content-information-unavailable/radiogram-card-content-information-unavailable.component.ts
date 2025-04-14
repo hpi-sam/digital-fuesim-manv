@@ -8,6 +8,7 @@ import type { ExerciseRadiogram } from 'digital-fuesim-manv-shared';
     styleUrls: [
         './radiogram-card-content-information-unavailable.component.scss',
     ],
+    standalone: false,
 })
 export class RadiogramCardContentInformationUnavailableComponent {
     @Input() radiogramType!: ExerciseRadiogram['type'];

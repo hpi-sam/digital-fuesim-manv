@@ -1,11 +1,11 @@
 import type { Type } from 'class-transformer';
-import { StrictObject } from '../../utils';
-import { IsValue } from '../../utils/validators';
-import { IsResourceDescription } from '../../utils/validators/is-resource-description';
-import { getCreate } from './get-create';
-import type { PersonnelType } from './personnel-type';
-import { personnelTypeAllowedValues } from './personnel-type';
-import { ResourceDescription } from './resource-description';
+import { StrictObject } from '../../utils/index.js';
+import { IsValue } from '../../utils/validators/index.js';
+import { IsResourceDescription } from '../../utils/validators/is-resource-description.js';
+import { getCreate } from './get-create.js';
+import type { PersonnelType } from './personnel-type.js';
+import { personnelTypeAllowedValues } from './personnel-type.js';
+import type { ResourceDescription } from './resource-description.js';
 
 class RescueResource {
     public readonly type!: `${string}Resource`;

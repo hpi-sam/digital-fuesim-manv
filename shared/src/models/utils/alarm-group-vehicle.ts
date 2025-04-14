@@ -1,6 +1,7 @@
 import { IsNumber, IsString, IsUUID, Min } from 'class-validator';
-import { uuid, UUID, uuidValidationOptions } from '../../utils';
-import { getCreate } from './get-create';
+import type { UUID } from '../../utils/index.js';
+import { uuid, uuidValidationOptions } from '../../utils/index.js';
+import { getCreate } from './get-create.js';
 
 export class AlarmGroupVehicle {
     @IsUUID(4, uuidValidationOptions)

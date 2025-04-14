@@ -1,32 +1,32 @@
 import { IsBoolean, isUUID, IsUUID } from 'class-validator';
-import { RadiogramUnpublishedStatus } from '../../models/radiogram/status/radiogram-unpublished-status';
-import { getCreate } from '../../models/utils/get-create';
+import { RadiogramUnpublishedStatus } from '../../models/radiogram/status/radiogram-unpublished-status.js';
+import { getCreate } from '../../models/utils/get-create.js';
+import type { UUID } from '../../utils/index.js';
 import {
     cloneDeepMutable,
     StrictObject,
-    UUID,
     uuid,
     uuidValidationOptions,
-} from '../../utils';
-import { IsLiteralUnionMap, IsValue } from '../../utils/validators';
-import { GenerateReportActivityState } from '../activities/generate-report';
-import { CollectInformationEvent } from '../events/collect';
-import { nextUUID } from '../utils/randomness';
+} from '../../utils/index.js';
+import { IsLiteralUnionMap, IsValue } from '../../utils/validators/index.js';
+import { GenerateReportActivityState } from '../activities/generate-report.js';
+import { CollectInformationEvent } from '../events/collect.js';
+import { nextUUID } from '../utils/randomness.js';
 import {
     TransferCategoryCompletedRadiogram,
     TreatmentStatusRadiogram,
-} from '../../models/radiogram';
-import { addActivity } from '../activities/utils';
-import { PublishRadiogramActivityState } from '../activities';
+} from '../../models/radiogram/index.js';
+import { addActivity } from '../activities/utils.js';
+import { PublishRadiogramActivityState } from '../activities/index.js';
 import type {
     SimulationBehavior,
     SimulationBehaviorState,
-} from './simulation-behavior';
-import type { ReportableInformation } from './utils';
+} from './simulation-behavior.js';
+import type { ReportableInformation } from './utils.js';
 import {
     createRadiogramMap,
     reportableInformationAllowedValues,
-} from './utils';
+} from './utils.js';
 
 export class ReportBehaviorState implements SimulationBehaviorState {
     @IsValue('reportBehavior')
@@ -145,7 +145,7 @@ export const reportBehavior: SimulationBehavior<ReportBehaviorState> = {
         StrictObject.values(behaviorState.activityIds)
             .filter((activityId) => activityId !== undefined)
             .forEach((activityId) => {
-                delete simulatedRegion.activities[activityId!];
+                delete simulatedRegion.activities[activityId];
             });
     },
 };

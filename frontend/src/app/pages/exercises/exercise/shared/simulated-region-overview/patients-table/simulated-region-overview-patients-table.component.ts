@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { UUID } from 'digital-fuesim-manv-shared';
+import type { UUID } from 'digital-fuesim-manv-shared';
 import type { Patient, PatientStatus } from 'digital-fuesim-manv-shared';
 import { SelectPatientService } from '../select-patient.service';
 
@@ -13,6 +13,7 @@ export type Scope = 'simulatedRegion' | 'vehicle';
     selector: 'app-simulated-region-overview-patients-table',
     templateUrl: './simulated-region-overview-patients-table.component.html',
     styleUrls: ['./simulated-region-overview-patients-table.component.scss'],
+    standalone: false,
 })
 export class SimulatedRegionOverviewPatientsTableComponent {
     @Input()

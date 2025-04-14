@@ -5,6 +5,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
     selector: 'app-emergency-operations-center-modal',
     templateUrl: './emergency-operations-center-modal.component.html',
     styleUrls: ['./emergency-operations-center-modal.component.scss'],
+    standalone: false,
 })
 export class EmergencyOperationsCenterModalComponent {
     constructor(public activeModal: NgbActiveModal) {}

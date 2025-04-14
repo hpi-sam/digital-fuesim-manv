@@ -1,8 +1,8 @@
-import { LogEntry } from '../../../models/log-entry';
-import type { ExerciseRadiogram } from '../../../models/radiogram';
-import type { Tag } from '../../../models/tag';
-import { personnelTypeNames } from '../../../models/utils/personnel-type';
-import { statusNames } from '../../../models/utils/patient-status';
+import { LogEntry } from '../../../models/log-entry.js';
+import type { ExerciseRadiogram } from '../../../models/radiogram/index.js';
+import type { Tag } from '../../../models/tag.js';
+import { personnelTypeNames } from '../../../models/utils/personnel-type.js';
+import { statusNames } from '../../../models/utils/patient-status.js';
 import {
     createAlarmGroupTag,
     createBehaviorTag,
@@ -18,29 +18,33 @@ import {
     createVehicleTag,
     createVehicleTypeTag,
     createPersonnelTypeTag,
-} from '../../../models/utils/tag-helpers';
-import type { TreatmentProgress } from '../../../simulation/utils/treatment';
-import { treatmentProgressToGermanNameDictionary } from '../../../simulation/utils/treatment';
-import type { ExerciseState } from '../../../state';
-import type { UUID } from '../../../utils';
-import { formatDuration, StrictObject } from '../../../utils';
-import type { Mutable } from '../../../utils/immutability';
-import { Patient } from '../../../models/patient';
-import type { PatientStatus, Personnel, Vehicle } from '../../../models';
+} from '../../../models/utils/tag-helpers.js';
+import type { TreatmentProgress } from '../../../simulation/utils/treatment.js';
+import { treatmentProgressToGermanNameDictionary } from '../../../simulation/utils/treatment.js';
+import type { ExerciseState } from '../../../state.js';
+import type { UUID } from '../../../utils/index.js';
+import { formatDuration, StrictObject } from '../../../utils/index.js';
+import type { Mutable } from '../../../utils/immutability.js';
+import { Patient } from '../../../models/patient.js';
+import type {
+    PatientStatus,
+    Personnel,
+    Vehicle,
+} from '../../../models/index.js';
 import {
     currentSimulatedRegionIdOf,
     currentSimulatedRegionOf,
     isInSimulatedRegion,
-} from '../../../models/utils/position/position-helpers';
-import type { WithPosition } from '../../../models/utils/position/with-position';
-import type { TransferPoint } from '../../../models/transfer-point';
-import type { Hospital } from '../../../models/hospital';
-import { behaviorTypeToGermanNameDictionary } from '../../../simulation/behaviors/utils';
+} from '../../../models/utils/position/position-helpers.js';
+import type { WithPosition } from '../../../models/utils/position/with-position.js';
+import type { TransferPoint } from '../../../models/transfer-point.js';
+import type { Hospital } from '../../../models/hospital.js';
+import { behaviorTypeToGermanNameDictionary } from '../../../simulation/behaviors/utils.js';
 import {
     getElement,
     getExerciseBehaviorById,
     getExerciseRadiogramById,
-} from './get-element';
+} from './get-element.js';
 
 export function log(
     state: Mutable<ExerciseState>,

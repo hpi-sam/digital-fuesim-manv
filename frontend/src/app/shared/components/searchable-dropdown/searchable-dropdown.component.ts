@@ -19,6 +19,7 @@ interface Option {
     selector: 'app-searchable-dropdown',
     templateUrl: './searchable-dropdown.component.html',
     styleUrls: ['./searchable-dropdown.component.scss'],
+    standalone: false,
 })
 export class SearchableDropdownComponent implements AfterViewInit {
     @Input()

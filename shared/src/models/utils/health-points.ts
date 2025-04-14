@@ -1,6 +1,6 @@
 import type { ValidationOptions, ValidationArguments } from 'class-validator';
 import { isNumber, registerDecorator } from 'class-validator';
-import type { PatientStatus } from './patient-status';
+import type { PatientStatus } from './patient-status.js';
 
 /**
  * `100_000` healthPoints is the maximum;
@@ -81,7 +81,7 @@ export function isAlive(health: HealthPoints) {
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export function IsValidHealthPoint(validationOptions?: ValidationOptions) {
     // Disabled as this is the suggested way for [class-validator](https://github.com/typestack/class-validator#custom-validation-decorators)
-    // eslint-disable-next-line @typescript-eslint/ban-types
+    // eslint-disable-next-line @typescript-eslint/no-wrapper-object-types
     return function (object: Object, propertyName: string) {
         registerDecorator({
             name: 'isValidHealthpoint',

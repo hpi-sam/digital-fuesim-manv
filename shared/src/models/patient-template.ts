@@ -1,22 +1,27 @@
 import { Type } from 'class-transformer';
 import { IsUUID, ValidateNested } from 'class-validator';
-import { cloneDeepMutable, UUID, uuid, uuidValidationOptions } from '../utils';
-import { IsIdMap, IsValue } from '../utils/validators';
-import type { PatientStatusCode } from './utils';
+import type { UUID } from '../utils/index.js';
+import {
+    cloneDeepMutable,
+    uuid,
+    uuidValidationOptions,
+} from '../utils/index.js';
+import { IsIdMap, IsValue } from '../utils/validators/index.js';
+import type { PatientStatusCode } from './utils/index.js';
+import type { HealthPoints } from './utils/index.js';
 import {
     BiometricInformation,
     getCreate,
     getStatus,
-    HealthPoints,
     IsValidHealthPoint,
-} from './utils';
-import { ImageProperties } from './utils/image-properties';
-import { PersonalInformation } from './utils/personal-information';
-import { Patient } from './patient';
-import type { FunctionParameters } from './patient-health-state';
-import { PretriageInformation } from './utils/pretriage-information';
-import { PatientHealthState } from './patient-health-state';
-import type { Position } from './utils/position/position';
+} from './utils/index.js';
+import { ImageProperties } from './utils/image-properties.js';
+import { PersonalInformation } from './utils/personal-information.js';
+import { Patient } from './patient.js';
+import type { FunctionParameters } from './patient-health-state.js';
+import { PretriageInformation } from './utils/pretriage-information.js';
+import { PatientHealthState } from './patient-health-state.js';
+import type { Position } from './utils/position/position.js';
 
 export class PatientTemplate {
     @IsUUID(4, uuidValidationOptions)

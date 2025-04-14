@@ -1,26 +1,26 @@
-import type { ExerciseState } from '../../../state';
-import { getElement } from '../../../store/action-reducers/utils';
+import type { ExerciseState } from '../../../state.js';
+import { getElement } from '../../../store/action-reducers/utils/index.js';
 import {
     removeTreatmentsOfElement,
     updateTreatments,
-} from '../../../store/action-reducers/utils/calculate-treatments';
-import type { SpatialElementType } from '../../../store/action-reducers/utils/spatial-elements';
+} from '../../../store/action-reducers/utils/calculate-treatments.js';
+import type { SpatialElementType } from '../../../store/action-reducers/utils/spatial-elements.js';
 import {
     removeElementPosition,
     updateElementPosition,
-} from '../../../store/action-reducers/utils/spatial-elements';
-import type { Mutable, UUID } from '../../../utils';
-import { cloneDeepMutable } from '../../../utils';
-import type { MapCoordinates } from './map-coordinates';
-import type { MapPosition } from './map-position';
-import type { Position } from './position';
+} from '../../../store/action-reducers/utils/spatial-elements.js';
+import type { Mutable, UUID } from '../../../utils/index.js';
+import { cloneDeepMutable } from '../../../utils/index.js';
+import type { MapCoordinates } from './map-coordinates.js';
+import type { MapPosition } from './map-position.js';
+import type { Position } from './position.js';
 import {
     coordinatesOfPosition,
     isPositionNotOnMap,
     isPositionOnMap,
     isNotOnMap,
     isOnMap,
-} from './position-helpers';
+} from './position-helpers.js';
 
 type MutablePosition = Mutable<Position>;
 

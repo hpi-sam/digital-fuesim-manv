@@ -1,5 +1,3 @@
-import { createNewDataSource, testingDatabaseName } from 'database/data-source';
-import { DatabaseService } from 'database/services/database-service';
 import type {
     ClientToServerEvents,
     ExerciseIds,
@@ -11,10 +9,15 @@ import type { Socket } from 'socket.io-client';
 import { io } from 'socket.io-client';
 import request from 'supertest';
 import type { DataSource } from 'typeorm';
-import { Config } from '../src/config';
-import type { HttpMethod } from '../src/exercise/http-handler/secure-http';
-import { FuesimServer } from '../src/fuesim-server';
-import type { SocketReservedEvents } from './socket-reserved-events';
+import { DatabaseService } from '../src/database/services/database-service.js';
+import {
+    createNewDataSource,
+    testingDatabaseName,
+} from '../src/database/data-source.js';
+import { Config } from '../src/config.js';
+import type { HttpMethod } from '../src/exercise/http-handler/secure-http.js';
+import { FuesimServer } from '../src/fuesim-server.js';
+import type { SocketReservedEvents } from './socket-reserved-events.js';
 
 export interface ExerciseCreationResponse {
     readonly participantId: string;
@@ -28,8 +31,8 @@ export interface ExerciseCreationResponse {
 type LastElement<T extends any[]> = T extends [...any[], infer R]
     ? R
     : T extends []
-    ? undefined
-    : never;
+      ? undefined
+      : never;
 
 /**
  * Returns an array of all but the last element in an array
@@ -51,11 +54,14 @@ export class WebsocketClient {
 
     public async emit<
         EventKey extends keyof ClientToServerEvents,
-        Event extends ClientToServerEvents[EventKey] = ClientToServerEvents[EventKey],
+        Event extends
+            ClientToServerEvents[EventKey] = ClientToServerEvents[EventKey],
         EventParameters extends Parameters<Event> = Parameters<Event>,
         // We expect the callback to be the last parameter
-        EventCallback extends LastElement<EventParameters> = LastElement<EventParameters>,
-        Response extends Parameters<EventCallback>[0] = Parameters<EventCallback>[0]
+        EventCallback extends
+            LastElement<EventParameters> = LastElement<EventParameters>,
+        Response extends
+            Parameters<EventCallback>[0] = Parameters<EventCallback>[0],
     >(
         event: EventKey,
         ...args: HeadElements<Parameters<Event>>
@@ -76,7 +82,8 @@ export class WebsocketClient {
 
     public on<
         EventKey extends keyof AllServerToClientEvents,
-        Callback extends AllServerToClientEvents[EventKey] = AllServerToClientEvents[EventKey]
+        Callback extends
+            AllServerToClientEvents[EventKey] = AllServerToClientEvents[EventKey],
     >(event: EventKey, callback: Callback): void {
         this.socket.on(event, callback as any);
     }
@@ -174,9 +181,8 @@ async function setupDatabase() {
     if (!Config.useDb) {
         return createNewDataSource('testing');
     }
-    const baselineDataSource = await createNewDataSource(
-        'baseline'
-    ).initialize();
+    const baselineDataSource =
+        await createNewDataSource('baseline').initialize();
     // Re-create the test database
     await baselineDataSource.query(
         `DROP DATABASE IF EXISTS "${testingDatabaseName}"`

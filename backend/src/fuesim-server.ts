@@ -1,11 +1,11 @@
 import express from 'express';
-import { PeriodicEventHandler } from './exercise/periodic-events/periodic-event-handler';
-import { exerciseMap } from './exercise/exercise-map';
-import { ExerciseWebsocketServer } from './exercise/websocket';
-import { ExerciseHttpServer } from './exercise/http-server';
-import { Config } from './config';
-import type { DatabaseService } from './database/services/database-service';
-import type { ExerciseWrapper } from './exercise/exercise-wrapper';
+import { PeriodicEventHandler } from './exercise/periodic-events/periodic-event-handler.js';
+import { exerciseMap } from './exercise/exercise-map.js';
+import { ExerciseWebsocketServer } from './exercise/websocket.js';
+import { ExerciseHttpServer } from './exercise/http-server.js';
+import { Config } from './config.js';
+import type { DatabaseService } from './database/services/database-service.js';
+import type { ExerciseWrapper } from './exercise/exercise-wrapper.js';
 
 export class FuesimServer {
     private readonly _httpServer: ExerciseHttpServer;
@@ -41,22 +41,18 @@ export class FuesimServer {
             await manager.save(actionEntities);
             // Re-map database id to instance
             exercisesToSave.forEach((exercise) => {
-                if (!exercise.id) {
-                    exercise.id = exerciseEntities.find(
-                        (entity) => entity.trainerId === exercise.trainerId
-                    )?.id;
-                }
+                exercise.id ??= exerciseEntities.find(
+                    (entity) => entity.trainerId === exercise.trainerId
+                )?.id;
             });
             exercisesToSave
                 .flatMap((exercise) => exercise.temporaryActionHistory)
                 .forEach((action) => {
-                    if (!action.id) {
-                        action.id = actionEntities.find(
-                            (entity) =>
-                                entity.index === action.index &&
-                                entity.exercise.id === action.exercise.id
-                        )?.id;
-                    }
+                    action.id ??= actionEntities.find(
+                        (entity) =>
+                            entity.index === action.index &&
+                            entity.exercise.id === action.exercise.id
+                    )?.id;
                 });
             exercisesToSave.forEach((exercise) => {
                 exercise.markAsSaved();

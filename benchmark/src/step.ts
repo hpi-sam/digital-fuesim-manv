@@ -3,7 +3,7 @@ export abstract class Step<
         [StepName: string]: any | undefined;
     },
     Name extends keyof State = keyof State,
-    Value extends State[Name] = State[Name]
+    Value extends State[Name] = State[Name],
 > {
     constructor(
         public readonly name: Name,

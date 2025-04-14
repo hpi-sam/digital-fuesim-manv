@@ -1,12 +1,12 @@
 import type { Type } from 'class-transformer';
-import type { Constructor } from '../../../utils';
-import { IntermediateOccupation } from './intermediate-occupation';
-import { Occupation } from './occupation';
-import { NoOccupation } from './no-occupation';
-import { LoadOccupation } from './load-occupation';
-import { WaitForTransferOccupation } from './wait-for-transfer-occupation';
-import { UnloadingOccupation } from './unloading-occupation';
-import { PatientTransferOccupation } from './patient-transfer-occupation';
+import type { Constructor } from '../../../utils/index.js';
+import { IntermediateOccupation } from './intermediate-occupation.js';
+import { Occupation } from './occupation.js';
+import { NoOccupation } from './no-occupation.js';
+import { LoadOccupation } from './load-occupation.js';
+import { WaitForTransferOccupation } from './wait-for-transfer-occupation.js';
+import { UnloadingOccupation } from './unloading-occupation.js';
+import { PatientTransferOccupation } from './patient-transfer-occupation.js';
 
 export const occupations = {
     IntermediateOccupation,

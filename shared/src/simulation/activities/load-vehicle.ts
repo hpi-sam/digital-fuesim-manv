@@ -8,8 +8,8 @@ import {
 } from 'class-validator';
 import { difference } from 'lodash-es';
 import { Type } from 'class-transformer';
+import type { ExerciseOccupation } from '../../models/utils/index.js';
 import {
-    ExerciseOccupation,
     SimulatedRegionPosition,
     VehiclePosition,
     changeOccupation,
@@ -17,35 +17,36 @@ import {
     getCreate,
     isInSpecificSimulatedRegion,
     occupationTypeOptions,
-} from '../../models/utils';
+} from '../../models/utils/index.js';
+import type { UUID, UUIDSet } from '../../utils/index.js';
+import { cloneDeepMutable, uuidValidationOptions } from '../../utils/index.js';
 import {
-    UUID,
-    UUIDSet,
-    cloneDeepMutable,
-    uuidValidationOptions,
-} from '../../utils';
-import { IsLiteralUnion, IsUUIDSet, IsValue } from '../../utils/validators';
+    IsLiteralUnion,
+    IsUUIDSet,
+    IsValue,
+} from '../../utils/validators/index.js';
+import type { TransferDestination } from '../utils/transfer-destination.js';
+import { transferDestinationTypeAllowedValues } from '../utils/transfer-destination.js';
 import {
-    TransferDestination,
-    transferDestinationTypeAllowedValues,
-} from '../utils/transfer-destination';
-import { getElement, tryGetElement } from '../../store/action-reducers/utils';
-import { sendSimulationEvent } from '../events/utils';
+    getElement,
+    tryGetElement,
+} from '../../store/action-reducers/utils/index.js';
+import { sendSimulationEvent } from '../events/utils.js';
 import {
     MaterialRemovedEvent,
     NewPatientEvent,
     PatientRemovedEvent,
     PersonnelRemovedEvent,
     StartTransferEvent,
-} from '../events';
-import { completelyLoadVehicle } from '../../store/action-reducers/utils/completely-load-vehicle';
-import { IntermediateOccupation } from '../../models/utils/occupations/intermediate-occupation';
-import { changePositionWithId } from '../../models/utils/position/position-helpers-mutable';
-import { logVehicle } from '../../store/action-reducers/utils/log';
+} from '../events/index.js';
+import { completelyLoadVehicle } from '../../store/action-reducers/utils/completely-load-vehicle.js';
+import { IntermediateOccupation } from '../../models/utils/occupations/intermediate-occupation.js';
+import { changePositionWithId } from '../../models/utils/position/position-helpers-mutable.js';
+import { logVehicle } from '../../store/action-reducers/utils/log.js';
 import type {
     SimulationActivity,
     SimulationActivityState,
-} from './simulation-activity';
+} from './simulation-activity.js';
 
 export class LoadVehicleActivityState implements SimulationActivityState {
     @IsValue('loadVehicleActivity' as const)
@@ -262,14 +263,11 @@ export const loadVehicleActivity: SimulationActivity<LoadVehicleActivityState> =
 
                 // Calculate loading time based on the patients and personnel to be loaded
                 // Do not do the calculation if the time is already set (which could occur if an instance of this activity was imported from an older state version)
-                if (activityState.loadDelay === undefined) {
-                    activityState.loadDelay =
-                        patientMovementsCount *
-                            activityState.loadTimePerPatient +
-                        (personnelLoadingRequired
-                            ? activityState.personnelLoadTime
-                            : 0);
-                }
+                activityState.loadDelay ??=
+                    patientMovementsCount * activityState.loadTimePerPatient +
+                    (personnelLoadingRequired
+                        ? activityState.personnelLoadTime
+                        : 0);
 
                 activityState.hasBeenStarted = true;
                 activityState.startTime = draftState.currentTime;

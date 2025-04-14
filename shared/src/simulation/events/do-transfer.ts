@@ -1,6 +1,6 @@
-import { getCreate } from '../../models/utils/get-create';
-import { IsValue } from '../../utils/validators';
-import type { SimulationEvent } from './simulation-event';
+import { getCreate } from '../../models/utils/get-create.js';
+import { IsValue } from '../../utils/validators/index.js';
+import type { SimulationEvent } from './simulation-event.js';
 
 export class DoTransferEvent implements SimulationEvent {
     @IsValue('doTransferEvent')

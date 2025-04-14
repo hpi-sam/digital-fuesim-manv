@@ -1,15 +1,15 @@
-import type { ExerciseRadiogram } from '../../../models/radiogram';
+import type { ExerciseRadiogram } from '../../../models/radiogram/index.js';
 import type {
     ExerciseSimulationActivityState,
     ExerciseSimulationActivityType,
     ExerciseSimulationBehaviorState,
     ExerciseSimulationBehaviorType,
-} from '../../../simulation';
-import type { ExerciseState } from '../../../state';
-import type { Mutable, UUID } from '../../../utils';
-import type { ElementTypePluralMap } from '../../../utils/element-type-plural-map';
-import { elementTypePluralMap } from '../../../utils/element-type-plural-map';
-import { ReducerError } from '../../reducer-error';
+} from '../../../simulation/index.js';
+import type { ExerciseState } from '../../../state.js';
+import type { Mutable, UUID } from '../../../utils/index.js';
+import type { ElementTypePluralMap } from '../../../utils/element-type-plural-map.js';
+import { elementTypePluralMap } from '../../../utils/element-type-plural-map.js';
+import { ReducerError } from '../../reducer-error.js';
 
 /**
  * @returns The element with the given id
@@ -17,7 +17,7 @@ import { ReducerError } from '../../reducer-error';
  */
 export function getElement<
     ElementType extends keyof ElementTypePluralMap,
-    State extends ExerciseState | Mutable<ExerciseState>
+    State extends ExerciseState | Mutable<ExerciseState>,
 >(state: State, elementType: ElementType, elementId: UUID) {
     const element = tryGetElement(state, elementType, elementId);
     if (!element) {
@@ -33,7 +33,7 @@ export function getElement<
  */
 export function tryGetElement<
     ElementType extends keyof ElementTypePluralMap,
-    State extends ExerciseState | Mutable<ExerciseState>
+    State extends ExerciseState | Mutable<ExerciseState>,
 >(state: State, elementType: ElementType, elementId: UUID) {
     return state[elementTypePluralMap[elementType]][elementId] as
         | State[ElementTypePluralMap[ElementType]][UUID]
@@ -42,7 +42,7 @@ export function tryGetElement<
 
 export function getElementByPredicate<
     ElementType extends keyof ElementTypePluralMap,
-    State extends Mutable<ExerciseState>
+    State extends Mutable<ExerciseState>,
 >(
     state: State,
     elementType: ElementType,

@@ -2,7 +2,7 @@ import type { OnInit } from '@angular/core';
 import { Component, Input } from '@angular/core';
 import { createSelector, Store } from '@ngrx/store';
 import type { VehicleCountRadiogram } from 'digital-fuesim-manv-shared';
-import { UUID } from 'digital-fuesim-manv-shared';
+import type { UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import type { AppState } from 'src/app/state/app.state';
 import { createSelectRadiogram } from 'src/app/state/application/selectors/exercise.selectors';
@@ -11,6 +11,7 @@ import { createSelectRadiogram } from 'src/app/state/application/selectors/exerc
     selector: 'app-radiogram-card-content-vehicle-count',
     templateUrl: './radiogram-card-content-vehicle-count.component.html',
     styleUrls: ['./radiogram-card-content-vehicle-count.component.scss'],
+    standalone: false,
 })
 export class RadiogramCardContentVehicleCountComponent implements OnInit {
     @Input() radiogramId!: UUID;

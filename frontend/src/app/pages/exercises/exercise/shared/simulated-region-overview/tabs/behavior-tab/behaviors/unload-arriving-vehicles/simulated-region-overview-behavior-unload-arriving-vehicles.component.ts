@@ -5,7 +5,8 @@ import type {
     UnloadArrivingVehiclesBehaviorState,
     UnloadVehicleActivityState,
 } from 'digital-fuesim-manv-shared';
-import { StrictObject, UUID } from 'digital-fuesim-manv-shared';
+import type { UUID } from 'digital-fuesim-manv-shared';
+import { StrictObject } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { map } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
@@ -24,6 +25,7 @@ import {
     styleUrls: [
         './simulated-region-overview-behavior-unload-arriving-vehicles.component.scss',
     ],
+    standalone: false,
 })
 export class SimulatedRegionOverviewBehaviorUnloadArrivingVehiclesComponent
     implements OnInit

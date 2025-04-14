@@ -1,6 +1,6 @@
-import type { ExerciseState } from '../state';
-import type { ExerciseAction } from '../store';
-import type { UUID } from '../utils';
+import type { ExerciseState } from '../state.js';
+import type { ExerciseAction } from '../store/index.js';
+import type { UUID } from '../utils/index.js';
 
 export interface ServerToClientEvents {
     performAction: (action: ExerciseAction) => void;
@@ -22,8 +22,10 @@ export interface ClientToServerEvents {
     ) => void;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface InterServerEvents {}
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface SocketData {}
 
 export type SocketResponse<T = undefined> =

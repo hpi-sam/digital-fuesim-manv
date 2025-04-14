@@ -1,17 +1,16 @@
 import { Type } from 'class-transformer';
 import { IsInt, IsUUID, Min, ValidateNested } from 'class-validator';
-import { UUID, uuidValidationOptions } from '../../utils';
-import { IsValue } from '../../utils/validators';
-import { sendSimulationEvent } from '../events/utils';
-import { getCreate } from '../../models/utils/get-create';
-import {
-    ExerciseSimulationEvent,
-    simulationEventTypeOptions,
-} from '../events/exercise-simulation-event';
+import type { UUID } from '../../utils/index.js';
+import { uuidValidationOptions } from '../../utils/index.js';
+import { IsValue } from '../../utils/validators/index.js';
+import { sendSimulationEvent } from '../events/utils.js';
+import { getCreate } from '../../models/utils/get-create.js';
+import type { ExerciseSimulationEvent } from '../events/exercise-simulation-event.js';
+import { simulationEventTypeOptions } from '../events/exercise-simulation-event.js';
 import type {
     SimulationActivity,
     SimulationActivityState,
-} from './simulation-activity';
+} from './simulation-activity.js';
 
 export class DelayEventActivityState implements SimulationActivityState {
     @IsValue('delayEventActivity' as const)

@@ -6,14 +6,14 @@ import {
     IsOptional,
     IsInt,
 } from 'class-validator';
-import type { DatabaseService } from 'database/services/database-service';
 import type { ExerciseAction, UUID } from 'digital-fuesim-manv-shared';
 import { uuidValidationOptions } from 'digital-fuesim-manv-shared';
-import type { ActionWrapper } from 'exercise/action-wrapper';
 import type { EntityManager } from 'typeorm';
 import { Entity, ManyToOne, Column } from 'typeorm';
-import { BaseEntity } from './base-entity';
-import { ExerciseWrapperEntity } from './exercise-wrapper.entity';
+import type { ActionWrapper } from '../../exercise/action-wrapper.js';
+import type { DatabaseService } from '../services/database-service.js';
+import { BaseEntity } from './base-entity.js';
+import { ExerciseWrapperEntity } from './exercise-wrapper.entity.js';
 
 @Entity()
 export class ActionWrapperEntity extends BaseEntity<

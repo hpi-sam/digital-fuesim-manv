@@ -2,7 +2,7 @@ import type { OnChanges } from '@angular/core';
 import { Component, Input } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type { Hospital } from 'digital-fuesim-manv-shared';
-import { UUID } from 'digital-fuesim-manv-shared';
+import type { UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import type { AppState } from 'src/app/state/app.state';
 import { createSelectHospital } from 'src/app/state/application/selectors/exercise.selectors';
@@ -11,6 +11,7 @@ import { createSelectHospital } from 'src/app/state/application/selectors/exerci
     selector: 'app-hospital-name',
     templateUrl: './hospital-name.component.html',
     styleUrls: ['./hospital-name.component.scss'],
+    standalone: false,
 })
 export class HospitalNameComponent implements OnChanges {
     @Input() hospitalId!: UUID;

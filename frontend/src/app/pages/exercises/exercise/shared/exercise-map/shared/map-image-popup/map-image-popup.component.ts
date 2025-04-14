@@ -18,6 +18,7 @@ import { PopupService } from '../../utility/popup.service';
     selector: 'app-map-image-popup',
     templateUrl: './map-image-popup.component.html',
     styleUrls: ['./map-image-popup.component.scss'],
+    standalone: false,
 })
 export class MapImagePopupComponent implements OnInit {
     // These properties are only set after OnInit

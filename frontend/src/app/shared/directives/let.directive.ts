@@ -19,6 +19,7 @@ interface LetContext<T> {
  */
 @Directive({
     selector: '[appLet]',
+    standalone: false,
 })
 export class LetDirective<T> {
     @Input()

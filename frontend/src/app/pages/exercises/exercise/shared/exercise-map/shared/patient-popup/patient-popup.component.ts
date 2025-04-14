@@ -6,6 +6,7 @@ import { PopupService } from '../../utility/popup.service';
     selector: 'app-patient-popup',
     templateUrl: './patient-popup.component.html',
     styleUrls: ['./patient-popup.component.scss'],
+    standalone: false,
 })
 export class PatientPopupComponent {
     // These properties are only set after OnInit

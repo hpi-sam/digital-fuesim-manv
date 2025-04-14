@@ -11,9 +11,10 @@ import {
 import { Type } from 'class-transformer';
 import type {
     ExerciseSimulationEvent,
+    ReportableInformation,
     TreatPatientsBehaviorState,
     UnloadArrivingVehiclesBehaviorState,
-} from '../../simulation';
+} from '../../simulation/index.js';
 import {
     reportableInformationTypeToGermanNameDictionary,
     behaviorTypeToGermanNameDictionary,
@@ -23,31 +24,34 @@ import {
     TransferSpecificVehicleRequestEvent,
     updateBehaviorsRequestTarget,
     updateBehaviorsRequestInterval,
-    ReportableInformation,
     reportableInformationAllowedValues,
     RecurringEventActivityState,
-} from '../../simulation';
-import { StartCollectingInformationEvent } from '../../simulation/events/start-collecting';
-import { sendSimulationEvent } from '../../simulation/events/utils';
-import { nextUUID } from '../../simulation/utils/randomness';
-import type { Mutable } from '../../utils';
+} from '../../simulation/index.js';
+import { StartCollectingInformationEvent } from '../../simulation/events/start-collecting.js';
+import { sendSimulationEvent } from '../../simulation/events/utils.js';
+import { nextUUID } from '../../simulation/utils/randomness.js';
+import type { Mutable, UUID, UUIDSet } from '../../utils/index.js';
 import {
-    UUID,
     uuidValidationOptions,
     cloneDeepMutable,
     uuidArrayValidationOptions,
-    UUIDSet,
     formatDuration,
-} from '../../utils';
-import { IsLiteralUnion, IsUUIDSet, IsValue } from '../../utils/validators';
-import type { Action, ActionReducer } from '../action-reducer';
-import { ExpectedReducerError, ReducerError } from '../reducer-error';
+} from '../../utils/index.js';
 import {
-    PatientStatus,
-    requestTargetTypeOptions,
+    IsLiteralUnion,
+    IsUUIDSet,
+    IsValue,
+} from '../../utils/validators/index.js';
+import type { Action, ActionReducer } from '../action-reducer.js';
+import { ExpectedReducerError, ReducerError } from '../reducer-error.js';
+import type {
     ExerciseRequestTargetConfiguration,
-    patientStatusForTransportAllowedValues,
+    PatientStatus,
     PatientStatusForTransport,
+} from '../../models/index.js';
+import {
+    requestTargetTypeOptions,
+    patientStatusForTransportAllowedValues,
     patientStatusAllowedValues,
     statusNames,
     createSimulatedRegionTag,
@@ -56,13 +60,11 @@ import {
     isInSimulatedRegion,
     currentSimulatedRegionIdOf,
     createTransferPointTag,
-} from '../../models';
-import {
-    TransferDestination,
-    transferDestinationTypeAllowedValues,
-} from '../../simulation/utils/transfer-destination';
-import { getActivityById, getBehaviorById, getElement } from './utils';
-import { logBehavior } from './utils/log';
+} from '../../models/index.js';
+import type { TransferDestination } from '../../simulation/utils/transfer-destination.js';
+import { transferDestinationTypeAllowedValues } from '../../simulation/utils/transfer-destination.js';
+import { getActivityById, getBehaviorById, getElement } from './utils/index.js';
+import { logBehavior } from './utils/log.js';
 
 export class UpdateTreatPatientsIntervalsAction implements Action {
     @IsValue('[TreatPatientsBehavior] Update TreatPatientsIntervals' as const)
@@ -1171,17 +1173,11 @@ export namespace SimulationActionReducers {
                         vehicleType
                     ];
                 } else {
-                    if (
-                        !automaticDistributionBehaviorState.remainingInNeed[
-                            vehicleType
-                        ]
-                    ) {
-                        automaticDistributionBehaviorState.remainingInNeed[
-                            vehicleType
-                        ] = cloneDeepMutable(
-                            automaticDistributionBehaviorState.distributionDestinations
-                        );
-                    }
+                    automaticDistributionBehaviorState.remainingInNeed[
+                        vehicleType
+                    ] ??= cloneDeepMutable(
+                        automaticDistributionBehaviorState.distributionDestinations
+                    );
                 }
                 return draftState;
             },
@@ -1774,22 +1770,16 @@ export namespace SimulationActionReducers {
                     managedSimulatedRegionId
                 ] = true;
 
-                if (
-                    !behaviorState.patientsExpectedInRegions[
-                        managedSimulatedRegionId
-                    ]
-                ) {
-                    behaviorState.patientsExpectedInRegions[
-                        managedSimulatedRegionId
-                    ] = {
-                        red: 0,
-                        yellow: 0,
-                        green: 0,
-                        blue: 0,
-                        black: 0,
-                        white: 0,
-                    };
-                }
+                behaviorState.patientsExpectedInRegions[
+                    managedSimulatedRegionId
+                ] ??= {
+                    red: 0,
+                    yellow: 0,
+                    green: 0,
+                    blue: 0,
+                    black: 0,
+                    white: 0,
+                };
 
                 return draftState;
             },
@@ -1913,7 +1903,7 @@ export namespace SimulationActionReducers {
 
                 behaviorState.patientsExpectedInRegions[
                     managedSimulatedRegionId
-                ]![patientStatus] = patientsExpected;
+                ][patientStatus] = patientsExpected;
                 return draftState;
             },
             rights: 'trainer',

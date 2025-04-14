@@ -1,9 +1,9 @@
 import { Type } from 'class-transformer';
 import { ArrayNotEmpty, IsArray, ValidateNested } from 'class-validator';
-import { IsValue } from '../utils/validators';
-import { PatientTemplate } from './patient-template';
-import { getCreate, ImageProperties } from './utils';
-import { PatientStatusCode } from './utils/patient-status-code';
+import { IsValue } from '../utils/validators/index.js';
+import { PatientTemplate } from './patient-template.js';
+import { getCreate, ImageProperties } from './utils/index.js';
+import { PatientStatusCode } from './utils/patient-status-code.js';
 
 export class PatientCategory {
     @IsValue('patientCategory' as const)

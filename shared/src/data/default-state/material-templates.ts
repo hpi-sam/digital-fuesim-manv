@@ -1,10 +1,10 @@
-import { CanCaterFor } from '../../models/utils';
-import { MaterialTemplate } from '../../models/material-template';
-import type { MaterialType } from '../../models/utils/material-type';
+import { CanCaterFor } from '../../models/utils/index.js';
+import { MaterialTemplate } from '../../models/material-template.js';
+import type { MaterialType } from '../../models/utils/material-type.js';
 import {
     defaultOverrideTreatmentRange,
     defaultTreatmentRange,
-} from './default-treatment-range';
+} from './default-treatment-range.js';
 
 const standardMaterialTemplate = MaterialTemplate.create(
     'standard',

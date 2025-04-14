@@ -3,16 +3,17 @@ import {
     changeOccupation,
     getCreate,
     isInSpecificSimulatedRegion,
-} from '../../models/utils';
-import { NoOccupation } from '../../models/utils/occupations/no-occupation';
-import { UUID, uuidValidationOptions } from '../../utils';
-import { IsValue } from '../../utils/validators';
-import { unloadVehicle } from '../utils/vehicle';
-import { tryGetElement } from '../../store/action-reducers/utils';
+} from '../../models/utils/index.js';
+import { NoOccupation } from '../../models/utils/occupations/no-occupation.js';
+import type { UUID } from '../../utils/index.js';
+import { uuidValidationOptions } from '../../utils/index.js';
+import { IsValue } from '../../utils/validators/index.js';
+import { unloadVehicle } from '../utils/vehicle.js';
+import { tryGetElement } from '../../store/action-reducers/utils/index.js';
 import type {
     SimulationActivity,
     SimulationActivityState,
-} from './simulation-activity';
+} from './simulation-activity.js';
 
 export class UnloadVehicleActivityState implements SimulationActivityState {
     @IsValue('unloadVehicleActivity' as const)

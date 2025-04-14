@@ -1,12 +1,12 @@
 import type { ValidationArguments, ValidationOptions } from 'class-validator';
 import { isNumber, min } from 'class-validator';
-import type { PersonnelCount } from '../../models/radiogram/personnel-count-radiogram';
-import type { PersonnelType } from '../../models/utils';
-import { personnelTypeAllowedValues } from '../../models/utils/personnel-type';
-import { createMapValidator } from './create-map-validator';
-import type { GenericPropertyDecorator } from './generic-property-decorator';
-import { isLiteralUnion } from './is-literal-union';
-import { makeValidator } from './make-validator';
+import type { PersonnelCount } from '../../models/radiogram/personnel-count-radiogram.js';
+import type { PersonnelType } from '../../models/utils/index.js';
+import { personnelTypeAllowedValues } from '../../models/utils/personnel-type.js';
+import { createMapValidator } from './create-map-validator.js';
+import type { GenericPropertyDecorator } from './generic-property-decorator.js';
+import { isLiteralUnion } from './is-literal-union.js';
+import { makeValidator } from './make-validator.js';
 
 export const isPersonnelCount = createMapValidator<PersonnelType, number>({
     keyValidator: ((key) =>

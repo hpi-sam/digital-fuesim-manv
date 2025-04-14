@@ -15,8 +15,7 @@
                     let reachableTransferPoint of reachableTransferPoints$
                         | async;
                     trackBy: 'id'
-                        | appTrackByProperty
-                            : (reachableTransferPoints$ | async)
+                        | appTrackByProperty: (reachableTransferPoints$ | async)
                 "
                 class="list-group-item d-flex align-items-center flex-nowrap p-0"
             >
@@ -80,7 +79,7 @@
                     let transferPoint of transferPointsToBeAdded$
                         | async
                         | values
-                        | orderBy : getTransferPointOrderByValue;
+                        | orderBy: getTransferPointOrderByValue;
                     trackBy: 'id' | appTrackByProperty
                 "
                 ngbDropdownItem

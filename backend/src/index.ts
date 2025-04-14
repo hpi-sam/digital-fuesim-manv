@@ -1,12 +1,12 @@
 import * as util from 'node:util';
 import { ReducerError } from 'digital-fuesim-manv-shared';
-import { ValidationErrorWrapper } from './utils/validation-error-wrapper';
-import { RestoreError } from './utils/restore-error';
-import { ExerciseWrapper } from './exercise/exercise-wrapper';
-import { Config } from './config';
-import { createNewDataSource } from './database/data-source';
-import { DatabaseService } from './database/services/database-service';
-import { FuesimServer } from './fuesim-server';
+import { ValidationErrorWrapper } from './utils/validation-error-wrapper.js';
+import { RestoreError } from './utils/restore-error.js';
+import { ExerciseWrapper } from './exercise/exercise-wrapper.js';
+import { Config } from './config.js';
+import { createNewDataSource } from './database/data-source.js';
+import { DatabaseService } from './database/services/database-service.js';
+import { FuesimServer } from './fuesim-server.js';
 
 async function main() {
     Config.initialize();
@@ -30,9 +30,8 @@ async function main() {
         try {
             console.log('Loading exercises from database…');
             const startTime = performance.now();
-            const exercises = await ExerciseWrapper.restoreAllExercises(
-                databaseService
-            );
+            const exercises =
+                await ExerciseWrapper.restoreAllExercises(databaseService);
             const endTime = performance.now();
             console.log(
                 `✅ Successfully loaded ${exercises.length} exercise(s) in ${(

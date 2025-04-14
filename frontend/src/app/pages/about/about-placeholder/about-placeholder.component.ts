@@ -8,6 +8,7 @@ import type { Observable } from 'rxjs';
     selector: 'app-about-placeholder',
     templateUrl: './about-placeholder.component.html',
     styleUrls: ['./about-placeholder.component.scss'],
+    standalone: false,
 })
 export class AboutPlaceholderComponent implements OnInit {
     content$!: Observable<string>;

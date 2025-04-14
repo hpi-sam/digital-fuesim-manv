@@ -1,5 +1,5 @@
-import { VehicleTemplate } from '../../models';
-import type { ImageProperties } from '../../models/utils';
+import { VehicleTemplate } from '../../models/index.js';
+import type { ImageProperties } from '../../models/utils/index.js';
 
 const rtwImage: ImageProperties = {
     url: '/assets/rtw-vehicle.png',

@@ -1,7 +1,7 @@
-import type { SimulatedRegion } from '../../models';
-import type { ExerciseState } from '../../state';
-import type { Constructor, Mutable, UUID } from '../../utils';
-import type { ExerciseSimulationEvent } from '../events';
+import type { SimulatedRegion } from '../../models/index.js';
+import type { ExerciseState } from '../../state.js';
+import type { Constructor, Mutable, UUID } from '../../utils/index.js';
+import type { ExerciseSimulationEvent } from '../events/index.js';
 
 export class SimulationBehaviorState {
     readonly type!: `${string}Behavior`;
@@ -10,7 +10,7 @@ export class SimulationBehaviorState {
 
 export interface SimulationBehavior<
     S extends SimulationBehaviorState,
-    C extends Constructor<S> = Constructor<S>
+    C extends Constructor<S> = Constructor<S>,
 > {
     readonly behaviorState: C & {
         readonly create: (...args: ConstructorParameters<C>) => S;

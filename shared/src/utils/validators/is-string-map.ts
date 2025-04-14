@@ -1,9 +1,9 @@
 import { Transform, plainToInstance } from 'class-transformer';
 import type { ValidationOptions } from 'class-validator';
 import { ValidateNested } from 'class-validator';
-import type { Constructor } from '../constructor';
-import { combineDecorators } from './combine-decorators';
-import type { GenericPropertyDecorator } from './generic-property-decorator';
+import type { Constructor } from '../constructor.js';
+import { combineDecorators } from './combine-decorators.js';
+import type { GenericPropertyDecorator } from './generic-property-decorator.js';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export function IsStringMap<T extends object, Each extends boolean = false>(
@@ -20,7 +20,7 @@ export function IsStringMap<T extends object, Each extends boolean = false>(
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export function IsMultiTypedStringMap<
     T extends Constructor,
-    Each extends boolean = false
+    Each extends boolean = false,
 >(
     getConstructor: (value: InstanceType<T>) => T | undefined,
     keyValidator: (key: string, plain: InstanceType<T>) => boolean,

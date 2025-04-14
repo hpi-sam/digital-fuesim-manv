@@ -1,11 +1,11 @@
 import { Type } from 'class-transformer';
 import { IsArray, IsOptional, ValidateNested } from 'class-validator';
-import { ExerciseState } from '../../state';
-import { Mutable } from '../../utils';
-import { IsValue } from '../../utils/validators';
-import type { ExerciseAction } from '../../store/action-reducers/action-reducers';
-import { IsExerciseAction } from '../../store/validate-exercise-action';
-import { BaseExportImportFile } from './base-file';
+import { ExerciseState } from '../../state.js';
+import type { Mutable } from '../../utils/index.js';
+import { IsValue } from '../../utils/validators/index.js';
+import type { ExerciseAction } from '../../store/action-reducers/action-reducers.js';
+import { IsExerciseAction } from '../../store/validate-exercise-action.js';
+import { BaseExportImportFile } from './base-file.js';
 
 export class StateHistoryCompound {
     @IsArray()

@@ -1,19 +1,16 @@
 import { IsOptional, IsString, IsUUID } from 'class-validator';
 import { Type } from 'class-transformer';
-import { IsLiteralUnion, IsValue } from '../../utils/validators';
-import { ResourceDescription } from '../../models/utils/resource-description';
-import { IsResourceDescription } from '../../utils/validators/is-resource-description';
-import { UUID, uuidValidationOptions } from '../../utils';
-import {
-    TransferDestination,
-    transferDestinationTypeAllowedValues,
-} from '../utils/transfer-destination';
-import {
-    ExerciseOccupation,
-    occupationTypeOptions,
-} from '../../models/utils/occupations/exercise-occupation';
-import { getCreate } from '../../models/utils/get-create';
-import type { SimulationEvent } from './simulation-event';
+import { IsLiteralUnion, IsValue } from '../../utils/validators/index.js';
+import type { ResourceDescription } from '../../models/utils/resource-description.js';
+import { IsResourceDescription } from '../../utils/validators/is-resource-description.js';
+import type { UUID } from '../../utils/index.js';
+import { uuidValidationOptions } from '../../utils/index.js';
+import type { TransferDestination } from '../utils/transfer-destination.js';
+import { transferDestinationTypeAllowedValues } from '../utils/transfer-destination.js';
+import type { ExerciseOccupation } from '../../models/utils/occupations/exercise-occupation.js';
+import { occupationTypeOptions } from '../../models/utils/occupations/exercise-occupation.js';
+import { getCreate } from '../../models/utils/get-create.js';
+import type { SimulationEvent } from './simulation-event.js';
 
 export class TransferVehiclesRequestEvent implements SimulationEvent {
     @IsValue('transferVehiclesRequestEvent')

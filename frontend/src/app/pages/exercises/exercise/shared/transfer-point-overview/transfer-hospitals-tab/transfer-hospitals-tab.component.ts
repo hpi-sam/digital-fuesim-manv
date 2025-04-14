@@ -2,7 +2,7 @@ import type { OnInit } from '@angular/core';
 import { Component, Input } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type { Hospital, TransferPoint } from 'digital-fuesim-manv-shared';
-import { UUID } from 'digital-fuesim-manv-shared';
+import type { UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { combineLatest, map } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
@@ -16,6 +16,7 @@ import {
     selector: 'app-transfer-hospitals-tab',
     templateUrl: './transfer-hospitals-tab.component.html',
     styleUrls: ['./transfer-hospitals-tab.component.scss'],
+    standalone: false,
 })
 export class TransferHospitalsTabComponent implements OnInit {
     @Input() public transferPointId!: UUID;

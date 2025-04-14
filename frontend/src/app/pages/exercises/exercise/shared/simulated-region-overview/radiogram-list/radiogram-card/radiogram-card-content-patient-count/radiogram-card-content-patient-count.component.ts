@@ -2,7 +2,7 @@ import type { OnInit } from '@angular/core';
 import { Component, Input } from '@angular/core';
 import { createSelector, Store } from '@ngrx/store';
 import type { PatientCountRadiogram } from 'digital-fuesim-manv-shared';
-import { UUID } from 'digital-fuesim-manv-shared';
+import type { UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import type { AppState } from 'src/app/state/app.state';
 import {
@@ -14,6 +14,7 @@ import {
     selector: 'app-radiogram-card-content-patient-count',
     templateUrl: './radiogram-card-content-patient-count.component.html',
     styleUrls: ['./radiogram-card-content-patient-count.component.scss'],
+    standalone: false,
 })
 export class RadiogramCardContentPatientCountComponent implements OnInit {
     @Input() radiogramId!: UUID;

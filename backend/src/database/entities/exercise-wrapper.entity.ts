@@ -1,10 +1,10 @@
 import { IsInt, IsJSON, IsString, MinLength, MaxLength } from 'class-validator';
-import type { DatabaseService } from 'database/services/database-service';
 import { ExerciseState } from 'digital-fuesim-manv-shared';
-import type { ExerciseWrapper } from 'exercise/exercise-wrapper';
 import { Entity, Column } from 'typeorm';
-import type { ActionWrapperEntity } from './action-wrapper.entity';
-import { BaseEntity } from './base-entity';
+import type { ExerciseWrapper } from '../../exercise/exercise-wrapper.js';
+import type { DatabaseService } from '../services/database-service.js';
+import type { ActionWrapperEntity } from './action-wrapper.entity.js';
+import { BaseEntity } from './base-entity.js';
 
 @Entity()
 export class ExerciseWrapperEntity extends BaseEntity<

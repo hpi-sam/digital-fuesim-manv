@@ -1,10 +1,11 @@
 import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
-import { UUID, uuidValidationOptions } from '../../utils';
-import { IsValue } from '../../utils/validators';
-import { VehicleResource } from '../../models/utils/rescue-resource';
-import { getCreate } from '../../models/utils/get-create';
-import type { SimulationEvent } from './simulation-event';
+import type { UUID } from '../../utils/index.js';
+import { uuidValidationOptions } from '../../utils/index.js';
+import { IsValue } from '../../utils/validators/index.js';
+import { VehicleResource } from '../../models/utils/rescue-resource.js';
+import { getCreate } from '../../models/utils/get-create.js';
+import type { SimulationEvent } from './simulation-event.js';
 
 export class VehicleTransferSuccessfulEvent implements SimulationEvent {
     @IsValue('vehicleTransferSuccessfulEvent')

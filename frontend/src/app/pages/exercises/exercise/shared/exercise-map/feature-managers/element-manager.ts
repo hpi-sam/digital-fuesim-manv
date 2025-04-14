@@ -16,7 +16,7 @@ import { generateChangedProperties } from '../utility/generate-changed-propertie
  */
 export abstract class ElementManager<
     Element extends Immutable<JsonObject>,
-    FeatureType extends Geometry
+    FeatureType extends Geometry,
 > {
     /**
      * This should be called if a new element is added.

@@ -1,16 +1,16 @@
 import type { Type } from 'class-transformer';
-import { SimulationBehaviorState } from './simulation-behavior';
-import { assignLeaderBehavior } from './assign-leader';
-import { treatPatientsBehavior } from './treat-patients';
-import { unloadArrivingVehiclesBehavior } from './unload-arrived-vehicles';
-import { reportBehavior } from './report';
-import { automaticallyDistributeVehiclesBehavior } from './automatically-distribute-vehicles';
-import { providePersonnelBehavior } from './provide-personnel';
-import { answerRequestsBehavior } from './answer-requests';
-import { requestBehavior } from './request';
-import { transferBehavior } from './transfer';
-import { transferToHospitalBehavior } from './transfer-to-hospital';
-import { managePatientTransportToHospitalBehavior } from './manage-patient-transport-to-hospital';
+import { SimulationBehaviorState } from './simulation-behavior.js';
+import { assignLeaderBehavior } from './assign-leader.js';
+import { treatPatientsBehavior } from './treat-patients.js';
+import { unloadArrivingVehiclesBehavior } from './unload-arrived-vehicles.js';
+import { reportBehavior } from './report.js';
+import { automaticallyDistributeVehiclesBehavior } from './automatically-distribute-vehicles.js';
+import { providePersonnelBehavior } from './provide-personnel.js';
+import { answerRequestsBehavior } from './answer-requests.js';
+import { requestBehavior } from './request.js';
+import { transferBehavior } from './transfer.js';
+import { transferToHospitalBehavior } from './transfer-to-hospital.js';
+import { managePatientTransportToHospitalBehavior } from './manage-patient-transport-to-hospital.js';
 
 export const simulationBehaviors = {
     automaticallyDistributeVehiclesBehavior,
@@ -40,7 +40,7 @@ export type ExerciseSimulationBehaviorDictionary = {
 };
 
 export type ExerciseSimulationBehaviorState<
-    T extends ExerciseSimulationBehaviorType = ExerciseSimulationBehaviorType
+    T extends ExerciseSimulationBehaviorType = ExerciseSimulationBehaviorType,
 > = InstanceType<ExerciseSimulationBehaviorDictionary[T]['behaviorState']>;
 
 export const simulationBehaviorDictionary = Object.fromEntries(

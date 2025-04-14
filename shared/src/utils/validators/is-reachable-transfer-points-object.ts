@@ -1,10 +1,10 @@
 import type { ValidationOptions, ValidationArguments } from 'class-validator';
 import { isUUID, isNumber, min } from 'class-validator';
-import type { ReachableTransferPoints } from '../../models/transfer-point';
-import type { UUID } from '../uuid';
-import { createMapValidator } from './create-map-validator';
-import type { GenericPropertyDecorator } from './generic-property-decorator';
-import { makeValidator } from './make-validator';
+import type { ReachableTransferPoints } from '../../models/transfer-point.js';
+import type { UUID } from '../uuid.js';
+import { createMapValidator } from './create-map-validator.js';
+import type { GenericPropertyDecorator } from './generic-property-decorator.js';
+import { makeValidator } from './make-validator.js';
 
 export const isReachableTransferPoints = createMapValidator<
     UUID,

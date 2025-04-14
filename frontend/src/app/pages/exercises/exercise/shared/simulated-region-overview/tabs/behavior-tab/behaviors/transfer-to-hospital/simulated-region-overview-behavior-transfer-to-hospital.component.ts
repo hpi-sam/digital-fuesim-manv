@@ -7,5 +7,6 @@ import { Component } from '@angular/core';
     styleUrls: [
         './simulated-region-overview-behavior-transfer-to-hospital.component.scss',
     ],
+    standalone: false,
 })
 export class SimulatedRegionOverviewBehaviorTransferToHospitalComponent {}

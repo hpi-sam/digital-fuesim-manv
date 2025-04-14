@@ -1,21 +1,22 @@
-import { AlarmGroupActionReducers } from './alarm-group';
-import { ClientActionReducers } from './client';
-import { ExerciseActionReducers } from './exercise';
-import { ConfigurationActionReducers } from './configuration';
-import { HospitalActionReducers } from './hospital';
-import { MapImageTemplatesActionReducers } from './map-image-templates';
-import { MapImagesActionReducers } from './map-images';
-import { MaterialActionReducers } from './material';
-import { PatientActionReducers } from './patient';
-import { PersonnelActionReducers } from './personnel';
-import { TransferActionReducers } from './transfer';
-import { TransferPointActionReducers } from './transfer-point';
-import { VehicleActionReducers } from './vehicle';
-import { ViewportActionReducers } from './viewport';
-import { EmergencyOperationCenterActionReducers } from './emergency-operation-center';
-import { SimulatedRegionActionReducers } from './simulated-region';
-import { SimulationActionReducers } from './simulation';
-import { RadiogramActionReducers } from './radiogram';
+import { AlarmGroupActionReducers } from './alarm-group.js';
+import { ClientActionReducers } from './client.js';
+import { ExerciseActionReducers } from './exercise.js';
+import { ConfigurationActionReducers } from './configuration.js';
+import { HospitalActionReducers } from './hospital.js';
+import { MapImageTemplatesActionReducers } from './map-image-templates.js';
+import { MapImagesActionReducers } from './map-images.js';
+import { MaterialActionReducers } from './material.js';
+import { PatientActionReducers } from './patient.js';
+import { PersonnelActionReducers } from './personnel.js';
+import { TransferActionReducers } from './transfer.js';
+import { TransferPointActionReducers } from './transfer-point.js';
+import { VehicleActionReducers } from './vehicle.js';
+import { ViewportActionReducers } from './viewport.js';
+import { EmergencyOperationCenterActionReducers } from './emergency-operation-center.js';
+import { SimulatedRegionActionReducers } from './simulated-region.js';
+import { SimulationActionReducers } from './simulation.js';
+import { RadiogramActionReducers } from './radiogram.js';
+import { VehicleTemplateActionReducers } from './vehicle-templates.js';
 
 /**
  * All action reducers of the exercise must be registered here
@@ -39,6 +40,7 @@ const actionReducers = {
     ...SimulatedRegionActionReducers,
     ...SimulationActionReducers,
     ...RadiogramActionReducers,
+    ...VehicleTemplateActionReducers,
 };
 
 type ExerciseActionReducer =
@@ -61,6 +63,7 @@ export function getExerciseActionTypeDictionary(): ExerciseActionTypeDictionary 
     }
     const dictionary = {} as any;
     // fill in the dictionary
+    // eslint-disable-next-line total-functions/no-unsafe-readonly-mutable-assignment
     Object.values(actionReducers)
         .map(
             (actionReducer) =>
@@ -69,7 +72,7 @@ export function getExerciseActionTypeDictionary(): ExerciseActionTypeDictionary 
                     // therefore we have to call the constructor (An ActionClass constructor is therefore required to not throw an error when called without arguments)
                     type: new actionReducer.action().type,
                     actionClass: actionReducer,
-                } as const)
+                }) as const
         )
         .forEach(({ type, actionClass }) => {
             dictionary[type] = actionClass;

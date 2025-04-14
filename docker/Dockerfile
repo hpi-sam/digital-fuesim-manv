@@ -2,7 +2,7 @@
 ARG PRODUCTION_PATH="/usr/local/app"
 
 # Use official node image as the base image
-FROM node:18-bullseye-slim AS builder
+FROM node:22-bullseye-slim AS builder
 
 # Disable interactive frontend to prevent install dialogues
 ARG DEBIAN_FRONTEND=noninteractive
@@ -26,16 +26,12 @@ WORKDIR $PRODUCTION_PATH
 # install for production and cleanup
 RUN npm run deployment
 
-# git archive the whole repository into a zip file, so users can easily download it
-# and update/include THIRD-PARTY-LICENSE-ACKNOWLEDGEMENTS.html (and json version of it)
-RUN npm run licensing:all
-
 ####  building done  ####
 #########################
 ####  prod container ####
 
 # Use official node image as the base image, important to be on debian based for apt-get
-FROM node:18-bullseye-slim
+FROM node:22-bullseye-slim
 
 # needed to use PRODUCTION_PATH before the first FROM
 ARG PRODUCTION_PATH

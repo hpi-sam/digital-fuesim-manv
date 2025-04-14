@@ -14,6 +14,7 @@ import { PopupService } from '../../utility/popup.service';
     selector: 'app-choose-transfer-target-popup',
     templateUrl: './choose-transfer-target-popup.component.html',
     styleUrls: ['./choose-transfer-target-popup.component.scss'],
+    standalone: false,
 })
 export class ChooseTransferTargetPopupComponent implements OnInit {
     // These properties are only set after OnInit

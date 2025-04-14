@@ -9,6 +9,7 @@ import { Message } from 'src/app/core/messages/message';
     templateUrl: './message-body.component.html',
     styleUrls: ['./message-body.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class MessageBodyComponent {
     @Input() message!: Message;

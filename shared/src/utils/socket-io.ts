@@ -1,4 +1,4 @@
-import type { Mutable } from '.';
+import type { Mutable } from './index.js';
 
 const _socketIoTransports = {
     transports: ['websocket'],

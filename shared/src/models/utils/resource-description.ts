@@ -1,4 +1,4 @@
-import { StrictObject } from '../../utils';
+import { StrictObject } from '../../utils/index.js';
 
 export const addResourceDescription = createCombine((a, b) => a + b);
 export const subtractResourceDescription = createCombine((a, b) => a - b);
@@ -65,7 +65,10 @@ export function subtractPartialResourceDescriptions<K extends string>(
 ): Partial<ResourceDescription<K>> {
     const result = addPartialResourceDescriptions([
         minuend,
-        scaleResourceDescription(subtrahend as ResourceDescription, -1),
+        scaleResourceDescription(
+            subtrahend as ResourceDescription,
+            -1
+        ) as ResourceDescription<K>,
     ]);
     StrictObject.entries(result)
         .filter(([_, value]) => (value ?? 0) <= 0)

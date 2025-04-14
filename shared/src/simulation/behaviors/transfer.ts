@@ -13,43 +13,46 @@ import {
     getCreate,
     isInSimulatedRegion,
     isInSpecificSimulatedRegion,
-} from '../../models/utils';
+} from '../../models/utils/index.js';
+import type { UUID } from '../../utils/index.js';
 import {
-    UUID,
     cloneDeepMutable,
     uuid,
     uuidValidationOptions,
-} from '../../utils';
-import { IsValue } from '../../utils/validators';
-import { addActivity, terminateActivity } from '../activities/utils';
-import { nextUUID } from '../utils/randomness';
-import { getElement, tryGetElement } from '../../store/action-reducers/utils';
+} from '../../utils/index.js';
+import { IsValue } from '../../utils/validators/index.js';
+import { addActivity, terminateActivity } from '../activities/utils.js';
+import { nextUUID } from '../utils/randomness.js';
+import {
+    getElement,
+    tryGetElement,
+} from '../../store/action-reducers/utils/index.js';
 import {
     DelayEventActivityState,
     LoadVehicleActivityState,
     RecurringEventActivityState,
     SendRemoteEventActivityState,
-} from '../activities';
+} from '../activities/index.js';
 import {
     changeOccupation,
     isUnoccupied,
     isUnoccupiedOrIntermediarilyOccupied,
-} from '../../models/utils/occupations/occupation-helpers-mutable';
-import { amountOfResourcesInVehicle } from '../../models/utils/amount-of-resources-in-vehicle';
-import type { ResourceDescription } from '../../models/utils/resource-description';
+} from '../../models/utils/occupations/occupation-helpers-mutable.js';
+import { amountOfResourcesInVehicle } from '../../models/utils/amount-of-resources-in-vehicle.js';
+import type { ResourceDescription } from '../../models/utils/resource-description.js';
 import {
     DoTransferEvent,
     RequestReceivedEvent,
     StartTransferEvent,
     VehiclesSentEvent,
-} from '../events';
-import { LoadOccupation } from '../../models/utils/occupations/load-occupation';
-import { WaitForTransferOccupation } from '../../models/utils/occupations/wait-for-transfer-occupation';
-import { TransferVehicleActivityState } from '../activities/transfer-vehicle';
+} from '../events/index.js';
+import { LoadOccupation } from '../../models/utils/occupations/load-occupation.js';
+import { WaitForTransferOccupation } from '../../models/utils/occupations/wait-for-transfer-occupation.js';
+import { TransferVehicleActivityState } from '../activities/transfer-vehicle.js';
 import type {
     SimulationBehavior,
     SimulationBehaviorState,
-} from './simulation-behavior';
+} from './simulation-behavior.js';
 
 export class TransferBehaviorState implements SimulationBehaviorState {
     @IsValue('transferBehavior' as const)

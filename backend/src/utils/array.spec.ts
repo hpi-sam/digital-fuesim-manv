@@ -1,4 +1,4 @@
-import { pushAll, removeAll } from './array';
+import { pushAll, removeAll } from './array.js';
 
 describe('Array utility functions', () => {
     describe('pushAll', () => {

@@ -1,8 +1,8 @@
-import type { ExerciseRadiogramStatus } from './exercise-radiogram-status';
-import type { RadiogramAcceptedStatus } from './radiogram-accepted-status';
-import type { RadiogramDoneStatus } from './radiogram-done-status';
-import type { RadiogramUnpublishedStatus } from './radiogram-unpublished-status';
-import type { RadiogramUnreadStatus } from './radiogram-unread-status';
+import type { ExerciseRadiogramStatus } from './exercise-radiogram-status.js';
+import type { RadiogramAcceptedStatus } from './radiogram-accepted-status.js';
+import type { RadiogramDoneStatus } from './radiogram-done-status.js';
+import type { RadiogramUnpublishedStatus } from './radiogram-unpublished-status.js';
+import type { RadiogramUnreadStatus } from './radiogram-unread-status.js';
 
 export function isUnreadRadiogramStatus(
     radiogramStatus: ExerciseRadiogramStatus

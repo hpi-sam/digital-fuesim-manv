@@ -39,6 +39,7 @@ export type PersonnelCategory = (typeof personnelCategories)[number];
     selector: 'app-simulated-region-overview-general-tab',
     templateUrl: './simulated-region-overview-general-tab.component.html',
     styleUrls: ['./simulated-region-overview-general-tab.component.scss'],
+    standalone: false,
 })
 export class SimulatedRegionOverviewGeneralTabComponent implements OnInit {
     @Input() simulatedRegion!: SimulatedRegion;
@@ -106,15 +107,11 @@ export class SimulatedRegionOverviewGeneralTabComponent implements OnInit {
                     categorizedVehicles['all'] = [];
 
                     vehicleTemplates.forEach((template) => {
-                        if (!categorizedVehicles[template.vehicleType]) {
-                            categorizedVehicles[template.vehicleType] = [];
-                        }
+                        categorizedVehicles[template.vehicleType] ??= [];
                     });
 
                     vehicles.forEach((vehicle) => {
-                        if (!categorizedVehicles[vehicle.vehicleType]) {
-                            categorizedVehicles[vehicle.vehicleType] = [];
-                        }
+                        categorizedVehicles[vehicle.vehicleType] ??= [];
 
                         categorizedVehicles[vehicle.vehicleType]!.push(vehicle);
 

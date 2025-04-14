@@ -13,6 +13,7 @@ import {
     selector: 'app-alarm-group-overview-modal',
     templateUrl: './alarm-group-overview-modal.component.html',
     styleUrls: ['./alarm-group-overview-modal.component.scss'],
+    standalone: false,
 })
 export class AlarmGroupOverviewModalComponent {
     public exerciseId!: string;

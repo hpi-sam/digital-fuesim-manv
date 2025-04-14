@@ -1,5 +1,5 @@
-import type { Action } from '../store';
-import type { Migration } from './migration-functions';
+import type { Action } from '../store/index.js';
+import type { Migration } from './migration-functions.js';
 
 export const removeStateHistory6: Migration = {
     action: (_intermediaryState, action) => {

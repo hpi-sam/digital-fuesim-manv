@@ -1,9 +1,10 @@
 import { Type } from 'class-transformer';
 import { IsNumber, Max, Min, ValidateNested } from 'class-validator';
-import { maxTreatmentRange } from '../state-helpers/max-treatment-range';
-import { IsLiteralUnion, IsValue } from '../utils/validators';
-import { CanCaterFor, getCreate, ImageProperties } from './utils';
-import { MaterialType, materialTypeAllowedValues } from './utils/material-type';
+import { maxTreatmentRange } from '../state-helpers/max-treatment-range.js';
+import { IsLiteralUnion, IsValue } from '../utils/validators/index.js';
+import { CanCaterFor, getCreate, ImageProperties } from './utils/index.js';
+import type { MaterialType } from './utils/material-type.js';
+import { materialTypeAllowedValues } from './utils/material-type.js';
 
 export class MaterialTemplate {
     @IsValue('materialTemplate' as const)

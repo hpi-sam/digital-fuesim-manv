@@ -6,14 +6,14 @@ import {
     Min,
     ValidateNested,
 } from 'class-validator';
-import { AlarmGroup } from '../../models/alarm-group';
-import { AlarmGroupVehicle } from '../../models/utils/alarm-group-vehicle';
-import type { Mutable } from '../../utils';
-import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
-import { IsValue } from '../../utils/validators';
-import type { Action, ActionReducer } from '../action-reducer';
-import { ReducerError } from '../reducer-error';
-import { getElement } from './utils/get-element';
+import { AlarmGroup } from '../../models/alarm-group.js';
+import { AlarmGroupVehicle } from '../../models/utils/alarm-group-vehicle.js';
+import type { Mutable, UUID } from '../../utils/index.js';
+import { cloneDeepMutable, uuidValidationOptions } from '../../utils/index.js';
+import { IsValue } from '../../utils/validators/index.js';
+import type { Action, ActionReducer } from '../action-reducer.js';
+import { ReducerError } from '../reducer-error.js';
+import { getElement } from './utils/get-element.js';
 
 export class AddAlarmGroupAction implements Action {
     @IsValue('[AlarmGroup] Add AlarmGroup' as const)

@@ -5,7 +5,7 @@ import type {
     ProvidePersonnelBehaviorState,
     VehicleTemplate,
 } from 'digital-fuesim-manv-shared';
-import { UUID } from 'digital-fuesim-manv-shared';
+import type { UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { combineLatest, map, Subject, takeUntil } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
@@ -23,6 +23,7 @@ import type { CdkDragDrop } from '@angular/cdk/drag-drop';
     styleUrls: [
         './simulated-region-overview-behavior-provide-personnel.component.scss',
     ],
+    standalone: false,
 })
 export class SimulatedRegionOverviewBehaviorProvidePersonnelComponent
     implements OnInit, OnDestroy

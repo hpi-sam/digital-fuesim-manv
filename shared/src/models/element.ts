@@ -10,7 +10,7 @@ import type {
     TransferPoint,
     Vehicle,
     Viewport,
-} from '.';
+} from './index.js';
 
 export type Element =
     | AlarmGroup

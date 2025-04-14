@@ -1,15 +1,17 @@
 import { Type } from 'class-transformer';
 import { IsUUID, ValidateNested } from 'class-validator';
-import { getCreate } from '../../models/utils/get-create';
-import { UUID, uuidValidationOptions } from '../../utils';
-import { IsValue } from '../../utils/validators';
-import { ExerciseSimulationEvent, simulationEventTypeOptions } from '../events';
-import { sendSimulationEvent } from '../events/utils';
-import { tryGetElement } from '../../store/action-reducers/utils';
+import { getCreate } from '../../models/utils/get-create.js';
+import type { UUID } from '../../utils/index.js';
+import { uuidValidationOptions } from '../../utils/index.js';
+import { IsValue } from '../../utils/validators/index.js';
+import type { ExerciseSimulationEvent } from '../events/index.js';
+import { simulationEventTypeOptions } from '../events/index.js';
+import { sendSimulationEvent } from '../events/utils.js';
+import { tryGetElement } from '../../store/action-reducers/utils/index.js';
 import type {
     SimulationActivity,
     SimulationActivityState,
-} from './simulation-activity';
+} from './simulation-activity.js';
 
 export class SendRemoteEventActivityState implements SimulationActivityState {
     @IsValue('sendRemoteEventActivity' as const)

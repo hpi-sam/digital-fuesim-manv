@@ -19,6 +19,7 @@ import { openTransferOverviewModal } from '../transfer-overview/open-transfer-ov
     selector: 'app-time-travel',
     templateUrl: './time-travel.component.html',
     styleUrls: ['./time-travel.component.scss'],
+    standalone: false,
 })
 export class TimeTravelComponent implements OnDestroy {
     public timeConstraints$ = this.store.select(selectTimeConstraints);

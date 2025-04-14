@@ -1,4 +1,4 @@
-import type { HttpResponse } from '../utils';
+import type { HttpResponse } from '../utils.js';
 
 export function getHealth(): HttpResponse<{ status: string }> {
     return {

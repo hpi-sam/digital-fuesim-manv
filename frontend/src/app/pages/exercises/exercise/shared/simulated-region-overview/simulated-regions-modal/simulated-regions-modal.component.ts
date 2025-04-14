@@ -2,7 +2,7 @@ import type { OnInit } from '@angular/core';
 import { Component, Input, ViewEncapsulation } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
-import { UUID } from 'digital-fuesim-manv-shared';
+import type { UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { map } from 'rxjs';
 import type { AppState } from 'src/app/state/app.state';
@@ -13,6 +13,7 @@ import { selectSimulatedRegions } from 'src/app/state/application/selectors/exer
     templateUrl: './simulated-regions-modal.component.html',
     styleUrls: ['./simulated-regions-modal.component.scss'],
     encapsulation: ViewEncapsulation.None,
+    standalone: false,
 })
 export class SimulatedRegionsModalComponent implements OnInit {
     simulatedRegionIds$!: Observable<UUID[]>;
