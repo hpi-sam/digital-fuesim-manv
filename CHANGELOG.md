@@ -16,6 +16,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
     - Patients, vehicles, and image templates can be selected.
     - Imports can either overwrite existing templates or be added to the exercise.
 - Vehicle templates can now be edited, added, and deleted from within an exercise.
+- Users must confirm terms and conditions to join an exercise.
 
 ### Changed
 
