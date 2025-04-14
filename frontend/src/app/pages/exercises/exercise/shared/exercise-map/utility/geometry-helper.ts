@@ -39,8 +39,8 @@ type ArrayElement<ArrayType> = ArrayType extends readonly (infer ElementType)[]
 type SubstituteCoordinateForPoint<T> = T extends Coordinate
     ? MapCoordinates
     : T extends Array<ArrayElement<T>>
-    ? SubstituteCoordinateForPoint<ArrayElement<T>>[]
-    : never;
+      ? SubstituteCoordinateForPoint<ArrayElement<T>>[]
+      : never;
 
 export type Positions<T extends GeometryWithCoordinates> =
     SubstituteCoordinateForPoint<Coordinates<T>>;
@@ -52,7 +52,7 @@ export interface CoordinatePair<T extends GeometryWithCoordinates> {
 
 export interface GeometryHelper<
     T extends GeometryWithCoordinates,
-    Element extends PositionableElement = PositionableElement
+    Element extends PositionableElement = PositionableElement,
 > {
     create: (element: Element) => Feature<T>;
     getElementCoordinates: (element: Element) => Coordinates<T>;

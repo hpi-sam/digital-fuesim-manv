@@ -19,7 +19,7 @@ import {
     selectVehicleTemplates,
 } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
-import { TransferOptions } from '../../start-transfer.service';
+import type { TransferOptions } from '../../start-transfer.service';
 
 let globalLastBehaviorType: ExerciseSimulationBehaviorType | undefined;
 
@@ -27,6 +27,7 @@ let globalLastBehaviorType: ExerciseSimulationBehaviorType | undefined;
     selector: 'app-simulated-region-overview-behavior-tab',
     templateUrl: './simulated-region-overview-behavior-tab.component.html',
     styleUrls: ['./simulated-region-overview-behavior-tab.component.scss'],
+    standalone: false,
 })
 export class SimulatedRegionOverviewBehaviorTabComponent
     implements OnChanges, OnInit

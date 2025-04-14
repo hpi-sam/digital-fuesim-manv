@@ -1,22 +1,26 @@
 import { IsInt, IsOptional, IsUUID, Min } from 'class-validator';
 import { cloneDeep } from 'lodash-es';
-import { getCreate } from '../../models/utils/get-create';
-import type { Mutable } from '../../utils';
-import { cloneDeepMutable, UUID, uuid, UUIDSet } from '../../utils';
-import { IsUUIDSet, IsUUIDSetMap, IsValue } from '../../utils/validators';
-import { IsResourceDescription } from '../../utils/validators/is-resource-description';
+import { getCreate } from '../../models/utils/get-create.js';
+import type { Mutable, UUID, UUIDSet } from '../../utils/index.js';
+import { cloneDeepMutable, uuid } from '../../utils/index.js';
+import {
+    IsUUIDSet,
+    IsUUIDSetMap,
+    IsValue,
+} from '../../utils/validators/index.js';
+import { IsResourceDescription } from '../../utils/validators/is-resource-description.js';
 import {
     DelayEventActivityState,
     RecurringEventActivityState,
-} from '../activities';
-import { addActivity } from '../activities/utils';
-import { TryToDistributeEvent } from '../events/try-to-distribute';
-import { nextUUID } from '../utils/randomness';
-import { TransferVehiclesRequestEvent } from '../events';
+} from '../activities/index.js';
+import { addActivity } from '../activities/utils.js';
+import { TryToDistributeEvent } from '../events/try-to-distribute.js';
+import { nextUUID } from '../utils/randomness.js';
+import { TransferVehiclesRequestEvent } from '../events/index.js';
 import type {
     SimulationBehavior,
     SimulationBehaviorState,
-} from './simulation-behavior';
+} from './simulation-behavior.js';
 
 export class AutomaticallyDistributeVehiclesBehaviorState
     implements SimulationBehaviorState
@@ -101,15 +105,9 @@ export const automaticallyDistributeVehiclesBehavior: SimulationBehavior<Automat
                         Object.entries(behaviorState.remainingInNeed).forEach(
                             ([vehicleType, regionsInNeed]) => {
                                 if (Object.keys(regionsInNeed).length === 0) {
-                                    if (
-                                        !behaviorState.distributedRounds[
-                                            vehicleType
-                                        ]
-                                    ) {
-                                        behaviorState.distributedRounds[
-                                            vehicleType
-                                        ] = 0;
-                                    }
+                                    behaviorState.distributedRounds[
+                                        vehicleType
+                                    ] ??= 0;
 
                                     // Check if a vehicle was distributed during the last distribution try
                                     // to not increase the distributed rounds if all transfer connections were missing
@@ -168,10 +166,8 @@ export const automaticallyDistributeVehiclesBehavior: SimulationBehavior<Automat
                                 }
 
                                 Object.keys(regionsInNeed).forEach((region) => {
-                                    if (!vehiclesToBeSent[region]) {
-                                        vehiclesToBeSent[region] = {};
-                                    }
-                                    vehiclesToBeSent[region]![vehicleType] = 1;
+                                    vehiclesToBeSent[region] ??= {};
+                                    vehiclesToBeSent[region][vehicleType] = 1;
                                 });
                             }
                         );
@@ -185,7 +181,7 @@ export const automaticallyDistributeVehiclesBehavior: SimulationBehavior<Automat
                                 DelayEventActivityState.create(
                                     nextUUID(draftState),
                                     TransferVehiclesRequestEvent.create(
-                                        cloneDeep(vehiclesToBeSent[region]!),
+                                        cloneDeep(vehiclesToBeSent[region]),
                                         'transferPoint',
                                         region,
                                         simulatedRegion.id,
@@ -227,15 +223,9 @@ export const automaticallyDistributeVehiclesBehavior: SimulationBehavior<Automat
                                 if (vehicleAmount === 0) {
                                     return;
                                 }
-                                if (
-                                    !behaviorState.distributedLastRound[
-                                        vehicleType
-                                    ]
-                                ) {
-                                    behaviorState.distributedLastRound[
-                                        vehicleType
-                                    ] = 0;
-                                }
+                                behaviorState.distributedLastRound[
+                                    vehicleType
+                                ] ??= 0;
                                 behaviorState.distributedLastRound[
                                     vehicleType
                                 ]++;
@@ -245,7 +235,7 @@ export const automaticallyDistributeVehiclesBehavior: SimulationBehavior<Automat
                                 ) {
                                     delete behaviorState.remainingInNeed[
                                         vehicleType
-                                    ]![event.transferDestinationId];
+                                    ][event.transferDestinationId];
                                 }
                             }
                         );

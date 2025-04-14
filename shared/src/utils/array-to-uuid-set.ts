@@ -1,5 +1,5 @@
-import type { Mutable } from './immutability';
-import type { UUID, UUIDSet } from '.';
+import type { Mutable } from './immutability.js';
+import type { UUID, UUIDSet } from './index.js';
 
 export function arrayToUUIDSet(uuids: ReadonlyArray<UUID>) {
     const set: Mutable<UUIDSet> = {};

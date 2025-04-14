@@ -1,10 +1,10 @@
-import { PersonnelTemplate } from '../../models/personnel-template';
-import { CanCaterFor } from '../../models/utils/cater-for';
-import type { PersonnelType } from '../../models/utils/personnel-type';
+import { PersonnelTemplate } from '../../models/personnel-template.js';
+import { CanCaterFor } from '../../models/utils/cater-for.js';
+import type { PersonnelType } from '../../models/utils/personnel-type.js';
 import {
     defaultOverrideTreatmentRange,
     defaultTreatmentRange,
-} from './default-treatment-range';
+} from './default-treatment-range.js';
 
 const sanPersonnelTemplate = PersonnelTemplate.create(
     'san',

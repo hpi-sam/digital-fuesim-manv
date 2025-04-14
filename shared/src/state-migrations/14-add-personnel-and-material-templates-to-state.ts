@@ -1,5 +1,5 @@
-import { cloneDeepMutable } from '../utils';
-import type { Migration } from './migration-functions';
+import { cloneDeepMutable } from '../utils/index.js';
+import type { Migration } from './migration-functions.js';
 
 export const addPersonnelAndMaterialToState14: Migration = {
     action: null,

@@ -1,12 +1,15 @@
 import { IsString, IsUUID } from 'class-validator';
-import { getCreate } from '../../models/utils/get-create';
-import { IsLiteralUnion, IsUUIDSet, IsValue } from '../../utils/validators';
-import { UUID, UUIDSet, uuidValidationOptions } from '../../utils';
+import { getCreate } from '../../models/utils/get-create.js';
 import {
-    TransferDestination,
-    transferDestinationTypeAllowedValues,
-} from '../utils/transfer-destination';
-import type { SimulationEvent } from './simulation-event';
+    IsLiteralUnion,
+    IsUUIDSet,
+    IsValue,
+} from '../../utils/validators/index.js';
+import type { UUID, UUIDSet } from '../../utils/index.js';
+import { uuidValidationOptions } from '../../utils/index.js';
+import type { TransferDestination } from '../utils/transfer-destination.js';
+import { transferDestinationTypeAllowedValues } from '../utils/transfer-destination.js';
+import type { SimulationEvent } from './simulation-event.js';
 
 export class TransferPatientsRequestEvent implements SimulationEvent {
     @IsValue('transferPatientsRequestEvent')

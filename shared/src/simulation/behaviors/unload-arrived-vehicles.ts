@@ -1,24 +1,27 @@
 import { IsInt, IsUUID, Min } from 'class-validator';
-import { getCreate } from '../../models/utils/get-create';
+import { getCreate } from '../../models/utils/get-create.js';
 import {
     changeOccupation,
     isUnoccupied,
-} from '../../models/utils/occupations/occupation-helpers-mutable';
-import { UnloadingOccupation } from '../../models/utils/occupations/unloading-occupation';
-import { StrictObject, UUID, uuid, uuidValidationOptions } from '../../utils';
-import { IsValue } from '../../utils/validators';
+} from '../../models/utils/occupations/occupation-helpers-mutable.js';
+import { UnloadingOccupation } from '../../models/utils/occupations/unloading-occupation.js';
+import type { UUID } from '../../utils/index.js';
 import {
-    IsUUIDSquaredMap,
-    UUIDSquaredMap,
-} from '../../utils/validators/is-uuid-uuid-map';
-import { UnloadVehicleActivityState } from '../activities/unload-vehicle';
-import { addActivity, terminateActivity } from '../activities/utils';
-import { nextUUID } from '../utils/randomness';
-import { tryGetElement } from '../../store/action-reducers/utils';
+    StrictObject,
+    uuid,
+    uuidValidationOptions,
+} from '../../utils/index.js';
+import { IsValue } from '../../utils/validators/index.js';
+import type { UUIDSquaredMap } from '../../utils/validators/is-uuid-uuid-map.js';
+import { IsUUIDSquaredMap } from '../../utils/validators/is-uuid-uuid-map.js';
+import { UnloadVehicleActivityState } from '../activities/unload-vehicle.js';
+import { addActivity, terminateActivity } from '../activities/utils.js';
+import { nextUUID } from '../utils/randomness.js';
+import { tryGetElement } from '../../store/action-reducers/utils/index.js';
 import type {
     SimulationBehavior,
     SimulationBehaviorState,
-} from './simulation-behavior';
+} from './simulation-behavior.js';
 
 export class UnloadArrivingVehiclesBehaviorState
     implements SimulationBehaviorState

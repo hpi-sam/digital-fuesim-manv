@@ -1,8 +1,9 @@
 import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
-import { UUID, uuid, uuidValidationOptions } from '../utils';
-import { IsValue } from '../utils/validators';
-import { getCreate, ImageProperties } from './utils';
+import type { UUID } from '../utils/index.js';
+import { uuid, uuidValidationOptions } from '../utils/index.js';
+import { IsValue } from '../utils/validators/index.js';
+import { getCreate, ImageProperties } from './utils/index.js';
 
 export class MapImageTemplate {
     @IsUUID(4, uuidValidationOptions)

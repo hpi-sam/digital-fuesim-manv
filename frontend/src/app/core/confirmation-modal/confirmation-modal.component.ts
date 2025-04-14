@@ -7,6 +7,7 @@ import { Subject } from 'rxjs';
     selector: 'app-confirmation-modal',
     templateUrl: './confirmation-modal.component.html',
     styleUrls: ['./confirmation-modal.component.scss'],
+    standalone: false,
 })
 export class ConfirmationModalComponent implements OnDestroy {
     public title = '';

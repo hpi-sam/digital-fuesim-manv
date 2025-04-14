@@ -1,8 +1,8 @@
 import type { ExerciseAction, UUID } from 'digital-fuesim-manv-shared';
 import { Client } from 'digital-fuesim-manv-shared';
-import type { ExerciseSocket } from '../exercise-server';
-import { exerciseMap } from './exercise-map';
-import type { ExerciseWrapper } from './exercise-wrapper';
+import type { ExerciseSocket } from '../exercise-server.js';
+import { exerciseMap } from './exercise-map.js';
+import type { ExerciseWrapper } from './exercise-wrapper.js';
 
 export class ClientWrapper {
     public constructor(private readonly socket: ExerciseSocket) {}

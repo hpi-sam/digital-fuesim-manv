@@ -10,31 +10,31 @@ import {
     MaxLength,
 } from 'class-validator';
 import { isEmpty } from 'lodash-es';
-import { uuidValidationOptions, UUID, uuid, UUIDSet } from '../utils';
+import type { UUID, UUIDSet } from '../utils/index.js';
+import { uuidValidationOptions, uuid } from '../utils/index.js';
 import {
     IsLiteralUnion,
     IsIdMap,
     IsUUIDSet,
     IsValue,
-} from '../utils/validators';
-import { IsPosition } from '../utils/validators/is-position';
-import { PatientHealthState } from './patient-health-state';
-import { Position } from './utils/position/position';
-import { PersonalInformation } from './utils/personal-information';
-import { PretriageInformation } from './utils/pretriage-information';
-import { BiometricInformation } from './utils/biometric-information';
-import { PatientStatusCode } from './utils/patient-status-code';
-import {
-    PatientStatus,
-    patientStatusAllowedValues,
-} from './utils/patient-status';
-import { ImageProperties } from './utils/image-properties';
-import { HealthPoints, healthPointsDefaults } from './utils/health-points';
-import { getCreate } from './utils/get-create';
+} from '../utils/validators/index.js';
+import { IsPosition } from '../utils/validators/is-position.js';
+import { PatientHealthState } from './patient-health-state.js';
+import type { Position } from './utils/position/position.js';
+import { PersonalInformation } from './utils/personal-information.js';
+import { PretriageInformation } from './utils/pretriage-information.js';
+import { BiometricInformation } from './utils/biometric-information.js';
+import { PatientStatusCode } from './utils/patient-status-code.js';
+import type { PatientStatus } from './utils/patient-status.js';
+import { patientStatusAllowedValues } from './utils/patient-status.js';
+import { ImageProperties } from './utils/image-properties.js';
+import type { HealthPoints } from './utils/health-points.js';
+import { healthPointsDefaults } from './utils/health-points.js';
+import { getCreate } from './utils/get-create.js';
 import {
     isInSimulatedRegion,
     isOnMap,
-} from './utils/position/position-helpers';
+} from './utils/position/position-helpers.js';
 
 export class Patient {
     @IsUUID(4, uuidValidationOptions)

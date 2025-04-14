@@ -5,9 +5,9 @@ import {
     validateExerciseAction,
     validatePermissions,
 } from 'digital-fuesim-manv-shared';
-import type { ExerciseServer, ExerciseSocket } from '../../exercise-server';
-import { clientMap } from '../client-map';
-import { secureOn } from './secure-on';
+import type { ExerciseServer, ExerciseSocket } from '../../exercise-server.js';
+import { clientMap } from '../client-map.js';
+import { secureOn } from './secure-on.js';
 
 export const registerProposeActionHandler = (
     io: ExerciseServer,

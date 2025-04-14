@@ -10,7 +10,6 @@ module.exports = {
     ],
     extends: [
         'plugin:@angular-eslint/recommended',
-        'plugin:@angular-eslint/recommended--extra',
         'plugin:rxjs/recommended',
         // TODO: doesn't work for some reason from this config and has to be imported separately
         // 'prettier',
@@ -39,7 +38,6 @@ module.exports = {
         '@angular-eslint/component-max-inline-declarations': 'warn',
         '@angular-eslint/no-attribute-decorator': 'warn',
         '@angular-eslint/no-conflicting-lifecycle': 'warn',
-        '@angular-eslint/no-host-metadata-property': 'warn',
         '@angular-eslint/no-input-rename': 'warn',
         '@angular-eslint/no-inputs-metadata-property': 'warn',
         '@angular-eslint/no-lifecycle-call': 'warn',
@@ -51,6 +49,7 @@ module.exports = {
         '@angular-eslint/no-queries-metadata-property': 'warn',
         '@angular-eslint/pipe-prefix': 'warn',
         '@angular-eslint/prefer-output-readonly': 'warn',
+        '@angular-eslint/prefer-standalone': 'off',
         '@angular-eslint/use-component-selector': 'warn',
         '@angular-eslint/use-lifecycle-interface': 'warn',
         '@angular-eslint/use-pipe-transform-interface': 'warn',

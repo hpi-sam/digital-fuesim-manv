@@ -1,5 +1,5 @@
-import type { UUID } from '../utils';
-import type { Migration } from './migration-functions';
+import type { UUID } from '../utils/index.js';
+import type { Migration } from './migration-functions.js';
 
 interface Patient {
     id: UUID;
@@ -27,13 +27,9 @@ export const addPatientIdentifiers37: Migration = {
             patientCounter?: number;
         };
 
-        if (typedState.patientCounter === undefined) {
-            typedState.patientCounter = 0;
-        }
+        typedState.patientCounter ??= 0;
 
-        if (typedState.configuration.patientIdentifierPrefix === undefined) {
-            typedState.configuration.patientIdentifierPrefix = '';
-        }
+        typedState.configuration.patientIdentifierPrefix ??= '';
 
         Object.values(typedState.patients)
             .sort((a, b) => a.id.localeCompare(b.id))

@@ -11,6 +11,7 @@ import type {
     selector: 'app-create-image-template-modal',
     templateUrl: './create-image-template-modal.component.html',
     styleUrls: ['./create-image-template-modal.component.scss'],
+    standalone: false,
 })
 export class CreateImageTemplateModalComponent {
     public readonly editableImageTemplateValues: EditableImageTemplateValues = {

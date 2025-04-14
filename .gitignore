@@ -28,3 +28,6 @@ benchmark/data/*
 .vscode/*
 !.vscode/*.example
 !.vscode/extensions.json
+
+# mitigate accidental commit of files in source-code
+frontend/src/assets/source-code/*

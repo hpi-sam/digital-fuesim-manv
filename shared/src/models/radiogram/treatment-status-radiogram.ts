@@ -1,14 +1,13 @@
 import { IsBoolean, IsUUID, ValidateNested } from 'class-validator';
-import {
-    TreatmentProgress,
-    treatmentProgressAllowedValues,
-} from '../../simulation/utils/treatment';
-import { UUID, uuidValidationOptions } from '../../utils';
-import { IsLiteralUnion, IsValue } from '../../utils/validators';
-import { IsRadiogramStatus } from '../../utils/validators/is-radiogram-status';
-import { getCreate } from '../utils/get-create';
-import type { Radiogram } from './radiogram';
-import { ExerciseRadiogramStatus } from './status/exercise-radiogram-status';
+import type { TreatmentProgress } from '../../simulation/utils/treatment.js';
+import { treatmentProgressAllowedValues } from '../../simulation/utils/treatment.js';
+import type { UUID } from '../../utils/index.js';
+import { uuidValidationOptions } from '../../utils/index.js';
+import { IsLiteralUnion, IsValue } from '../../utils/validators/index.js';
+import { IsRadiogramStatus } from '../../utils/validators/is-radiogram-status.js';
+import { getCreate } from '../utils/get-create.js';
+import type { Radiogram } from './radiogram.js';
+import type { ExerciseRadiogramStatus } from './status/exercise-radiogram-status.js';
 
 export class TreatmentStatusRadiogram implements Radiogram {
     @IsUUID(4, uuidValidationOptions)

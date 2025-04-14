@@ -1,8 +1,8 @@
 import type { UUID } from 'digital-fuesim-manv-shared';
-import { ValidationErrorWrapper } from '../../utils/validation-error-wrapper';
-import type { ExerciseServer, ExerciseSocket } from '../../exercise-server';
-import { clientMap } from '../client-map';
-import { secureOn } from './secure-on';
+import { ValidationErrorWrapper } from '../../utils/validation-error-wrapper.js';
+import type { ExerciseServer, ExerciseSocket } from '../../exercise-server.js';
+import { clientMap } from '../client-map.js';
+import { secureOn } from './secure-on.js';
 
 export const registerJoinExerciseHandler = (
     io: ExerciseServer,

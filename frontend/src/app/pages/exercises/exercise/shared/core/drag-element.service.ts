@@ -164,7 +164,7 @@ export class DragElementService {
         const pixel = this.olMap.getEventPixel(event);
         const [x, y] = this.olMap.getCoordinateFromPixel(pixel) as [
             number,
-            number
+            number,
         ];
         const position = { x, y };
         // create the element

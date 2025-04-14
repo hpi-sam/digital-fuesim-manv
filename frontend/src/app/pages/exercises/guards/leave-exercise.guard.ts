@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import type {
     ActivatedRouteSnapshot,
-    CanDeactivate,
     RouterStateSnapshot,
 } from '@angular/router';
 import { Store } from '@ngrx/store';
@@ -14,7 +13,7 @@ import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 @Injectable({
     providedIn: 'root',
 })
-export class LeaveExerciseGuard implements CanDeactivate<unknown> {
+export class LeaveExerciseGuard {
     constructor(
         private readonly applicationService: ApplicationService,
         private readonly store: Store<AppState>,

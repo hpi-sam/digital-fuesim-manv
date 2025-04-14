@@ -1,8 +1,8 @@
 import type { EntityManager, DataSource } from 'typeorm';
 import type { UUID } from 'digital-fuesim-manv-shared';
-import { ActionWrapperEntity } from '../entities/action-wrapper.entity';
-import { BaseService } from './base-service';
-import type { ExerciseWrapperService } from './exercise-wrapper.service';
+import { ActionWrapperEntity } from '../entities/action-wrapper.entity.js';
+import { BaseService } from './base-service.js';
+import type { ExerciseWrapperService } from './exercise-wrapper.service.js';
 
 type CreateActionWrapper = Omit<ActionWrapperEntity, 'exercise' | 'id'> & {
     exerciseId: UUID;
@@ -30,13 +30,9 @@ export class ActionWrapperService extends BaseService<
         manager: EntityManager
     ): Promise<ActionWrapperEntity> {
         const { exerciseId, ...rest } = dto;
-        const actionWrapper = manager.create<ActionWrapperEntity>(
-            this.entityTarget,
-            rest
-        );
-        actionWrapper.exercise = await this.exerciseWrapperService.getFindById(
-            exerciseId
-        )(manager);
+        const actionWrapper = manager.create(this.entityTarget, rest);
+        actionWrapper.exercise =
+            await this.exerciseWrapperService.getFindById(exerciseId)(manager);
         return actionWrapper;
     }
 

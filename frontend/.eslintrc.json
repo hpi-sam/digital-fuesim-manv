@@ -1,6 +1,11 @@
 {
     "root": true,
-    "ignorePatterns": ["index.html", "**/assets/about/*.html"],
+    "ignorePatterns": [
+        "index.html",
+        "**/assets/about/*.html",
+        "cypress.config.ts",
+        "cypress/**/*.ts"
+    ],
     "overrides": [
         {
             "files": ["*.ts", "*.js"],

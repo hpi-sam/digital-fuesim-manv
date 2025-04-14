@@ -1,8 +1,9 @@
 import { IsUUID } from 'class-validator';
-import { getCreate } from '../../models/utils/get-create';
-import { UUID, uuidValidationOptions } from '../../utils';
-import { IsValue } from '../../utils/validators';
-import type { SimulationEvent } from './simulation-event';
+import { getCreate } from '../../models/utils/get-create.js';
+import type { UUID } from '../../utils/index.js';
+import { uuidValidationOptions } from '../../utils/index.js';
+import { IsValue } from '../../utils/validators/index.js';
+import type { SimulationEvent } from './simulation-event.js';
 
 export class TryToSendToHospitalEvent implements SimulationEvent {
     @IsValue('tryToSendToHospitalEvent')

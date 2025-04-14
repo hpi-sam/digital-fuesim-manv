@@ -1,8 +1,9 @@
 import { IsInt, IsUUID, Min } from 'class-validator';
-import { UUID, uuidValidationOptions } from '../../../utils';
-import { IsValue } from '../../../utils/validators';
-import { getCreate } from '../../utils/get-create';
-import type { RadiogramStatus } from './radiogram-status';
+import type { UUID } from '../../../utils/index.js';
+import { uuidValidationOptions } from '../../../utils/index.js';
+import { IsValue } from '../../../utils/validators/index.js';
+import { getCreate } from '../../utils/get-create.js';
+import type { RadiogramStatus } from './radiogram-status.js';
 
 export class RadiogramAcceptedStatus implements RadiogramStatus {
     @IsValue('acceptedRadiogramStatus')

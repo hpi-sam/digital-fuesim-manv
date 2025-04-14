@@ -7,5 +7,6 @@ import { Component } from '@angular/core';
     styleUrls: [
         './radiogram-card-content-transport-patient-count-request.component.scss',
     ],
+    standalone: false,
 })
 export class RadiogramCardContentTransportPatientCountRequestComponent {}

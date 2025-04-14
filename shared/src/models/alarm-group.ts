@@ -1,9 +1,10 @@
 import { IsString, IsUUID } from 'class-validator';
-import { UUID, uuid, uuidValidationOptions } from '../utils';
-import { IsValue } from '../utils/validators';
-import { IsIdMap } from '../utils/validators/is-id-map';
-import { getCreate } from './utils';
-import { AlarmGroupVehicle } from './utils/alarm-group-vehicle';
+import type { UUID } from '../utils/index.js';
+import { uuid, uuidValidationOptions } from '../utils/index.js';
+import { IsValue } from '../utils/validators/index.js';
+import { IsIdMap } from '../utils/validators/is-id-map.js';
+import { getCreate } from './utils/index.js';
+import { AlarmGroupVehicle } from './utils/alarm-group-vehicle.js';
 
 export class AlarmGroup {
     @IsUUID(4, uuidValidationOptions)

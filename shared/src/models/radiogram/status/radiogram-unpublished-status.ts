@@ -1,6 +1,6 @@
-import { IsValue } from '../../../utils/validators';
-import { getCreate } from '../../utils/get-create';
-import type { RadiogramStatus } from './radiogram-status';
+import { IsValue } from '../../../utils/validators/index.js';
+import { getCreate } from '../../utils/get-create.js';
+import type { RadiogramStatus } from './radiogram-status.js';
 
 export class RadiogramUnpublishedStatus implements RadiogramStatus {
     @IsValue('unpublishedRadiogramStatus')

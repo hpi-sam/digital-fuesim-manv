@@ -3,21 +3,25 @@ import {
     IntermediateOccupation,
     changeOccupation,
     getCreate,
-} from '../../models/utils';
-import { UUID, UUIDSet, uuidValidationOptions } from '../../utils';
-import { IsUUIDSet, IsValue } from '../../utils/validators';
-import { sendSimulationEvent } from '../events/utils';
+} from '../../models/utils/index.js';
+import type { UUID, UUIDSet } from '../../utils/index.js';
+import { uuidValidationOptions } from '../../utils/index.js';
+import { IsUUIDSet, IsValue } from '../../utils/validators/index.js';
+import { sendSimulationEvent } from '../events/utils.js';
 import {
     PatientTransferToHospitalSuccessfulEvent,
     TransferPatientsInSpecificVehicleRequestEvent,
-} from '../events';
-import { catchAllHospitalId } from '../../data/default-state/catch-all-hospital';
-import { getElement, tryGetElement } from '../../store/action-reducers/utils';
-import { Patient } from '../../models/patient';
+} from '../events/index.js';
+import { catchAllHospitalId } from '../../data/default-state/catch-all-hospital.js';
+import {
+    getElement,
+    tryGetElement,
+} from '../../store/action-reducers/utils/index.js';
+import { Patient } from '../../models/patient.js';
 import type {
     SimulationActivity,
     SimulationActivityState,
-} from './simulation-activity';
+} from './simulation-activity.js';
 
 export class TransferPatientToHospitalActivityState
     implements SimulationActivityState

@@ -1,13 +1,13 @@
 import type { ValidationOptions, ValidationArguments } from 'class-validator';
 import { isUUID } from 'class-validator';
-import type { UUID } from '../uuid';
-import type { ResourceDescription } from '../../models/utils/resource-description';
-import type { PatientStatus } from '../../models/utils/patient-status';
-import { patientStatusAllowedValues } from '../../models/utils/patient-status';
-import { createMapValidator } from './create-map-validator';
-import type { GenericPropertyDecorator } from './generic-property-decorator';
-import { makeValidator } from './make-validator';
-import { isResourceDescription } from './is-resource-description';
+import type { UUID } from '../uuid.js';
+import type { ResourceDescription } from '../../models/utils/resource-description.js';
+import type { PatientStatus } from '../../models/utils/patient-status.js';
+import { patientStatusAllowedValues } from '../../models/utils/patient-status.js';
+import { createMapValidator } from './create-map-validator.js';
+import type { GenericPropertyDecorator } from './generic-property-decorator.js';
+import { makeValidator } from './make-validator.js';
+import { isResourceDescription } from './is-resource-description.js';
 
 export const isPatientsPerUUID = createMapValidator<
     UUID,

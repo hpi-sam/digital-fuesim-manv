@@ -1,12 +1,11 @@
 import { IsUUID } from 'class-validator';
-import { getCreate } from '../../models/utils/get-create';
-import { UUID, uuidValidationOptions } from '../../utils';
-import { IsLiteralUnion, IsValue } from '../../utils/validators';
-import {
-    ReportableInformation,
-    reportableInformationAllowedValues,
-} from '../behaviors/utils';
-import type { SimulationEvent } from './simulation-event';
+import { getCreate } from '../../models/utils/get-create.js';
+import type { UUID } from '../../utils/index.js';
+import { uuidValidationOptions } from '../../utils/index.js';
+import { IsLiteralUnion, IsValue } from '../../utils/validators/index.js';
+import type { ReportableInformation } from '../behaviors/utils.js';
+import { reportableInformationAllowedValues } from '../behaviors/utils.js';
+import type { SimulationEvent } from './simulation-event.js';
 
 export class CollectInformationEvent implements SimulationEvent {
     @IsValue('collectInformationEvent')

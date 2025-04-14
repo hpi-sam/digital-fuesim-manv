@@ -32,6 +32,7 @@ import { StartTransferService } from '../../start-transfer.service';
     selector: 'app-simulated-region-overview-vehicles-tab',
     templateUrl: './simulated-region-overview-vehicles-tab.component.html',
     styleUrls: ['./simulated-region-overview-vehicles-tab.component.scss'],
+    standalone: false,
 })
 export class SimulatedRegionOverviewVehiclesTabComponent implements OnInit {
     @Input()

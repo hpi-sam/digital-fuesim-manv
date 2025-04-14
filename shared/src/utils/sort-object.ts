@@ -1,4 +1,4 @@
-import { StrictObject } from './strict-object';
+import { StrictObject } from './strict-object.js';
 
 /**
  *

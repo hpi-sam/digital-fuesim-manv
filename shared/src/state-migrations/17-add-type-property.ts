@@ -1,5 +1,5 @@
-import type { UUID } from '../utils';
-import type { Migration } from './migration-functions';
+import type { UUID } from '../utils/index.js';
+import type { Migration } from './migration-functions.js';
 
 export const addTypeProperty17: Migration = {
     action: (_intermediaryState, action) => {

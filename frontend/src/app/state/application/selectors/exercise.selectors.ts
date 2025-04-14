@@ -101,6 +101,12 @@ export function createSelectRadiogram<R extends ExerciseRadiogram>(id: UUID) {
         (radiograms) => radiograms[id] as R
     );
 }
+export const createSelectMaterialTemplate = createSelectElementFromMapFactory(
+    selectMaterialTemplates
+);
+export const createSelectPersonnelTemplate = createSelectElementFromMapFactory(
+    selectPersonnelTemplates
+);
 
 function createSelectElementFromArrayFactory<Element extends { id: UUID }>(
     elementsSelector: (state: AppState) => readonly Element[]
@@ -231,7 +237,7 @@ export function createSelectActivityStates(simulatedRegionId: UUID) {
 }
 
 export function createSelectBehaviorState<
-    B extends ExerciseSimulationBehaviorState
+    B extends ExerciseSimulationBehaviorState,
 >(simulatedRegionId: UUID, behaviorId: UUID) {
     return createSelector(
         createSelectBehaviorStates(simulatedRegionId),
@@ -241,7 +247,7 @@ export function createSelectBehaviorState<
 }
 
 export function createSelectActivityState<
-    A extends ExerciseSimulationActivityState
+    A extends ExerciseSimulationActivityState,
 >(simulatedRegionId: UUID, activityId: UUID) {
     return createSelector(
         createSelectActivityStates(simulatedRegionId),
@@ -250,7 +256,7 @@ export function createSelectActivityState<
 }
 
 export function createSelectBehaviorStatesByType<
-    T extends ExerciseSimulationBehaviorType
+    T extends ExerciseSimulationBehaviorType,
 >(simulatedRegionId: UUID, behaviorType: T) {
     return createSelector(
         createSelectBehaviorStates(simulatedRegionId),
@@ -263,7 +269,7 @@ export function createSelectBehaviorStatesByType<
 }
 
 export function createSelectActivityStatesByType<
-    T extends ExerciseSimulationActivityType
+    T extends ExerciseSimulationActivityType,
 >(simulatedRegionId: UUID, activityType: T) {
     return createSelector(
         createSelectActivityStates(simulatedRegionId),

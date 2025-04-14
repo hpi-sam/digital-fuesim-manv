@@ -30,7 +30,7 @@ import { ElementManager } from './element-manager';
  */
 export abstract class MoveableFeatureManager<
         ManagedElement extends PositionableElement,
-        FeatureType extends GeometryWithCoordinates = Point
+        FeatureType extends GeometryWithCoordinates = Point,
     >
     extends ElementManager<ManagedElement, FeatureType>
     implements FeatureManager<FeatureType>

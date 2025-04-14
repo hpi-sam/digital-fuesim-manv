@@ -1,48 +1,47 @@
 import { IsInt, IsOptional, IsUUID, Min } from 'class-validator';
-import type { ExerciseState } from '../../state';
-import type { CatersFor } from '../../store/action-reducers/utils/calculate-treatments';
+import type { ExerciseState } from '../../state.js';
+import type { CatersFor } from '../../store/action-reducers/utils/calculate-treatments.js';
 import {
     couldCaterFor,
     removeTreatmentsOfElement,
     tryToCaterFor,
-} from '../../store/action-reducers/utils/calculate-treatments';
-import type { Immutable, Mutable } from '../../utils/immutability';
-import { UUID, uuidValidationOptions } from '../../utils/uuid';
-import { IsLiteralUnion, IsValue } from '../../utils/validators';
-import {
-    TreatmentProgress,
-    treatmentProgressAllowedValues,
-} from '../utils/treatment';
+} from '../../store/action-reducers/utils/calculate-treatments.js';
+import type { Immutable, Mutable } from '../../utils/immutability.js';
+import type { UUID } from '../../utils/index.js';
+import { uuidValidationOptions } from '../../utils/uuid.js';
+import { IsLiteralUnion, IsValue } from '../../utils/validators/index.js';
+import type { TreatmentProgress } from '../utils/treatment.js';
+import { treatmentProgressAllowedValues } from '../utils/treatment.js';
 import {
     ResourceRequiredEvent,
     TreatmentProgressChangedEvent,
-} from '../events';
-import { sendSimulationEvent } from '../events/utils';
-import type { AssignLeaderBehaviorState } from '../behaviors/assign-leader';
-import { defaultPersonnelTemplates } from '../../data/default-state/personnel-templates';
-import { StrictObject } from '../../utils/strict-object';
-import { cloneDeepMutable } from '../../utils/clone-deep';
-import type { Material } from '../../models/material';
-import type { Personnel } from '../../models/personnel';
-import { Patient } from '../../models/patient';
-import type { ResourceDescription } from '../../models/utils/resource-description';
+} from '../events/index.js';
+import { sendSimulationEvent } from '../events/utils.js';
+import type { AssignLeaderBehaviorState } from '../behaviors/assign-leader.js';
+import { defaultPersonnelTemplates } from '../../data/default-state/personnel-templates.js';
+import { StrictObject } from '../../utils/strict-object.js';
+import { cloneDeepMutable } from '../../utils/clone-deep.js';
+import type { Material } from '../../models/material.js';
+import type { Personnel } from '../../models/personnel.js';
+import { Patient } from '../../models/patient.js';
+import type { ResourceDescription } from '../../models/utils/resource-description.js';
 import {
     addResourceDescription,
     ceilResourceDescription,
     maxResourceDescription,
     scaleResourceDescription,
     subtractResourceDescription,
-} from '../../models/utils/resource-description';
-import { logTreatmentStatusChangedInSimulatedRegion } from '../../store/action-reducers/utils/log';
-import { getCreate } from '../../models/utils/get-create';
-import { isInSpecificSimulatedRegion } from '../../models/utils/position/position-helpers';
-import type { PersonnelType } from '../../models/utils/personnel-type';
-import { PersonnelResource } from '../../models/utils/rescue-resource';
-import type { PatientStatus } from '../../models/utils/patient-status';
+} from '../../models/utils/resource-description.js';
+import { logTreatmentStatusChangedInSimulatedRegion } from '../../store/action-reducers/utils/log.js';
+import { getCreate } from '../../models/utils/get-create.js';
+import { isInSpecificSimulatedRegion } from '../../models/utils/position/position-helpers.js';
+import type { PersonnelType } from '../../models/utils/personnel-type.js';
+import { PersonnelResource } from '../../models/utils/rescue-resource.js';
+import type { PatientStatus } from '../../models/utils/patient-status.js';
 import type {
     SimulationActivity,
     SimulationActivityState,
-} from './simulation-activity';
+} from './simulation-activity.js';
 
 export class ReassignTreatmentsActivityState
     implements SimulationActivityState
@@ -764,6 +763,8 @@ function assignTreatments(
     });
 
     const [secured, missingPersonnel] = calculateMissingPersonnel(
+        // False positive
+        // eslint-disable-next-line total-functions/no-unsafe-readonly-mutable-assignment
         groupedPatients,
         cateringPersonnel,
         personnelTreatments,
@@ -823,18 +824,14 @@ function recordPatientTreatedByPersonnel(
     }
 ) {
     const { personnelTreatments, patientTreatments } = context;
-    if (personnelTreatments[personnelId] === undefined)
-        personnelTreatments[personnelId] = {};
-    if (personnelTreatments[personnelId]![minType] === undefined)
-        personnelTreatments[personnelId]![minType] = {};
-    personnelTreatments[personnelId]![minType]![patientStatus] =
-        (personnelTreatments[personnelId]![minType]![patientStatus] ?? 0) + 1;
+    personnelTreatments[personnelId] ??= {};
+    personnelTreatments[personnelId][minType] ??= {};
+    personnelTreatments[personnelId][minType][patientStatus] =
+        (personnelTreatments[personnelId][minType][patientStatus] ?? 0) + 1;
 
-    if (patientTreatments[patientId] === undefined)
-        patientTreatments[patientId] = {};
-    if (patientTreatments[patientId]![minType] === undefined)
-        patientTreatments[patientId]![minType] = [];
-    patientTreatments[patientId]![minType]!.push(personnelId);
+    patientTreatments[patientId] ??= {};
+    patientTreatments[patientId][minType] ??= [];
+    patientTreatments[patientId][minType].push(personnelId);
 }
 
 /**

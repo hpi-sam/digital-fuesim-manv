@@ -1,7 +1,8 @@
 import { IsNumber, IsString, IsUUID, Min } from 'class-validator';
-import { uuid, uuidValidationOptions, UUID, UUIDSet } from '../utils';
-import { IsUUIDSet, IsValue } from '../utils/validators';
-import { getCreate } from './utils';
+import type { UUID, UUIDSet } from '../utils/index.js';
+import { uuid, uuidValidationOptions } from '../utils/index.js';
+import { IsUUIDSet, IsValue } from '../utils/validators/index.js';
+import { getCreate } from './utils/index.js';
 
 export class Hospital {
     @IsUUID(4, uuidValidationOptions)

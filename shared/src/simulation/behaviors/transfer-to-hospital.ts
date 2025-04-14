@@ -1,40 +1,38 @@
 import { IsUUID } from 'class-validator';
 import { difference, groupBy } from 'lodash-es';
-import { IsValue } from '../../utils/validators/is-value';
-import type { Mutable } from '../../utils';
+import { IsValue } from '../../utils/validators/is-value.js';
+import type { Mutable, UUID, UUIDSet } from '../../utils/index.js';
 import {
     StrictObject,
-    UUID,
     uuid,
     uuidValidationOptions,
-    UUIDSet,
-} from '../../utils';
-import type { PatientStatus } from '../../models/utils';
+} from '../../utils/index.js';
+import type { PatientStatus } from '../../models/utils/index.js';
 import {
     getCreate,
     isInSpecificSimulatedRegion,
     patientStatusAllowedValues,
-} from '../../models/utils';
-import { Patient } from '../../models/patient';
-import type { ExerciseState } from '../../state';
-import { addActivity } from '../activities/utils';
-import { DelayEventActivityState } from '../activities';
-import { nextUUID } from '../utils/randomness';
-import { PatientCategoryTransferToHospitalFinishedEvent } from '../events';
+} from '../../models/utils/index.js';
+import { Patient } from '../../models/patient.js';
+import type { ExerciseState } from '../../state.js';
+import { addActivity } from '../activities/utils.js';
+import { DelayEventActivityState } from '../activities/index.js';
+import { nextUUID } from '../utils/randomness.js';
+import { PatientCategoryTransferToHospitalFinishedEvent } from '../events/index.js';
 import {
     getActivityById,
     tryGetElement,
-} from '../../store/action-reducers/utils';
-import { IsUUIDSet } from '../../utils/validators';
-import { TransferPatientToHospitalActivityState } from '../activities/transfer-patient-to-hospital';
-import { IsResourceDescription } from '../../utils/validators/is-resource-description';
-import { ResourceDescription } from '../../models/utils/resource-description';
-import type { TransferCountsRadiogram } from '../../models/radiogram';
-import { logLastPatientTransportedInSimulatedRegion } from '../../store/action-reducers/utils/log';
+} from '../../store/action-reducers/utils/index.js';
+import { IsUUIDSet } from '../../utils/validators/index.js';
+import { TransferPatientToHospitalActivityState } from '../activities/transfer-patient-to-hospital.js';
+import { IsResourceDescription } from '../../utils/validators/is-resource-description.js';
+import type { ResourceDescription } from '../../models/utils/resource-description.js';
+import type { TransferCountsRadiogram } from '../../models/radiogram/index.js';
+import { logLastPatientTransportedInSimulatedRegion } from '../../store/action-reducers/utils/log.js';
 import type {
     SimulationBehavior,
     SimulationBehaviorState,
-} from './simulation-behavior';
+} from './simulation-behavior.js';
 
 export class TransferToHospitalBehaviorState
     implements SimulationBehaviorState

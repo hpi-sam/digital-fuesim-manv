@@ -1,16 +1,16 @@
 import type { Type } from 'class-transformer';
-import type { Constructor } from '../../utils';
-import { MaterialCountRadiogram } from './material-count-radiogram';
-import { MissingTransferConnectionRadiogram } from './missing-transfer-connection-radiogram';
-import { PatientCountRadiogram } from './patient-count-radiogram';
-import { PersonnelCountRadiogram } from './personnel-count-radiogram';
-import { Radiogram } from './radiogram';
-import { TreatmentStatusRadiogram } from './treatment-status-radiogram';
-import { VehicleCountRadiogram } from './vehicle-count-radiogram';
-import { ResourceRequestRadiogram } from './resource-request-radiogram';
-import { TransferCountsRadiogram } from './transfer-counts-radiogram';
-import { TransferCategoryCompletedRadiogram } from './transfer-category-completed-radiogram';
-import { NewPatientDataRequestedRadiogram } from './new-patient-data-requested-radiogram';
+import type { Constructor } from '../../utils/index.js';
+import { MaterialCountRadiogram } from './material-count-radiogram.js';
+import { MissingTransferConnectionRadiogram } from './missing-transfer-connection-radiogram.js';
+import { PatientCountRadiogram } from './patient-count-radiogram.js';
+import { PersonnelCountRadiogram } from './personnel-count-radiogram.js';
+import { Radiogram } from './radiogram.js';
+import { TreatmentStatusRadiogram } from './treatment-status-radiogram.js';
+import { VehicleCountRadiogram } from './vehicle-count-radiogram.js';
+import { ResourceRequestRadiogram } from './resource-request-radiogram.js';
+import { TransferCountsRadiogram } from './transfer-counts-radiogram.js';
+import { TransferCategoryCompletedRadiogram } from './transfer-category-completed-radiogram.js';
+import { NewPatientDataRequestedRadiogram } from './new-patient-data-requested-radiogram.js';
 
 export const radiograms = {
     MaterialCountRadiogram,

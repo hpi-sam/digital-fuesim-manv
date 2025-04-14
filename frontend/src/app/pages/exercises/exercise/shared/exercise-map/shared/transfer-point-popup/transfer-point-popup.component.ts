@@ -20,6 +20,7 @@ let activeNavId: NavIds = 'names';
     templateUrl: './transfer-point-popup.component.html',
     styleUrls: ['./transfer-point-popup.component.scss'],
     encapsulation: ViewEncapsulation.None,
+    standalone: false,
 })
 export class TransferPointPopupComponent implements OnInit {
     // These properties are only set after OnInit

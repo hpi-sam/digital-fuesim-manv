@@ -8,7 +8,7 @@ import {
     Input,
     ViewChild,
 } from '@angular/core';
-import { HeightChangeObservationStrategies } from './height-change-observation-strategies';
+import type { HeightChangeObservationStrategies } from './height-change-observation-strategies';
 
 /**
  * Automatically determines whether the content passed via ng-content is larger than the provided defaultHeight
@@ -39,6 +39,7 @@ import { HeightChangeObservationStrategies } from './height-change-observation-s
     selector: 'app-show-more',
     templateUrl: './app-show-more.component.html',
     styleUrls: ['./app-show-more.component.scss'],
+    standalone: false,
 })
 export class AppShowMoreComponent
     implements OnChanges, AfterViewInit, OnDestroy

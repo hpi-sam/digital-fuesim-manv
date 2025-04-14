@@ -1,5 +1,5 @@
-import { StrictObject } from '../utils';
-import type { Migration } from './migration-functions';
+import { StrictObject } from '../utils/index.js';
+import type { Migration } from './migration-functions.js';
 
 export const renameIncorrectPatientImages12: Migration = {
     action: (_intermediaryState, action) => {

@@ -1,4 +1,4 @@
-import type { MapCoordinates } from '../../../models/utils';
+import type { MapCoordinates } from '../../../models/utils/index.js';
 
 /**
  * @returns the distance between the two positions in meters.

@@ -5,7 +5,7 @@ import { isEqual } from 'lodash-es';
  * @returns a Set of all the properties that are different between the two objects
  */
 export function generateChangedProperties<
-    Element extends Immutable<JsonObject>
+    Element extends Immutable<JsonObject>,
 >(oldElement: Element, newElement: Element): Set<keyof Element> {
     const properties = new Set<keyof Element>([
         // there could be optional properties that are only in one element

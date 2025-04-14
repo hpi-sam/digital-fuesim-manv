@@ -1,6 +1,6 @@
-import { SpatialTree } from '../models/utils';
-import { cloneDeepMutable, StrictObject } from '../utils';
-import type { Migration } from './migration-functions';
+import { SpatialTree } from '../models/utils/index.js';
+import { cloneDeepMutable, StrictObject } from '../utils/index.js';
+import type { Migration } from './migration-functions.js';
 
 export const treatmentSystemImprovements8: Migration = {
     action: (_intermediaryState, action: any) => {

@@ -30,7 +30,7 @@
             *ngFor="
                 let vehicle of vehiclesInTransfer$ | async;
                 trackBy: 'id'
-                    | appTrackByProperty : (vehiclesInTransfer$ | async)
+                    | appTrackByProperty: (vehiclesInTransfer$ | async)
             "
         >
             <td class="align-middle">
@@ -61,7 +61,7 @@
             *ngFor="
                 let personnel of personnelInTransfer$ | async;
                 trackBy: 'id'
-                    | appTrackByProperty : (personnelInTransfer$ | async)
+                    | appTrackByProperty: (personnelInTransfer$ | async)
             "
         >
             <td class="align-middle">

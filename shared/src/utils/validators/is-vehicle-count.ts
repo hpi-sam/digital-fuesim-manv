@@ -1,9 +1,9 @@
 import type { ValidationArguments, ValidationOptions } from 'class-validator';
 import { isNumber, isString, min } from 'class-validator';
-import type { VehicleCount } from '../../models/radiogram/vehicle-count-radiogram';
-import { createMapValidator } from './create-map-validator';
-import type { GenericPropertyDecorator } from './generic-property-decorator';
-import { makeValidator } from './make-validator';
+import type { VehicleCount } from '../../models/radiogram/vehicle-count-radiogram.js';
+import { createMapValidator } from './create-map-validator.js';
+import type { GenericPropertyDecorator } from './generic-property-decorator.js';
+import { makeValidator } from './make-validator.js';
 
 export const isVehicleCount = createMapValidator<string, number>({
     keyValidator: isString,

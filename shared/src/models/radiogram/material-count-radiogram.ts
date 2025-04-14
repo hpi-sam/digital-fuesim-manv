@@ -1,12 +1,13 @@
 import { Type } from 'class-transformer';
 import { IsBoolean, IsUUID, ValidateNested } from 'class-validator';
-import { UUID, uuidValidationOptions } from '../../utils';
-import { IsValue } from '../../utils/validators';
-import { IsRadiogramStatus } from '../../utils/validators/is-radiogram-status';
-import { getCreate } from '../utils/get-create';
-import { CanCaterFor } from '../utils/cater-for';
-import type { Radiogram } from './radiogram';
-import { ExerciseRadiogramStatus } from './status/exercise-radiogram-status';
+import type { UUID } from '../../utils/index.js';
+import { uuidValidationOptions } from '../../utils/index.js';
+import { IsValue } from '../../utils/validators/index.js';
+import { IsRadiogramStatus } from '../../utils/validators/is-radiogram-status.js';
+import { getCreate } from '../utils/get-create.js';
+import { CanCaterFor } from '../utils/cater-for.js';
+import type { Radiogram } from './radiogram.js';
+import type { ExerciseRadiogramStatus } from './status/exercise-radiogram-status.js';
 
 export class MaterialCountRadiogram implements Radiogram {
     @IsUUID(4, uuidValidationOptions)

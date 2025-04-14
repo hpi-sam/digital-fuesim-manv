@@ -16,8 +16,7 @@ export const setupCypressTestingValues = (
 ) => {
     const anyWindow = window as any;
     if (isBeingTestedByCypress()) {
-        if (!anyWindow.cypressTestingValues)
-            anyWindow.cypressTestingValues = {};
+        anyWindow.cypressTestingValues ??= {};
         defaults(anyWindow.cypressTestingValues, values);
     }
 };

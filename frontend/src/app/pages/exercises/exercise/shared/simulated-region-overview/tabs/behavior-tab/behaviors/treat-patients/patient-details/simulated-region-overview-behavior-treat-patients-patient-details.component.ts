@@ -1,9 +1,9 @@
-import '@angular/localize/init';
 import type { OnDestroy, OnInit } from '@angular/core';
 import { Component, Input } from '@angular/core';
 import { createSelector, Store } from '@ngrx/store';
 import type { PatientStatus, PersonnelType } from 'digital-fuesim-manv-shared';
-import { Patient, UUID } from 'digital-fuesim-manv-shared';
+import type { UUID } from 'digital-fuesim-manv-shared';
+import { Patient } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { distinctUntilChanged, Subject, takeUntil } from 'rxjs';
 import type { AppState } from 'src/app/state/app.state';
@@ -21,6 +21,7 @@ import {
     styleUrls: [
         './simulated-region-overview-behavior-treat-patients-patient-details.component.scss',
     ],
+    standalone: false,
 })
 export class SimulatedRegionOverviewBehaviorTreatPatientsPatientDetailsComponent
     implements OnInit, OnDestroy
@@ -53,9 +54,9 @@ export class SimulatedRegionOverviewBehaviorTreatPatientsPatientDetailsComponent
                             .map((personnelId) => personnel[personnelId])
                             .filter((person) => person !== undefined)
                             .map((person) => ({
-                                personnelType: person!.personnelType,
+                                personnelType: person.personnelType,
                                 assignedPatientCount: Object.values(
-                                    person!.assignedPatientIds
+                                    person.assignedPatientIds
                                 ).length,
                             }))
                 )
@@ -70,7 +71,7 @@ export class SimulatedRegionOverviewBehaviorTreatPatientsPatientDetailsComponent
                             (val, index) =>
                                 val.assignedPatientCount ===
                                     b[index]?.assignedPatientCount &&
-                                val.personnelType === b[index]?.personnelType
+                                val.personnelType === b[index].personnelType
                         )
                 ),
                 takeUntil(this.destroy$)

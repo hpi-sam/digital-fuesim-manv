@@ -1,7 +1,7 @@
-export {
+export type {
     ClientToServerEvents,
     InterServerEvents,
     ServerToClientEvents,
     SocketData,
     SocketResponse,
-} from './socket-types';
+} from './socket-types.js';

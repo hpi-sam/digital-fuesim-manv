@@ -69,7 +69,7 @@ function selectVisibleElementsFactory<
     Element extends WithPosition,
     Elements extends { readonly [key: UUID]: Element } = {
         readonly [key: UUID]: Element;
-    }
+    },
 >(
     selectElements: (state: AppState) => Elements,
     isInViewport: (element: Element, viewport: Viewport) => boolean = (

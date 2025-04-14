@@ -1,14 +1,12 @@
 import { Type } from 'class-transformer';
 import { IsNumber, Max, Min, ValidateNested } from 'class-validator';
-import { maxTreatmentRange } from '../state-helpers/max-treatment-range';
-import { IsLiteralUnion, IsValue } from '../utils/validators';
-import {
-    PersonnelType,
-    personnelTypeAllowedValues,
-} from './utils/personnel-type';
-import { CanCaterFor } from './utils/cater-for';
-import { ImageProperties } from './utils/image-properties';
-import { getCreate } from './utils/get-create';
+import { maxTreatmentRange } from '../state-helpers/max-treatment-range.js';
+import { IsLiteralUnion, IsValue } from '../utils/validators/index.js';
+import type { PersonnelType } from './utils/personnel-type.js';
+import { personnelTypeAllowedValues } from './utils/personnel-type.js';
+import { CanCaterFor } from './utils/cater-for.js';
+import { ImageProperties } from './utils/image-properties.js';
+import { getCreate } from './utils/get-create.js';
 
 // TODO: These are not (yet) saved in the state -> Decide whether they should and if not move this file from the models folder away
 export class PersonnelTemplate {

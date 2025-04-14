@@ -56,6 +56,7 @@ import { trackByPropertyPipeTransform } from './track-by-property-pipe-transform
  */
 @Pipe({
     name: 'appTrackByProperty',
+    standalone: false,
 })
 export class AppTrackByPropertyPipe implements PipeTransform {
     /**

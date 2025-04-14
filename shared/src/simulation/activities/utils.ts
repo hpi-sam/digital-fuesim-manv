@@ -1,9 +1,9 @@
-import type { SimulatedRegion } from '../../models';
-import type { ExerciseState } from '../../state';
-import type { Mutable, UUID } from '../../utils';
-import { cloneDeepMutable } from '../../utils';
-import type { ExerciseSimulationActivityState } from './exercise-simulation-activity';
-import { simulationActivityDictionary } from './exercise-simulation-activity';
+import type { SimulatedRegion } from '../../models/index.js';
+import type { ExerciseState } from '../../state.js';
+import type { Mutable, UUID } from '../../utils/index.js';
+import { cloneDeepMutable } from '../../utils/index.js';
+import type { ExerciseSimulationActivityState } from './exercise-simulation-activity.js';
+import { simulationActivityDictionary } from './exercise-simulation-activity.js';
 
 export function addActivity(
     simulatedRegion: Mutable<SimulatedRegion>,

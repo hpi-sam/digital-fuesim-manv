@@ -1,19 +1,20 @@
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
-import { UUID, uuidValidationOptions } from '../../utils';
-import { IsValue } from '../../utils/validators';
-import type { RequestTarget } from '../../models/utils/request-target/request-target';
+import type { UUID } from '../../utils/index.js';
+import { uuidValidationOptions } from '../../utils/index.js';
+import { IsValue } from '../../utils/validators/index.js';
+import type { RequestTarget } from '../../models/utils/request-target/request-target.js';
+import type { ExerciseRequestTargetConfiguration } from '../../models/utils/request-target/exercise-request-target.js';
 import {
-    ExerciseRequestTargetConfiguration,
     requestTargetDictionary,
     requestTargetTypeOptions,
-} from '../../models/utils/request-target/exercise-request-target';
-import { VehicleResource } from '../../models/utils/rescue-resource';
-import { getCreate } from '../../models/utils/get-create';
+} from '../../models/utils/request-target/exercise-request-target.js';
+import { VehicleResource } from '../../models/utils/rescue-resource.js';
+import { getCreate } from '../../models/utils/get-create.js';
 import type {
     SimulationActivity,
     SimulationActivityState,
-} from './simulation-activity';
+} from './simulation-activity.js';
 
 export class CreateRequestActivityState implements SimulationActivityState {
     @IsUUID(4, uuidValidationOptions)

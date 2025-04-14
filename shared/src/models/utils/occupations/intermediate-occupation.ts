@@ -1,7 +1,7 @@
 import { IsInt, Min } from 'class-validator';
-import { IsValue } from '../../../utils/validators';
-import { getCreate } from '../get-create';
-import type { Occupation } from './occupation';
+import { IsValue } from '../../../utils/validators/index.js';
+import { getCreate } from '../get-create.js';
+import type { Occupation } from './occupation.js';
 
 export class IntermediateOccupation implements Occupation {
     @IsValue('intermediateOccupation')

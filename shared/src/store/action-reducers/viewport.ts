@@ -1,15 +1,16 @@
 import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
-import { Viewport } from '../../models';
-import { MapCoordinates, MapPosition, Size } from '../../models/utils';
+import { Viewport } from '../../models/index.js';
+import { MapCoordinates, MapPosition, Size } from '../../models/utils/index.js';
 import {
     changePosition,
     changePositionWithId,
-} from '../../models/utils/position/position-helpers-mutable';
-import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
-import { IsValue } from '../../utils/validators';
-import type { Action, ActionReducer } from '../action-reducer';
-import { getElement } from './utils/get-element';
+} from '../../models/utils/position/position-helpers-mutable.js';
+import type { UUID } from '../../utils/index.js';
+import { cloneDeepMutable, uuidValidationOptions } from '../../utils/index.js';
+import { IsValue } from '../../utils/validators/index.js';
+import type { Action, ActionReducer } from '../action-reducer.js';
+import { getElement } from './utils/get-element.js';
 
 export class AddViewportAction implements Action {
     @IsValue('[Viewport] Add viewport' as const)

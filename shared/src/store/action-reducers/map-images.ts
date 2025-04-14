@@ -8,20 +8,19 @@ import {
     IsUUID,
     ValidateNested,
 } from 'class-validator';
-import { MapImage } from '../../models';
-import { MapPosition, MapCoordinates } from '../../models/utils';
-import { changePosition } from '../../models/utils/position/position-helpers-mutable';
-import type { ExerciseState } from '../../state';
-import type { Mutable } from '../../utils';
+import { MapImage } from '../../models/index.js';
+import { MapPosition, MapCoordinates } from '../../models/utils/index.js';
+import { changePosition } from '../../models/utils/position/position-helpers-mutable.js';
+import type { ExerciseState } from '../../state.js';
+import type { Mutable, UUID } from '../../utils/index.js';
 import {
     assertExhaustiveness,
     cloneDeepMutable,
-    UUID,
     uuidValidationOptions,
-} from '../../utils';
-import { IsLiteralUnion, IsValue } from '../../utils/validators';
-import type { Action, ActionReducer } from '../action-reducer';
-import { getElement } from './utils/get-element';
+} from '../../utils/index.js';
+import { IsLiteralUnion, IsValue } from '../../utils/validators/index.js';
+import type { Action, ActionReducer } from '../action-reducer.js';
+import { getElement } from './utils/get-element.js';
 
 export class AddMapImageAction implements Action {
     @IsValue('[MapImage] Add MapImage' as const)

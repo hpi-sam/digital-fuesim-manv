@@ -1,7 +1,8 @@
 import { IsInt, IsString, Min } from 'class-validator';
-import { IsLiteralUnion } from '../../utils/validators';
-import { getCreate } from './get-create';
-import { Sex, sexAllowedValues } from './sex';
+import { IsLiteralUnion } from '../../utils/validators/index.js';
+import { getCreate } from './get-create.js';
+import type { Sex } from './sex.js';
+import { sexAllowedValues } from './sex.js';
 
 export class BiometricInformation {
     @IsInt()

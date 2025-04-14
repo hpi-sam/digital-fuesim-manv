@@ -1,6 +1,6 @@
 # Sources and Attributions
 
-## All images are under the same original license, look at the links to see the license and more information about the author/publisher and see where we got them
+## All images are under the same original license, look at the links to see each individual license and get more information in this [file](LICENSES-IMAGES.md) about the author/publisher and see where we got them
 
 [fire.svg](fire.svg):  
 <https://commons.wikimedia.org/wiki/File:FireIcon.svg>
@@ -35,10 +35,12 @@ Florian Greiz 23
 <https://commons.wikimedia.org/wiki/File:RTW_Altenburg.png> (edited)
 
 [material.svg](material.svg):  
-Benildur Nickel
+Benildur Nickel\
+License: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)\
 
 [big-material.svg](big-material.svg):  
-Benildur Nickel
+Benildur Nickel\
+License: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)\
 
 [patient.svg](patient.svg):  
 <https://commons.wikimedia.org/wiki/File:Person_(63361)_-_The_Noun_Project.svg> (edited)

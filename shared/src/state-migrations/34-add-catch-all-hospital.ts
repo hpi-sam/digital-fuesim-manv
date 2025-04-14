@@ -1,4 +1,4 @@
-import type { Migration } from './migration-functions';
+import type { Migration } from './migration-functions.js';
 
 export const addCatchAllHospital34: Migration = {
     action: null,

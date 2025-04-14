@@ -1,4 +1,4 @@
-import type { Constructor } from '../../utils';
+import type { Constructor } from '../../utils/index.js';
 
 /**
  * Models must be JSON objects. This means they mustn't have any functions.

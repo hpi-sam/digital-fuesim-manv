@@ -1,8 +1,9 @@
 import type { TypeOptions } from 'class-transformer';
 import { IsNumber, IsUUID, Min } from 'class-validator';
-import { UUID, uuidValidationOptions } from '../../utils';
-import { IsValue } from '../../utils/validators';
-import { getCreate } from './get-create';
+import type { UUID } from '../../utils/index.js';
+import { uuidValidationOptions } from '../../utils/index.js';
+import { IsValue } from '../../utils/validators/index.js';
+import { getCreate } from './get-create.js';
 
 export type StartPoint = AlarmGroupStartPoint | TransferStartPoint;
 

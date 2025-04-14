@@ -5,7 +5,25 @@
         </div>
         <div class="card col-3 p-0 rounded-0 rounded-end">
             <div class="card-header text-center">
-                <h5 class="mb-0">Editor</h5>
+                <h5 class="mb-0 d-flex">
+                    Editor
+                    <span class="ms-auto">
+                        <label class="btn btn-outline-primary btn-sm ms-3">
+                            <i class="bi-cloud-upload me-2"> </i>
+                            Vorlagen Importieren
+                            <span
+                                *ngIf="importingTemplates"
+                                class="spinner-border spinner-border-sm"
+                            ></span>
+                            <input
+                                (appFileInput)="importPartialExport($event)"
+                                type="file"
+                                accept="application/json"
+                                class="d-none"
+                            />
+                        </label>
+                    </span>
+                </h5>
             </div>
             <!-- We want the editor panel to overflow, if it is too high -->
             <ul
@@ -24,7 +42,7 @@
                             (mousedown)="
                                 dragElementService.onMouseDown($event, {
                                     type: 'viewport',
-                                    template: viewportTemplate
+                                    template: viewportTemplate,
                                 })
                             "
                             data-cy="draggableViewportDiv"
@@ -50,7 +68,7 @@
                             (mousedown)="
                                 dragElementService.onMouseDown($event, {
                                     type: 'transferPoint',
-                                    template: transferPointTemplate
+                                    template: transferPointTemplate,
                                 })
                             "
                             data-cy="draggableTransferPointDiv"
@@ -104,7 +122,7 @@
                             (mousedown)="
                                 dragElementService.onMouseDown($event, {
                                     type: 'simulatedRegion',
-                                    template: simulatedRegionTemplate
+                                    template: simulatedRegionTemplate,
                                 })
                             "
                             data-cy="draggableSimulatedRegionDiv"
@@ -199,7 +217,7 @@
                                 (mousedown)="
                                     dragElementService.onMouseDown($event, {
                                         type: 'patient',
-                                        template: patientCategory
+                                        template: patientCategory,
                                     })
                                 "
                                 data-cy="draggablePatientDiv"
@@ -243,7 +261,16 @@
                     </div>
                 </li>
                 <li class="list-group-item">
-                    <h5>Fahrzeuge</h5>
+                    <h5>
+                        Fahrzeuge
+                        <button
+                            class="ms-3 btn btn-sm btn-link text-decoration-none"
+                            (click)="addVehicleTemplate()"
+                        >
+                            <i class="bi bi-plus"></i>
+                            Hinzufügen
+                        </button>
+                    </h5>
                     <div
                         class="overflow-auto w-100"
                         style="white-space: nowrap"
@@ -262,6 +289,18 @@
                             <div class="preview-image-container card-img-top">
                                 <img [src]="vehicleTemplate.image.url" />
                             </div>
+
+                            <!-- (mousedown) instead of (click) to be able to stop the propagation-->
+                            <button
+                                (mousedown)="
+                                    editVehicleTemplate(vehicleTemplate.id);
+                                    $event.stopPropagation()
+                                "
+                                class="btn btn-outline-warning position-absolute"
+                                style="top: 0; right: 0"
+                            >
+                                <i class="bi bi-pencil-fill"></i>
+                            </button>
                             <div class="card-body">
                                 <h5
                                     class="card-title text-truncate"
@@ -298,7 +337,7 @@
                             (mousedown)="
                                 dragElementService.onMouseDown($event, {
                                     type: 'mapImage',
-                                    template: mapImageTemplate
+                                    template: mapImageTemplate,
                                 })
                             "
                             data-cy="draggableMapImageDiv"

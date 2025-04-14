@@ -1,9 +1,9 @@
 import { Type } from 'class-transformer';
 import { IsBoolean, IsString, ValidateNested } from 'class-validator';
-import { TileMapProperties } from '../../models/utils';
-import { cloneDeepMutable } from '../../utils';
-import { IsValue } from '../../utils/validators';
-import type { Action, ActionReducer } from '../action-reducer';
+import { TileMapProperties } from '../../models/utils/index.js';
+import { cloneDeepMutable } from '../../utils/index.js';
+import { IsValue } from '../../utils/validators/index.js';
+import type { Action, ActionReducer } from '../action-reducer.js';
 
 export class SetTileMapPropertiesAction implements Action {
     @IsValue('[Configuration] Set tileMapProperties' as const)

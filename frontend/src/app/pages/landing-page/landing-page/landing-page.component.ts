@@ -11,6 +11,7 @@ import { MessageService } from 'src/app/core/messages/message.service';
     selector: 'app-landing-page',
     templateUrl: './landing-page.component.html',
     styleUrls: ['./landing-page.component.scss'],
+    standalone: false,
 })
 export class LandingPageComponent {
     public exerciseId = '';
@@ -71,16 +72,14 @@ export class LandingPageComponent {
                 (type === 'complete'
                     ? StateExport
                     : PartialExport) as Constructor<
-                    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-arguments
                     PartialExport | StateExport
                 >,
                 importPlain
             );
             switch (importInstance.type) {
                 case 'complete': {
-                    const ids = await this.apiService.importExercise(
-                        importInstance
-                    );
+                    const ids =
+                        await this.apiService.importExercise(importInstance);
                     this.trainerId = ids.trainerId;
                     this.exerciseId = this.trainerId;
                     this.participantId = ids.participantId;
@@ -97,9 +96,12 @@ export class LandingPageComponent {
                     break;
                 }
                 case 'partial': {
-                    throw new Error(
-                        'Dieser Typ kann zur Zeit nicht importiert werden.'
-                    );
+                    this.messageService.postMessage({
+                        color: 'danger',
+                        title: 'Unerlaubter Importtyp',
+                        body: 'Dieser Typ kann nur innerhalb einer Übung importiert werden.',
+                    });
+                    break;
                 }
             }
         } catch (error: unknown) {

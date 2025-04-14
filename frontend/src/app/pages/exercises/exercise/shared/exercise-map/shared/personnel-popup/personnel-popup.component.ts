@@ -11,6 +11,7 @@ import { PopupService } from '../../utility/popup.service';
     selector: 'app-personnel-popup',
     templateUrl: './personnel-popup.component.html',
     styleUrls: ['./personnel-popup.component.scss'],
+    standalone: false,
 })
 export class PersonnelPopupComponent implements OnInit {
     public personnelId!: UUID;

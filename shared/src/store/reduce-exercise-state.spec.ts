@@ -1,11 +1,11 @@
-import type { Viewport } from '../models';
-import type { ExerciseStatus } from '../models/utils';
-import { MapCoordinates, MapPosition } from '../models/utils';
-import { ExerciseState } from '../state';
-import type { UUID } from '../utils';
-import { uuid } from '../utils';
-import { reduceExerciseState } from './reduce-exercise-state';
-import { ReducerError } from './reducer-error';
+import type { Viewport } from '../models/index.js';
+import type { ExerciseStatus } from '../models/utils/index.js';
+import { MapCoordinates, MapPosition } from '../models/utils/index.js';
+import { ExerciseState } from '../state.js';
+import type { UUID } from '../utils/index.js';
+import { uuid } from '../utils/index.js';
+import { reduceExerciseState } from './reduce-exercise-state.js';
+import { ReducerError } from './reducer-error.js';
 
 describe('exerciseReducer', () => {
     let state: ExerciseState;

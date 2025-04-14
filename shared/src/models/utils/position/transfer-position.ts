@@ -1,8 +1,8 @@
 import { Type } from 'class-transformer';
 import { ValidateNested } from 'class-validator';
-import { IsValue } from '../../../utils/validators';
-import { getCreate } from '../get-create';
-import { Transfer } from '../transfer';
+import { IsValue } from '../../../utils/validators/index.js';
+import { getCreate } from '../get-create.js';
+import { Transfer } from '../transfer.js';
 import {
     // import needed to display @link Links in Comments
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -13,7 +13,7 @@ import {
     // import needed to display @link Links in Comments
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     currentTransferOf,
-} from './position-helpers';
+} from './position-helpers.js';
 
 export class TransferPosition {
     /**

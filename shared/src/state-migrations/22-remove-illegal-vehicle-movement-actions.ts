@@ -1,7 +1,7 @@
-import { getElement } from '../store/action-reducers/utils';
-import { isCompletelyLoaded } from '../store/action-reducers/utils/completely-load-vehicle';
-import type { UUID } from '../utils';
-import type { Migration } from './migration-functions';
+import { getElement } from '../store/action-reducers/utils/index.js';
+import { isCompletelyLoaded } from '../store/action-reducers/utils/completely-load-vehicle.js';
+import type { UUID } from '../utils/index.js';
+import type { Migration } from './migration-functions.js';
 
 /**
  * We prevent users to perform some actions on vehicles to enforce the connection between personnel, material and vehicles.

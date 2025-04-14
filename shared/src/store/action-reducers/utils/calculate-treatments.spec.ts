@@ -1,18 +1,18 @@
 import { produce } from 'immer';
-import type { PatientStatus, Position } from '../../../models/utils';
-import { CanCaterFor } from '../../../models/utils';
-import { MapPosition } from '../../../models/utils/position/map-position';
-import { VehiclePosition } from '../../../models/utils/position/vehicle-position';
-import { ExerciseState } from '../../../state';
-import type { Mutable } from '../../../utils';
-import { cloneDeepMutable, uuid } from '../../../utils';
-import { addMaterial } from '../../../../tests/utils/materials.spec';
-import { addPatient } from '../../../../tests/utils/patients.spec';
-import { addPersonnel } from '../../../../tests/utils/personnel.spec';
-import { assertCatering } from '../../../../tests/utils/catering.spec';
-import { Personnel } from '../../../models';
-import { defaultPersonnelTemplates } from '../../../data/default-state/personnel-templates';
-import { updateTreatments } from './calculate-treatments';
+import type { PatientStatus, Position } from '../../../models/utils/index.js';
+import { CanCaterFor } from '../../../models/utils/index.js';
+import { MapPosition } from '../../../models/utils/position/map-position.js';
+import { VehiclePosition } from '../../../models/utils/position/vehicle-position.js';
+import { ExerciseState } from '../../../state.js';
+import type { Mutable } from '../../../utils/index.js';
+import { cloneDeepMutable, uuid } from '../../../utils/index.js';
+import { addMaterial } from '../../../../tests/utils/materials.spec.js';
+import { addPatient } from '../../../../tests/utils/patients.spec.js';
+import { addPersonnel } from '../../../../tests/utils/personnel.spec.js';
+import { assertCatering } from '../../../../tests/utils/catering.spec.js';
+import { Personnel } from '../../../models/index.js';
+import { defaultPersonnelTemplates } from '../../../data/default-state/personnel-templates.js';
+import { updateTreatments } from './calculate-treatments.js';
 
 const emptyState = ExerciseState.create('123456');
 

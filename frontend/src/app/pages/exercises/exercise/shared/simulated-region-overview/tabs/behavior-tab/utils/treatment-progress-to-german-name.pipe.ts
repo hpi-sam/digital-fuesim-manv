@@ -5,6 +5,7 @@ import { treatmentProgressToGermanNameDictionary } from 'digital-fuesim-manv-sha
 
 @Pipe({
     name: 'treatmentProgressToGermanName',
+    standalone: false,
 })
 export class TreatmentProgressToGermanNamePipe implements PipeTransform {
     transform(value: TreatmentProgress): string {

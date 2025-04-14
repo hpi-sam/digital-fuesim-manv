@@ -1,6 +1,6 @@
-import { seededRandomState } from '../simulation/utils/randomness';
-import type { UUID } from '../utils';
-import type { Migration } from './migration-functions';
+import { seededRandomState } from '../simulation/utils/randomness.js';
+import type { UUID } from '../utils/index.js';
+import type { Migration } from './migration-functions.js';
 
 export const addSimulationProperties20: Migration = {
     action: (_intermediaryState, action) => {

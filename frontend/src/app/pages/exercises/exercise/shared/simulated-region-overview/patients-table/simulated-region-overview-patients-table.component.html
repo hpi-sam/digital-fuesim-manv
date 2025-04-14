@@ -14,7 +14,7 @@
         <tr
             *ngFor="
                 let patient of patients;
-                trackBy: 'id' | appTrackByProperty : patients
+                trackBy: 'id' | appTrackByProperty: patients
             "
             (click)="selectPatientService.selectPatient(patient.id)"
             [class.table-primary]="selectedPatientId === patient.id"

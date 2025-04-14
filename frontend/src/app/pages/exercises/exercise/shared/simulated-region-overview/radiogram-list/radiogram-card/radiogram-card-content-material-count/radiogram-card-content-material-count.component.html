@@ -6,7 +6,7 @@
             <td class="ps-4">
                 <app-patient-status-badge [status]="patientCategory" />
             </td>
-            <td>{{(capacity$ | async)?.[patientCategory]}}</td>
+            <td>{{ (capacity$ | async)?.[patientCategory] }}</td>
         </tr>
     </tbody>
 </table>

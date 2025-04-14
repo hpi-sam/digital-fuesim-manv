@@ -11,7 +11,7 @@ export function trackByPropertyPipeTransform<
     Path extends number | string =
         | FirstLevelPropertyName
         | `${FirstLevelPropertyName}.${string}`,
-    P extends Path = Path
+    P extends Path = Path,
 >(
     propertyNames: P | P[] | '$index' | '$value',
     // only to get the type for Items, because angular pipes don't support passing types as generic parameters

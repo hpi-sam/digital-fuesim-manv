@@ -12,6 +12,7 @@ import { CustomValidators } from './custom-validators';
             multi: true,
         },
     ],
+    standalone: false,
 })
 export class GeographicCoordinateDirective implements Validator {
     private readonly validator =

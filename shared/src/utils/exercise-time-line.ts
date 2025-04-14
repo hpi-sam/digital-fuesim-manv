@@ -1,6 +1,6 @@
-import type { ExerciseState } from '../state';
-import type { ExerciseAction } from '../store';
-import type { UUID } from './uuid';
+import type { ExerciseState } from '../state.js';
+import type { ExerciseAction } from '../store/index.js';
+import type { UUID } from './uuid.js';
 
 export interface ExerciseTimeline {
     readonly initialState: ExerciseState;

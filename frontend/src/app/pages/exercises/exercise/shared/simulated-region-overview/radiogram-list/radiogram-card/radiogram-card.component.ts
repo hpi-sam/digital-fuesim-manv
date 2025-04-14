@@ -5,13 +5,13 @@ import type {
     ExerciseRadiogram,
     SimulatedRegion,
 } from 'digital-fuesim-manv-shared';
+import type { UUID } from 'digital-fuesim-manv-shared';
 import {
     Client,
     currentParticipantIdOf,
     isAccepted,
     isDone,
     isUnread,
-    UUID,
 } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { map } from 'rxjs';
@@ -33,6 +33,7 @@ const unavailableClient = Client.create('Unbekannt', 'participant');
     selector: 'app-radiogram-card',
     templateUrl: './radiogram-card.component.html',
     styleUrls: ['./radiogram-card.component.scss'],
+    standalone: false,
 })
 export class RadiogramCardComponent implements OnInit {
     @Input() radiogramId!: UUID;

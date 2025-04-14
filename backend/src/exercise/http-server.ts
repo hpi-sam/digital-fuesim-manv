@@ -2,16 +2,16 @@ import type { Server as HttpServer } from 'node:http';
 import cors from 'cors';
 import type { Express } from 'express';
 import express from 'express';
-import { Config } from '../config';
-import type { DatabaseService } from '../database/services/database-service';
+import { Config } from '../config.js';
+import type { DatabaseService } from '../database/services/database-service.js';
 import {
     deleteExercise,
     getExercise,
     getExerciseHistory,
     postExercise,
-} from './http-handler/api/exercise';
-import { getHealth } from './http-handler/api/health';
-import { secureHttp } from './http-handler/secure-http';
+} from './http-handler/api/exercise.js';
+import { getHealth } from './http-handler/api/health.js';
+import { secureHttp } from './http-handler/secure-http.js';
 
 export class ExerciseHttpServer {
     public readonly httpServer: HttpServer;

@@ -45,7 +45,7 @@ export const applicationReducer = createReducer(
         (state, { initialExerciseState, endTime }) => ({
             ...state,
             exerciseState: initialExerciseState,
-            exerciseStateMode: 'timeTravel',
+            exerciseStateMode: 'timeTravel' as const,
             timeConstraints: {
                 start: initialExerciseState.currentTime,
                 current: initialExerciseState.currentTime,
@@ -69,7 +69,7 @@ export const applicationReducer = createReducer(
         (state, { ownClientId, exerciseId, clientName, exerciseState }) => ({
             ...state,
             exerciseState,
-            exerciseStateMode: 'exercise',
+            exerciseStateMode: 'exercise' as const,
             exerciseId,
             ownClientId,
             lastClientName: clientName,

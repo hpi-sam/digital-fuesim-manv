@@ -8,6 +8,7 @@ import { OlMapManager } from '../../exercise-map/utility/ol-map-manager';
     selector: 'app-coordinate-picker-modal',
     templateUrl: './coordinate-picker-modal.component.html',
     styleUrls: ['./coordinate-picker-modal.component.scss'],
+    standalone: false,
 })
 export class CoordinatePickerModalComponent implements OnInit {
     @Input()

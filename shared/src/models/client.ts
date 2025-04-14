@@ -5,10 +5,12 @@ import {
     IsUUID,
     MaxLength,
 } from 'class-validator';
-import { UUID, uuid, uuidValidationOptions } from '../utils';
-import { IsLiteralUnion, IsValue } from '../utils/validators';
-import { getCreate, Role } from './utils';
-import { roleAllowedValues } from './utils/role';
+import type { UUID } from '../utils/index.js';
+import { uuid, uuidValidationOptions } from '../utils/index.js';
+import { IsLiteralUnion, IsValue } from '../utils/validators/index.js';
+import type { Role } from './utils/index.js';
+import { getCreate } from './utils/index.js';
+import { roleAllowedValues } from './utils/role.js';
 
 export class Client {
     @IsUUID(4, uuidValidationOptions)

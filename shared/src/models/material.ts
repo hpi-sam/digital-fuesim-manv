@@ -7,15 +7,16 @@ import {
     Min,
     Max,
 } from 'class-validator';
-import { maxTreatmentRange } from '../state-helpers/max-treatment-range';
-import { uuidValidationOptions, UUID, uuid, UUIDSet } from '../utils';
-import { IsUUIDSet, IsValue } from '../utils/validators';
-import { IsPosition } from '../utils/validators/is-position';
-import type { MaterialTemplate } from './material-template';
-import { Position } from './utils/position/position';
-import { CanCaterFor } from './utils/cater-for';
-import { ImageProperties } from './utils/image-properties';
-import { getCreate } from './utils/get-create';
+import { maxTreatmentRange } from '../state-helpers/max-treatment-range.js';
+import type { UUID, UUIDSet } from '../utils/index.js';
+import { uuidValidationOptions, uuid } from '../utils/index.js';
+import { IsUUIDSet, IsValue } from '../utils/validators/index.js';
+import { IsPosition } from '../utils/validators/is-position.js';
+import type { MaterialTemplate } from './material-template.js';
+import type { Position } from './utils/position/position.js';
+import { CanCaterFor } from './utils/cater-for.js';
+import { ImageProperties } from './utils/image-properties.js';
+import { getCreate } from './utils/get-create.js';
 
 export class Material {
     @IsUUID(4, uuidValidationOptions)

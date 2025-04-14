@@ -1,16 +1,16 @@
-import type { ExerciseState } from '../../../state';
-import { getElement } from '../../../store/action-reducers/utils/get-element';
-import type { Mutable, UUID } from '../../../utils';
-import type { SimulatedRegion } from '../../simulated-region';
-import type { Transfer } from '../transfer';
-import { MapCoordinates } from './map-coordinates';
-import type { MapPosition } from './map-position';
-import type { Position } from './position';
-import type { SimulatedRegionPosition } from './simulated-region-position';
-import type { TransferPosition } from './transfer-position';
-import type { VehiclePosition } from './vehicle-position';
-import type { WithExtent } from './with-extent';
-import type { WithPosition } from './with-position';
+import type { ExerciseState } from '../../../state.js';
+import { getElement } from '../../../store/action-reducers/utils/get-element.js';
+import type { Mutable, UUID } from '../../../utils/index.js';
+import type { SimulatedRegion } from '../../simulated-region.js';
+import type { Transfer } from '../transfer.js';
+import { MapCoordinates } from './map-coordinates.js';
+import type { MapPosition } from './map-position.js';
+import type { Position } from './position.js';
+import type { SimulatedRegionPosition } from './simulated-region-position.js';
+import type { TransferPosition } from './transfer-position.js';
+import type { VehiclePosition } from './vehicle-position.js';
+import type { WithExtent } from './with-extent.js';
+import type { WithPosition } from './with-position.js';
 
 export function isOnMap(withPosition: WithPosition): boolean {
     return isPositionOnMap(withPosition.position);

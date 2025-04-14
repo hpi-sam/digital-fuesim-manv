@@ -1,4 +1,4 @@
-import type { Migration } from './migration-functions';
+import type { Migration } from './migration-functions.js';
 
 export const activitiesToUnloadVehiclesBehavior28: Migration = {
     action: (intermediaryState, action) => {

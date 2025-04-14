@@ -1,5 +1,5 @@
 import { sleep } from 'digital-fuesim-manv-shared';
-import { createTestEnvironment } from '../../../test/utils';
+import { createTestEnvironment } from '../../../test/utils.js';
 
 describe('secure on', () => {
     const environment = createTestEnvironment();

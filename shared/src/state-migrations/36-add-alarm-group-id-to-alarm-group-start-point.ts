@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-condition */
 // Disabled due to incomplete typings in the migration
 
-import type { UUID } from '../utils';
-import type { Migration } from './migration-functions';
+import type { UUID } from '../utils/index.js';
+import type { Migration } from './migration-functions.js';
 
 export const addAlarmGroupIdToAlarmGroupStartPoint36: Migration = {
     action: (intermediaryState, action) => {

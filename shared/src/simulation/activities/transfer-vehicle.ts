@@ -3,43 +3,42 @@ import { Type } from 'class-transformer';
 import {
     MissingTransferConnectionRadiogram,
     RadiogramUnpublishedStatus,
-} from '../../models/radiogram';
-import { publishRadiogram } from '../../models/radiogram/radiogram-helpers-mutable';
+} from '../../models/radiogram/index.js';
+import { publishRadiogram } from '../../models/radiogram/radiogram-helpers-mutable.js';
+import type { ExerciseOccupation } from '../../models/utils/index.js';
 import {
     changeOccupation,
-    ExerciseOccupation,
     getCreate,
     isInSpecificSimulatedRegion,
     isInSpecificVehicle,
     NoOccupation,
     occupationTypeOptions,
     TransferStartPoint,
-} from '../../models/utils';
-import { VehicleResource } from '../../models/utils/rescue-resource';
-import { TransferActionReducers } from '../../store/action-reducers/transfer';
+} from '../../models/utils/index.js';
+import { VehicleResource } from '../../models/utils/rescue-resource.js';
+import { TransferActionReducers } from '../../store/action-reducers/transfer.js';
 import {
     getElement,
     getElementByPredicate,
     tryGetElement,
-} from '../../store/action-reducers/utils';
-import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
-import { IsLiteralUnion, IsValue } from '../../utils/validators';
+} from '../../store/action-reducers/utils/index.js';
+import type { UUID } from '../../utils/index.js';
+import { cloneDeepMutable, uuidValidationOptions } from '../../utils/index.js';
+import { IsLiteralUnion, IsValue } from '../../utils/validators/index.js';
 import {
     TransferConnectionMissingEvent,
     VehicleTransferSuccessfulEvent,
-} from '../events';
-import { sendSimulationEvent } from '../events/utils';
-import { nextUUID } from '../utils/randomness';
-import {
-    TransferDestination,
-    transferDestinationTypeAllowedValues,
-} from '../utils/transfer-destination';
-import { HospitalActionReducers } from '../../store/action-reducers/hospital';
-import type { ResourceDescription } from '../../models/utils/resource-description';
+} from '../events/index.js';
+import { sendSimulationEvent } from '../events/utils.js';
+import { nextUUID } from '../utils/randomness.js';
+import type { TransferDestination } from '../utils/transfer-destination.js';
+import { transferDestinationTypeAllowedValues } from '../utils/transfer-destination.js';
+import { HospitalActionReducers } from '../../store/action-reducers/hospital.js';
+import type { ResourceDescription } from '../../models/utils/resource-description.js';
 import type {
     SimulationActivity,
     SimulationActivityState,
-} from './simulation-activity';
+} from './simulation-activity.js';
 
 export class TransferVehicleActivityState implements SimulationActivityState {
     @IsValue('transferVehicleActivity' as const)

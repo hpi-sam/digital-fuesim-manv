@@ -1,6 +1,6 @@
-import type { ExerciseRadiogram } from '../models/radiogram/exercise-radiogram';
-import type { UUID } from '../utils';
-import type { Migration } from './migration-functions';
+import type { ExerciseRadiogram } from '../models/radiogram/exercise-radiogram.js';
+import type { UUID } from '../utils/index.js';
+import type { Migration } from './migration-functions.js';
 
 export const addRadiograms24: Migration = {
     action: null,

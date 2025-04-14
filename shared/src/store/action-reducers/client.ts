@@ -1,10 +1,11 @@
 import { Type } from 'class-transformer';
 import { IsBoolean, IsOptional, IsUUID, ValidateNested } from 'class-validator';
-import { Client } from '../../models/client';
-import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
-import { IsValue } from '../../utils/validators';
-import type { Action, ActionReducer } from '../action-reducer';
-import { getElement } from './utils/get-element';
+import { Client } from '../../models/client.js';
+import type { UUID } from '../../utils/index.js';
+import { cloneDeepMutable, uuidValidationOptions } from '../../utils/index.js';
+import { IsValue } from '../../utils/validators/index.js';
+import type { Action, ActionReducer } from '../action-reducer.js';
+import { getElement } from './utils/get-element.js';
 
 export class AddClientAction implements Action {
     @IsValue('[Client] Add client' as const)

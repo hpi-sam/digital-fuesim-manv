@@ -1,4 +1,4 @@
-import produce from 'immer';
+import { produce } from 'immer';
 import {
     ImageProperties,
     MapCoordinates,
@@ -9,30 +9,29 @@ import {
     TransferPoint,
     Vehicle,
     VehicleResource,
-} from '../../models';
-import { ExerciseState } from '../../state';
+} from '../../models/index.js';
+import { ExerciseState } from '../../state.js';
 import {
     ResourceRequiredEvent,
     VehicleArrivedEvent,
     VehiclesSentEvent,
-} from '../events';
-import { cloneDeepMutable } from '../../utils/clone-deep';
-import type { Mutable } from '../../utils/immutability';
-import { sendSimulationEvent } from '../events/utils';
-import { handleSimulationEvents } from '../utils/simulation';
-import { StrictObject, uuid } from '../../utils';
-import { RecurringEventActivityState } from '../activities';
-import { addActivity } from '../activities/utils';
-import { SendRequestEvent } from '../events/send-request';
-import type { CreateRequestActivityState } from '../activities/create-request';
-import { ResourcePromise } from '../utils/resource-promise';
-import { NoOccupation } from '../../models/utils/occupations/no-occupation';
+} from '../events/index.js';
+import { cloneDeepMutable } from '../../utils/clone-deep.js';
+import type { Mutable } from '../../utils/immutability.js';
+import { sendSimulationEvent } from '../events/utils.js';
+import { handleSimulationEvents } from '../utils/simulation.js';
+import { StrictObject, uuid } from '../../utils/index.js';
+import { RecurringEventActivityState } from '../activities/index.js';
+import { addActivity } from '../activities/utils.js';
+import { SendRequestEvent } from '../events/send-request.js';
+import { ResourcePromise } from '../utils/resource-promise.js';
+import { NoOccupation } from '../../models/utils/occupations/no-occupation.js';
 import {
     RequestBehaviorState,
     getResourcesToRequest,
     updateBehaviorsRequestInterval,
     updateBehaviorsRequestTarget,
-} from './request';
+} from './request.js';
 
 // constants
 const emptyState = ExerciseState.create('123456');
@@ -516,7 +515,7 @@ describe('request behavior', () => {
                 );
                 expect(activity).toBeDefined();
 
-                const typedActivity = activity as CreateRequestActivityState;
+                const typedActivity = activity!;
                 expect(typedActivity.targetConfiguration).toEqual(
                     afterBehaviorState.requestTarget
                 );
@@ -550,9 +549,7 @@ describe('request behavior', () => {
 
                     const afterRecurringEventActivity = StrictObject.values(
                         afterSimulatedRegion.activities
-                    ).find(
-                        (a) => a.type === 'recurringEventActivity'
-                    ) as RecurringEventActivityState;
+                    ).find((a) => a.type === 'recurringEventActivity')!;
 
                     expect(
                         afterRecurringEventActivity.recurrenceIntervalTime

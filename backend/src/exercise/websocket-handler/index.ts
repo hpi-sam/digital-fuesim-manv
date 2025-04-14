@@ -1,3 +1,3 @@
-export * from './get-state-handler';
-export * from './join-exercise-handler';
-export * from './propose-action-handler';
+export * from './get-state-handler.js';
+export * from './join-exercise-handler.js';
+export * from './propose-action-handler.js';

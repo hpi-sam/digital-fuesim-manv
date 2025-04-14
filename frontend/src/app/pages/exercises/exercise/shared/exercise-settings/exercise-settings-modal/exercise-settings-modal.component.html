@@ -12,10 +12,12 @@
                     <!-- Yes, this is seemingly the only way to escape curly braces https://github.com/angular/angular/issues/11859 -->
                     Unter dieser Adresse werden die Karten-Kacheln geladen. Die
                     Url muss die Platzhalter für die Koordinaten
-                    <code>{{ '{' }}x}</code>, <code>{{ '{' }}y}</code> oder
-                    <code>{{ '{' }}-y}</code>, sowie der Zoomstufe
-                    <code>{{ '{' }}z}</code> enthalten. Bitte beachten Sie die
-                    Lizenzbedingungen der entsprechenden Karten-Server.
+                    <code>{{ '{' }}x{{ '}' }}</code
+                    >, <code>{{ '{' }}y{{ '}' }}</code> oder
+                    <code>{{ '{' }}-y{{ '}' }}</code
+                    >, sowie der Zoomstufe
+                    <code>{{ '{' }}z{{ '}' }}</code> enthalten. Bitte beachten
+                    Sie die Lizenzbedingungen der entsprechenden Karten-Server.
                 </p>
                 <input
                     #tileUrlInput="ngModel"

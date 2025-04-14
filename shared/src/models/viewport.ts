@@ -1,17 +1,18 @@
 import { Type } from 'class-transformer';
 import { IsString, IsUUID, ValidateNested } from 'class-validator';
-import { UUID, uuid, uuidValidationOptions } from '../utils';
-import { IsPosition } from '../utils/validators/is-position';
-import { IsValue } from '../utils/validators';
+import type { UUID } from '../utils/index.js';
+import { uuid, uuidValidationOptions } from '../utils/index.js';
+import { IsPosition } from '../utils/validators/is-position.js';
+import { IsValue } from '../utils/validators/index.js';
+import type { Position } from './utils/index.js';
 import {
     getCreate,
     lowerRightCornerOf,
     MapPosition,
-    Position,
     Size,
     upperLeftCornerOf,
-} from './utils';
-import type { ImageProperties, MapCoordinates } from './utils';
+} from './utils/index.js';
+import type { ImageProperties, MapCoordinates } from './utils/index.js';
 
 export class Viewport {
     @IsUUID(4, uuidValidationOptions)

@@ -6,10 +6,10 @@ import type {
     ReportableInformation,
     ReportBehaviorState,
 } from 'digital-fuesim-manv-shared';
+import type { UUID } from 'digital-fuesim-manv-shared';
 import {
     reportableInformationTypeToGermanNameDictionary,
     reportableInformations,
-    UUID,
 } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { combineLatest, map } from 'rxjs';
@@ -25,6 +25,7 @@ import {
     selector: 'app-simulated-region-overview-behavior-report',
     templateUrl: './simulated-region-overview-behavior-report.component.html',
     styleUrls: ['./simulated-region-overview-behavior-report.component.scss'],
+    standalone: false,
 })
 export class SimulatedRegionOverviewBehaviorReportComponent implements OnInit {
     @Input() simulatedRegionId!: UUID;

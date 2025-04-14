@@ -1,4 +1,4 @@
-import { arrayToUUIDSet } from './array-to-uuid-set';
+import { arrayToUUIDSet } from './array-to-uuid-set.js';
 
 describe('array to uuid set', () => {
     it('properly converts an array', () => {

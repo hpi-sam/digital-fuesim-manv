@@ -1,6 +1,6 @@
 import type { ReporterOptions } from 'envalid';
 import { cleanEnv } from 'envalid';
-import { Config } from './config';
+import { Config } from './config.js';
 
 type Report = ReporterOptions<{ port: unknown }> | undefined;
 
