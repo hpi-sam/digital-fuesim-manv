@@ -32,7 +32,7 @@ jobs:
               with:
                   version: ${{ github.event.inputs.versionName }}
             - name: Update changelog
-              uses: thomaseizinger/keep-a-changelog-new-release@v1
+              uses: thomaseizinger/keep-a-changelog-new-release@v3
               with:
                   tag: v${{ github.event.inputs.versionName }}
             - name: Format changelog
