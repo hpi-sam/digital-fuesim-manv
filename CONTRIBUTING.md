@@ -39,7 +39,7 @@
     - Deadline bis das Technik Set-Up stehen soll: Freitag den 25.04.2025
     - Weekend-Coding (Endspurt) vorauss. zwei Wochenenden vor finaler Abgabe
 
-# Absprachen zu Pull Requests und Review
+# Absprachen zu Pull Requests und Reviews
 
     - lieber häufigere, kleinere PR´s als "Monster"-PR´s, die man nur schwer überblicken kann
     - saubere, verständliche Beschreibungen / Dokumentation
