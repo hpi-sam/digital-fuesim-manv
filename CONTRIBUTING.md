@@ -16,7 +16,7 @@
     - Aufgabenaufteilung ueber ein Tool festhalten (Kanba, Github)
     - bis zu einem bestimmten Zeitpunkt: auseinandersetzen mit technischem Setup
     - regelmaesige Check-Ins durchfuehren (Wie geht es uns mit dem Projekt aktuell? Welche Wünsche / Sorgen haben wir? Was läuft gut bzw. noch nicht so gut?)
-        - hier würden wir auch gern Konflikte ansprechen 
+        - hier würden wir auch Konflikte ansprechen 
     - unterschiedliche Arbeits- und Herangehensweisen sowie Verfügbarkeiten respektieren 
     - kein "*T*oll *E*in *A*nderer *M*achts" - Prinzip
     - AI am besten nur zum eigenen Verständnis / für die Dokumentation nutzen 
