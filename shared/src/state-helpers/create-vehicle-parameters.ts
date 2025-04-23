@@ -1,4 +1,5 @@
 import type { Vehicle, VehicleTemplate } from '../models/index.js';
+import { VehicleParameters } from '../models/index.js';
 import { Material, Personnel } from '../models/index.js';
 import type { MaterialTemplate } from '../models/material-template.js';
 import type { PersonnelTemplate } from '../models/personnel-template.js';
@@ -25,11 +26,7 @@ export function createVehicleParameters(
         [Key in PersonnelType]: PersonnelTemplate;
     },
     vehiclePosition: MapCoordinates
-): {
-    materials: Material[];
-    personnel: Personnel[];
-    vehicle: Vehicle;
-} {
+): VehicleParameters {
     const materials = vehicleTemplate.materials.map((currentMaterial) =>
         Material.generateMaterial(
             materialTemplates[currentMaterial],
@@ -60,9 +57,6 @@ export function createVehicleParameters(
         position: MapPosition.create(vehiclePosition),
         occupation: NoOccupation.create(),
     };
-    return {
-        materials,
-        personnel,
-        vehicle,
-    };
+
+    return VehicleParameters.create(vehicle, materials, personnel);
 }

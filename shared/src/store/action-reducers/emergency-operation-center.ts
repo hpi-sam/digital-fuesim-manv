@@ -1,16 +1,18 @@
 import {
+    IsArray,
     IsInt,
     IsOptional,
     IsString,
     IsUUID,
     MaxLength,
     Min,
+    ValidateNested,
 } from 'class-validator';
-import type { AlarmGroupVehicle, VehicleTemplate } from '../../models/index.js';
+import { Type } from 'class-transformer';
 import {
     AlarmGroupStartPoint,
     EocLogEntry,
-    MapCoordinates,
+    VehicleParameters,
 } from '../../models/index.js';
 import type { Mutable, UUID } from '../../utils/index.js';
 import {
@@ -21,8 +23,6 @@ import {
 import { IsValue } from '../../utils/validators/index.js';
 import type { Action, ActionReducer } from '../action-reducer.js';
 import type { ExerciseState } from '../../state.js';
-import { createVehicleParameters } from '../../state-helpers/index.js';
-import { nextUUID } from '../../simulation/utils/randomness.js';
 import { getElement } from './utils/index.js';
 import { VehicleActionReducers } from './vehicle.js';
 import { TransferActionReducers } from './transfer.js';
@@ -49,6 +49,11 @@ export class SendAlarmGroupAction implements Action {
 
     @IsUUID(4, uuidValidationOptions)
     public readonly alarmGroupId!: UUID;
+
+    @IsArray()
+    @ValidateNested()
+    @Type(() => VehicleParameters)
+    public readonly sortedVehicleParameters!: readonly VehicleParameters[];
 
     @IsUUID(4, uuidValidationOptions)
     public readonly targetTransferPointId!: UUID;
@@ -83,6 +88,7 @@ export namespace EmergencyOperationCenterActionReducers {
             {
                 clientName,
                 alarmGroupId,
+                sortedVehicleParameters,
                 targetTransferPointId,
                 firstVehiclesCount,
                 firstVehiclesTargetTransferPointId,
@@ -93,16 +99,10 @@ export namespace EmergencyOperationCenterActionReducers {
                 'alarmGroup',
                 alarmGroupId
             );
-            const vehicleTemplatesById = Object.fromEntries(
-                draftState.vehicleTemplates.map((template) => [
-                    template.id,
-                    template,
-                ])
-            );
 
-            const alarmGroupVehicles = StrictObject.values(
+            const sortedAlarmGroupVehicles = StrictObject.values(
                 alarmGroup.alarmGroupVehicles
-            );
+            ).sort((a, b) => a.time - b.time);
 
             const targetTransferPoint = getElement(
                 draftState,
@@ -110,6 +110,8 @@ export namespace EmergencyOperationCenterActionReducers {
                 targetTransferPointId
             );
             let logEntry = `Alarmgruppe ${alarmGroup.name} wurde alarmiert zu ${targetTransferPoint.externalName}!`;
+
+            let remainingVehiclesOffset = 0;
 
             if (firstVehiclesCount > 0 && firstVehiclesTargetTransferPointId) {
                 const firstVehiclesTargetTransferPoint = getElement(
@@ -119,33 +121,32 @@ export namespace EmergencyOperationCenterActionReducers {
                 );
                 logEntry += ` Die ersten ${firstVehiclesCount} Fahrzeuge wurden zu ${firstVehiclesTargetTransferPoint.externalName} alarmiert!`;
 
-                alarmGroupVehicles.sort((a, b) => a.time - b.time);
-                for (
-                    let i = 0;
-                    alarmGroupVehicles.length > 0 && i < firstVehiclesCount;
-                    i++
-                ) {
+                for (let i = 0; i < firstVehiclesCount; i++) {
                     sendAlarmGroupVehicle(
                         draftState,
-                        alarmGroupVehicles.shift()!,
-                        vehicleTemplatesById,
+                        sortedVehicleParameters[i]!,
+                        sortedAlarmGroupVehicles[i]!.time,
                         alarmGroup.id,
-                        alarmGroup.name,
                         firstVehiclesTargetTransferPointId
                     );
                 }
+
+                remainingVehiclesOffset = firstVehiclesCount;
             }
 
-            alarmGroupVehicles.forEach((alarmGroupVehicle) => {
+            for (
+                let i = remainingVehiclesOffset;
+                i < sortedVehicleParameters.length;
+                i++
+            ) {
                 sendAlarmGroupVehicle(
                     draftState,
-                    alarmGroupVehicle,
-                    vehicleTemplatesById,
+                    sortedVehicleParameters[i]!,
+                    sortedAlarmGroupVehicles[i]!.time,
                     alarmGroup.id,
-                    alarmGroup.name,
                     targetTransferPointId
                 );
-            });
+            }
 
             addLogEntry.reducer(draftState, {
                 type: '[Emergency Operation Center] Add Log Entry',
@@ -163,42 +164,21 @@ export namespace EmergencyOperationCenterActionReducers {
 
 function sendAlarmGroupVehicle(
     draftState: Mutable<ExerciseState>,
-    alarmGroupVehicle: Mutable<AlarmGroupVehicle>,
-    vehicleTemplatesById: { [key in UUID]: VehicleTemplate },
+    vehicleParameters: VehicleParameters,
+    time: number,
     alarmGroupId: UUID,
-    alarmGroupName: string,
     targetTransferPointId: UUID
 ) {
-    const vehicleParameters = createVehicleParameters(
-        nextUUID(draftState),
-        {
-            ...vehicleTemplatesById[alarmGroupVehicle.vehicleTemplateId]!,
-            name: alarmGroupVehicle.name,
-        },
-        draftState.materialTemplates,
-        draftState.personnelTemplates,
-        // TODO: This position is not correct but needs to be provided.
-        // Here one should use a Position with the Transfer.
-        // But this is part of later Refactoring.
-        // We need the Transfer to be created before the Vehicle is created,
-        // else we need to provide a Position that is immediately overwritten by the Add to Transfer Action.
-        // This is done here
-        // Good Thing is, it is irrelevant, because the correctPosition is set immediately after this is called.
-        MapCoordinates.create(0, 0)
-    );
-
     VehicleActionReducers.addVehicle.reducer(draftState, {
         type: '[Vehicle] Add vehicle',
-        vehicle: vehicleParameters.vehicle,
-        materials: vehicleParameters.materials,
-        personnel: vehicleParameters.personnel,
+        vehicleParameters,
     });
     TransferActionReducers.addToTransfer.reducer(draftState, {
         type: '[Transfer] Add to transfer',
         elementType: vehicleParameters.vehicle.type,
         elementId: vehicleParameters.vehicle.id,
         startPoint: cloneDeepMutable(
-            AlarmGroupStartPoint.create(alarmGroupId, alarmGroupVehicle.time)
+            AlarmGroupStartPoint.create(alarmGroupId, time)
         ),
         targetTransferPointId,
     });

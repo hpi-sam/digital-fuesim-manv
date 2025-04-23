@@ -28,3 +28,4 @@ export * from './request-target/index.js';
 export * from './occupations/index.js';
 export * from './tag-helpers.js';
 export * from './material-type.js';
+export * from './vehicle-parameters.js';
