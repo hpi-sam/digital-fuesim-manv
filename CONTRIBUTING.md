@@ -41,7 +41,7 @@
 
 # Absprachen zu Pull Requests und Reviews
 
-    - lieber häufigere, kleinere PR´s als "Monster"-PR´s, die man nur schwer überblicken kann
+    - lieber häufigere, kleinere PR´s als "Monster"-PR´s", die man nur schwer überblicken kann
     - saubere, verständliche Beschreibungen / Dokumentation
     - lieber frühzeitige PR´s, damit man schneller Feedback geben / erhalten kann
     - nach Möglichkeit frühzeitig Feedback bereitstellen
