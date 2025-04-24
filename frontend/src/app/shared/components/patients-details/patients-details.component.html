@@ -211,5 +211,15 @@
             </table>
         </ng-template>
     </ng-container>
+    <ng-container ngbNavItem *ngIf="patient$ | async as patient">
+        <a ngbNavLink data-cy="patientPopupGeneralNav">QR-Code</a>
+        <ng-template ngbNavContent>
+            <qr-code
+                [value]="patient.identifier"
+                size="300"
+                errorCorrectionLevel="M"
+            />
+        </ng-template>
+    </ng-container>
 </nav>
 <div [ngbNavOutlet]="nav" class="mt-2"></div>
