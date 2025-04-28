@@ -10,6 +10,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 ### Fixed
 
 - Imports of exercise once again can be performed in the frontend
+- Material and Personnel from vehicles that were sent trough an alarm group can now be interacted with again
 
 ## [0.8.0] - 2025-04-14
 
