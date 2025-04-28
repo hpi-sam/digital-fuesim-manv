@@ -7,6 +7,10 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ## [Unreleased]
 
+### Fixed
+
+- Imports of exercise once again can be performed in the frontend
+
 ## [0.8.0] - 2025-04-14
 
 ### Added

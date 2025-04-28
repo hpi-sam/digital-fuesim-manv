@@ -487,13 +487,13 @@ Keep in mind, that if you don't use docker you have to run `npm run licensing:al
             <small>Supervisor 2021-23<small>
         </td>
         <td style="text-align: center">
-            <a href="https://github.com/christianzoellner">
+            <a href="https://github.com/christianschaeffer">
                 <img
                     src="https://avatars.githubusercontent.com/u/4678160?v=4"
                     width="100px;"
                 />
                 <br />
-                <sub><b>Christian Zöllner</b></sub>
+                <sub><b>Christian Schäffer</b></sub>
             </a>
             <br />
             📆

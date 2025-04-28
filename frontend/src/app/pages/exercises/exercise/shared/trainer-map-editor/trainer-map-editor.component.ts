@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
-import { plainToInstance } from 'class-transformer';
 import {
     Viewport,
     TransferPoint,
@@ -122,9 +121,7 @@ export class TrainerMapEditorComponent {
             ) as PartialExport;
             const migratedPartialExport =
                 migratePartialExport(importedPlainObject);
-            const validation = validateExerciseExport(
-                plainToInstance(PartialExport, migratedPartialExport)
-            );
+            const validation = validateExerciseExport(migratedPartialExport);
             if (validation.length > 0) {
                 throw Error(
                     `PartialExport is invalid:\n${validation.join('\n')}`

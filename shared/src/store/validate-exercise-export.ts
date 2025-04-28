@@ -12,12 +12,12 @@ import { defaultValidateOptions } from './validation-options.js';
 /**
  *
  * @param exportImportFile A json object that should be checked for validity.
- * @returns An array of errors validating {@link exportImportFile}. An empty array indicates a valid exportImport object.
+ * @returns An array of errors validating {@link exportImportFile}. An empty array indicates a valid `ExportImportFile` object.
  */
 export function validateExerciseExport(
     exportImportFile: ExportImportFile
 ): (ValidationError | string)[] {
-    // Be aware that `action` could be any json object. We need to program defensively here.
+    // Be aware that `exportImportFile` could be any json object. We need to program defensively here.
     if (typeof exportImportFile.type !== 'string') {
         return ['Export/import type is not a string.'];
     }
@@ -31,12 +31,12 @@ export function validateExerciseExport(
         return [`Unknown export/import type: ${exportImportFile.type}`];
     }
 
-    // This works - no idea about the type error though...
-    const validationErrors: (ValidationError | string)[] = validateSync(
-        plainToInstance(
-            exportImportClass as Constructor<ExportImportFile>,
-            exportImportFile
-        ),
+    const exportImportFileInstance = plainToInstance(
+        exportImportClass as Constructor<ExportImportFile>,
+        exportImportFile
+    );
+    const validationErrors = validateSync(
+        exportImportFileInstance,
         defaultValidateOptions
     );
     return validationErrors;
