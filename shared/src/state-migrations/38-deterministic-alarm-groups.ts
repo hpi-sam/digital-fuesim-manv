@@ -1,6 +1,8 @@
+import { nextUUID } from '../simulation/utils/randomness.js';
+import { ExerciseState } from '../state.js';
 import { getElement } from '../store/action-reducers/utils/index.js';
 import { arrayToUUIDSet } from '../utils/array-to-uuid-set.js';
-import { uuid, type UUID } from '../utils/index.js';
+import { Mutable, uuid, type UUID } from '../utils/index.js';
 import type { Migration } from './migration-functions.js';
 
 interface VehicleParameters {
@@ -216,6 +218,8 @@ export const deterministicAlarmGroups38: Migration = {
                 const typedAction = action as {
                     alarmGroupId: UUID;
                     sortedVehicleParameters: VehicleParameters[];
+                    firstVehiclesCount: number;
+                    firstVehiclesTargetTransferPointId: UUID | undefined;
                 };
                 const typedState = intermediaryState as {
                     materialTemplates: {
@@ -233,11 +237,15 @@ export const deterministicAlarmGroups38: Migration = {
                     typedAction.alarmGroupId
                 );
 
-                const sortedAlarmGroupVehicles = Object.values(
+                const alarmGroupVehicles = Object.values(
                     alarmGroup.alarmGroupVehicles as {
-                        [key: UUID]: { vehicleTemplateId: UUID; name: string };
+                        [key: UUID]: {
+                            id: UUID;
+                            vehicleTemplateId: UUID;
+                            name: string;
+                        };
                     }
-                ).sort((a: any, b: any) => a.time - b.time);
+                );
 
                 const vehicleTemplatesById = Object.fromEntries(
                     typedState.vehicleTemplates.map((template) => [
@@ -246,10 +254,33 @@ export const deterministicAlarmGroups38: Migration = {
                     ])
                 );
 
-                const sortedVehicleParameters = sortedAlarmGroupVehicles.map(
+                // We're trying to restore the original vehicle IDs that were generated with `nextUUID`.
+                // Therefore, we must create them in the same order as the original code, i. e., only
+                // sort by time if we have a different destination for the first vehicles
+                if (
+                    typedAction.firstVehiclesCount > 0 &&
+                    typedAction.firstVehiclesTargetTransferPointId
+                ) {
+                    alarmGroupVehicles.sort(
+                        (a: any, b: any) => a.time - b.time
+                    );
+                }
+
+                const vehicleIds = Object.fromEntries(
+                    alarmGroupVehicles.map((alarmGroupVehicle) => [
+                        alarmGroupVehicle.id,
+                        nextUUID(intermediaryState as Mutable<ExerciseState>),
+                    ])
+                );
+
+                // However, the new action expects the vehicles to be always sorted.
+                // So now, we sort again and can then draw the IDs from our map
+                alarmGroupVehicles.sort((a: any, b: any) => a.time - b.time);
+
+                const sortedVehicleParameters = alarmGroupVehicles.map(
                     (alarmGroupVehicle) =>
                         createVehicleParameters(
-                            uuid(),
+                            vehicleIds[alarmGroupVehicle.id]!,
                             {
                                 ...vehicleTemplatesById[
                                     alarmGroupVehicle.vehicleTemplateId
