@@ -1,8 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { plainToInstance } from 'class-transformer';
-import type { Constructor, ExportImportFile } from 'digital-fuesim-manv-shared';
-import { PartialExport, StateExport } from 'digital-fuesim-manv-shared';
+import type { ExportImportFile } from 'digital-fuesim-manv-shared';
 import { escapeRegExp } from 'lodash-es';
 import { ApiService } from 'src/app/core/api.service';
 import { MessageService } from 'src/app/core/messages/message.service';
@@ -68,18 +66,10 @@ export class LandingPageComponent {
             if (!['complete', 'partial'].includes(type)) {
                 throw new Error(`Ungültiger Dateityp: \`type === ${type}\``);
             }
-            const importInstance = plainToInstance(
-                (type === 'complete'
-                    ? StateExport
-                    : PartialExport) as Constructor<
-                    PartialExport | StateExport
-                >,
-                importPlain
-            );
-            switch (importInstance.type) {
+            switch (importPlain.type) {
                 case 'complete': {
                     const ids =
-                        await this.apiService.importExercise(importInstance);
+                        await this.apiService.importExercise(importPlain);
                     this.trainerId = ids.trainerId;
                     this.exerciseId = this.trainerId;
                     this.participantId = ids.participantId;
