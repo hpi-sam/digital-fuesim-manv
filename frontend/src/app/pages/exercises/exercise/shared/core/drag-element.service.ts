@@ -187,8 +187,8 @@ export class DragElementService {
                     );
                     this.exerciseService.proposeAction(
                         {
-                            ...params,
                             type: '[Vehicle] Add vehicle',
+                            vehicleParameters: params,
                         },
                         true
                     );

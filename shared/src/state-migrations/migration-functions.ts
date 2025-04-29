@@ -27,6 +27,7 @@ import { addCatchAllHospital34 } from './34-add-catch-all-hospital.js';
 import { addTransferInitiatingRegionToRequestEvents35 } from './35-add-transfer-initiating-region-to-request-events.js';
 import { addAlarmGroupIdToAlarmGroupStartPoint36 } from './36-add-alarm-group-id-to-alarm-group-start-point.js';
 import { addPatientIdentifiers37 } from './37-add-patient-identifiers.js';
+import { deterministicAlarmGroups38 } from './38-deterministic-alarm-groups.js';
 import { removeSetParticipantIdAction4 } from './4-remove-set-participant-id-action.js';
 import { removeStatistics5 } from './5-remove-statistics.js';
 import { removeStateHistory6 } from './6-remove-state-history.js';
@@ -97,4 +98,5 @@ export const migrations: {
     35: addTransferInitiatingRegionToRequestEvents35,
     36: addAlarmGroupIdToAlarmGroupStartPoint36,
     37: addPatientIdentifiers37,
+    38: deterministicAlarmGroups38,
 };

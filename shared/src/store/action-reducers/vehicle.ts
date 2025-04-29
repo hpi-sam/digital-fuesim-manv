@@ -1,6 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsArray, IsString, IsUUID, ValidateNested } from 'class-validator';
-import { Material } from '../../models/material.js';
+import { IsString, IsUUID, ValidateNested } from 'class-validator';
 import type { ExerciseOccupation } from '../../models/utils/index.js';
 import {
     changeOccupation,
@@ -16,6 +15,7 @@ import {
     MapPosition,
     occupationTypeOptions,
     SimulatedRegionPosition,
+    VehicleParameters,
     VehiclePosition,
 } from '../../models/utils/index.js';
 import {
@@ -42,8 +42,6 @@ import {
     PersonnelRemovedEvent,
     VehicleRemovedEvent,
 } from '../../simulation/events/index.js';
-import { Vehicle } from '../../models/vehicle.js';
-import { Personnel } from '../../models/personnel.js';
 import { deletePatient } from './patient.js';
 import { completelyLoadVehicle as completelyLoadVehicleHelper } from './utils/completely-load-vehicle.js';
 import { getElement } from './utils/get-element.js';
@@ -118,19 +116,10 @@ export function deleteVehicle(
 export class AddVehicleAction implements Action {
     @IsValue('[Vehicle] Add vehicle' as const)
     public readonly type = '[Vehicle] Add vehicle';
-    @ValidateNested()
-    @Type(() => Vehicle)
-    public readonly vehicle!: Vehicle;
 
-    @IsArray()
     @ValidateNested()
-    @Type(() => Material)
-    public readonly materials!: readonly Material[];
-
-    @IsArray()
-    @ValidateNested()
-    @Type(() => Personnel)
-    public readonly personnel!: readonly Personnel[];
+    @Type(() => VehicleParameters)
+    public readonly vehicleParameters!: VehicleParameters;
 }
 
 export class RenameVehicleAction implements Action {
@@ -223,7 +212,8 @@ export class SetVehicleOccupationAction implements Action {
 export namespace VehicleActionReducers {
     export const addVehicle: ActionReducer<AddVehicleAction> = {
         action: AddVehicleAction,
-        reducer: (draftState, { vehicle, materials, personnel }) => {
+        reducer: (draftState, { vehicleParameters }) => {
+            const { vehicle, materials, personnel } = vehicleParameters;
             if (
                 materials.some(
                     (material) =>
