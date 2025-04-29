@@ -244,6 +244,7 @@ export const deterministicAlarmGroups38: Migration = {
                             id: UUID;
                             vehicleTemplateId: UUID;
                             name: string;
+                            time: number;
                         };
                     }
                 );
@@ -262,9 +263,7 @@ export const deterministicAlarmGroups38: Migration = {
                     typedAction.firstVehiclesCount > 0 &&
                     typedAction.firstVehiclesTargetTransferPointId
                 ) {
-                    alarmGroupVehicles.sort(
-                        (a: { time: number }, b: { time: number }) => a.time - b.time
-                    );
+                    alarmGroupVehicles.sort((a, b) => a.time - b.time);
                 }
 
                 const vehicleIds = Object.fromEntries(
@@ -276,7 +275,7 @@ export const deterministicAlarmGroups38: Migration = {
 
                 // However, the new action expects the vehicles to be always sorted.
                 // So now, we sort again and can then draw the IDs from our map
-                alarmGroupVehicles.sort((a: { time: number }, b: { time: number }) => a.time - b.time);
+                alarmGroupVehicles.sort((a, b) => a.time - b.time);
 
                 const sortedVehicleParameters = alarmGroupVehicles.map(
                     (alarmGroupVehicle) =>
