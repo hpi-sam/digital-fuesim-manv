@@ -7,6 +7,8 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ## [Unreleased]
 
+## [0.8.1] - 2025-04-29
+
 ### Fixed
 
 - Imports of exercise once again can be performed in the frontend
@@ -295,7 +297,8 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ### Initial unstable release of Digitale FüSim MANV
 
-[unreleased]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.8.0...HEAD
+[unreleased]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.8.1...HEAD
+[0.8.1]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.8.0...v0.8.1
 [0.8.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.7.1...v0.8.0
 [0.7.1]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.6.0...v0.7.0
