@@ -119,7 +119,7 @@ export class SendAlarmGroupInterfaceComponent implements OnDestroy {
         // It will be overwritten directly after by putting the vehicle into transfer
         const placeholderPosition = MapCoordinates.create(0, 0);
 
-        // Create vehicles for the alarm group
+        // Create vehicle parameters for the alarm group
         // This has to be done in the frontend to ensure the UUIDs of the vehicles, material, and personnel are consistent across all clients
         const vehicleParameters = sortedAlarmGroupVehicles.map(
             (alarmGroupVehicle) =>
