@@ -263,7 +263,7 @@ export const deterministicAlarmGroups38: Migration = {
                     typedAction.firstVehiclesTargetTransferPointId
                 ) {
                     alarmGroupVehicles.sort(
-                        (a: any, b: any) => a.time - b.time
+                        (a: { time: number }, b: { time: number }) => a.time - b.time
                     );
                 }
 
@@ -276,7 +276,7 @@ export const deterministicAlarmGroups38: Migration = {
 
                 // However, the new action expects the vehicles to be always sorted.
                 // So now, we sort again and can then draw the IDs from our map
-                alarmGroupVehicles.sort((a: any, b: any) => a.time - b.time);
+                alarmGroupVehicles.sort((a: { time: number }, b: { time: number }) => a.time - b.time);
 
                 const sortedVehicleParameters = alarmGroupVehicles.map(
                     (alarmGroupVehicle) =>
