@@ -214,8 +214,22 @@
     <ng-container ngbNavItem *ngIf="patient$ | async as patient">
         <a ngbNavLink data-cy="patientPopupGeneralNav">QR-Code</a>
         <ng-template ngbNavContent>
+            <div *ngIf="(currentRole$ | async) === 'trainer'">
+                <div class="small fw-bold p-1">QR-Code-Inhalt</div>
+                <div class="p-1">
+                    <input
+                        [ngModel]="patient.customQRCode"
+                        (appSaveOnTyping)="updateCustomQRCode($event)"
+                        [appAutofocus]="true"
+                        maxlength="65535"
+                        [placeholder]="patient.identifier"
+                        class="form-control form-control-sm no-validation w-100"
+                        data-cy="patientPopupCustomQRCodeInput"
+                    />
+                </div>
+            </div>
             <qr-code
-                [value]="patient.identifier"
+                [value]="patient.customQRCode || patient.identifier"
                 size="300"
                 errorCorrectionLevel="M"
             />
