@@ -7,6 +7,10 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ## [Unreleased]
 
+### Fixed
+
+- When moving an element on the map fails, the element will now be moved back to its previous location
+
 ## [0.8.1] - 2025-04-29
 
 ### Fixed
