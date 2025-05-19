@@ -11,6 +11,7 @@ import {
     selector: 'app-signaller-modal',
     templateUrl: './signaller-modal.component.html',
     styleUrls: ['./signaller-modal.component.scss'],
+    standalone: false,
 })
 export class SignallerModalComponent {
     public get eocId() {

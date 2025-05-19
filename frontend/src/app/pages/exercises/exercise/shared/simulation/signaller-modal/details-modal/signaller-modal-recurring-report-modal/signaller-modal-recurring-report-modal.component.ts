@@ -1,11 +1,9 @@
 import type { OnInit } from '@angular/core';
 import { Component, Input } from '@angular/core';
 import { Store } from '@ngrx/store';
-import {
-    ReportableInformation,
-    UUID,
-    reportableInformationTypeToGermanNameDictionary,
-} from 'digital-fuesim-manv-shared';
+import type { UUID } from 'digital-fuesim-manv-shared';
+import type { ReportableInformation } from 'digital-fuesim-manv-shared';
+import { reportableInformationTypeToGermanNameDictionary } from 'digital-fuesim-manv-shared';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
@@ -20,6 +18,7 @@ import { SignallerModalDetailsService } from '../signaller-modal-details.service
     selector: 'app-signaller-modal-recurring-report-modal',
     templateUrl: './signaller-modal-recurring-report-modal.component.html',
     styleUrls: ['./signaller-modal-recurring-report-modal.component.scss'],
+    standalone: false,
 })
 export class SignallerModalRecurringReportModalComponent implements OnInit {
     @Input()

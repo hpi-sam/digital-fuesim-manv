@@ -2,9 +2,9 @@ import type { OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { Component, Input, ViewChild } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type { ResourceDescription } from 'digital-fuesim-manv-shared';
+import type { UUID } from 'digital-fuesim-manv-shared';
 import {
     TransferPoint,
-    UUID,
     isInSpecificSimulatedRegion,
     isUnoccupiedImmutable,
 } from 'digital-fuesim-manv-shared';
@@ -32,6 +32,7 @@ import { SignallerModalDetailsService } from '../signaller-modal-details.service
     selector: 'app-signaller-modal-provide-vehicles-editor',
     templateUrl: './signaller-modal-provide-vehicles-editor.component.html',
     styleUrls: ['./signaller-modal-provide-vehicles-editor.component.scss'],
+    standalone: false,
 })
 export class SignallerModalProvideVehiclesEditorComponent
     implements OnInit, OnChanges, OnDestroy
@@ -148,21 +149,17 @@ export class SignallerModalProvideVehiclesEditorComponent
     }
 
     increaseAmount(vehicleType: string) {
-        if (this.vehicleAmounts[vehicleType] === undefined) {
-            this.vehicleAmounts[vehicleType] = 0;
-        }
+        this.vehicleAmounts[vehicleType] ??= 0;
 
         this.vehicleAmounts[vehicleType]++;
     }
 
     decreaseAmount(vehicleType: string) {
-        if (this.vehicleAmounts[vehicleType] === undefined) {
-            this.vehicleAmounts[vehicleType] = 0;
-        }
+        this.vehicleAmounts[vehicleType] ??= 0;
 
         this.vehicleAmounts[vehicleType]--;
 
-        if (this.vehicleAmounts[vehicleType]! < 0) {
+        if (this.vehicleAmounts[vehicleType] < 0) {
             this.vehicleAmounts[vehicleType] = 0;
         }
     }

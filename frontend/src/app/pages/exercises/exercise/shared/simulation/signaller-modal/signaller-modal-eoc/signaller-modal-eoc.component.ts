@@ -10,6 +10,7 @@ import { SignallerModalDetailsService } from '../details-modal/signaller-modal-d
     selector: 'app-signaller-modal-eoc',
     templateUrl: './signaller-modal-eoc.component.html',
     styleUrls: ['./signaller-modal-eoc.component.scss'],
+    standalone: false,
 })
 export class SignallerModalEocComponent {
     @ViewChild('alarmGroupsSentDisplay')

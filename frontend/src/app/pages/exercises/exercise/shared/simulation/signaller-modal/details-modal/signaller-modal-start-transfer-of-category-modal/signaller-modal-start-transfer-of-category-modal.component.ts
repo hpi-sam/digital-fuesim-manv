@@ -5,7 +5,7 @@ import type {
     PatientStatus,
     PatientStatusForTransport,
 } from 'digital-fuesim-manv-shared';
-import { UUID } from 'digital-fuesim-manv-shared';
+import type { UUID } from 'digital-fuesim-manv-shared';
 import { Subject } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import type { HotkeyLayer } from 'src/app/shared/services/hotkeys.service';
@@ -23,6 +23,7 @@ import { SignallerModalDetailsService } from '../signaller-modal-details.service
     styleUrls: [
         './signaller-modal-start-transfer-of-category-modal.component.scss',
     ],
+    standalone: false,
 })
 export class SignallerModalStartTransferOfCategoryModalComponent
     implements OnInit, OnDestroy

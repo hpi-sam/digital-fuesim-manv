@@ -11,6 +11,7 @@ import {
     selector: 'app-signaller-modal-details-modal',
     templateUrl: './signaller-modal-details-modal.component.html',
     styleUrls: ['./signaller-modal-details-modal.component.scss'],
+    standalone: false,
 })
 export class SignallerModalDetailsModalComponent implements OnInit, OnDestroy {
     @Input() title = '';
@@ -21,16 +22,16 @@ export class SignallerModalDetailsModalComponent implements OnInit, OnDestroy {
 
     constructor(
         private readonly activeModal: NgbActiveModal,
-        private readonly hotkeysServive: HotkeysService
+        private readonly hotkeysService: HotkeysService
     ) {}
 
     ngOnInit() {
-        this.hotkeyLayer = this.hotkeysServive.createLayer(true);
+        this.hotkeyLayer = this.hotkeysService.createLayer(true);
         this.hotkeyLayer.addHotkey(this.closeHotkey);
     }
 
     ngOnDestroy() {
-        this.hotkeysServive.removeLayer(this.hotkeyLayer);
+        this.hotkeysService.removeLayer(this.hotkeyLayer);
     }
 
     public close() {

@@ -10,6 +10,7 @@ import {
     selector: 'app-signaller-modal-no-leader-overlay',
     templateUrl: './signaller-modal-no-leader-overlay.component.html',
     styleUrls: ['./signaller-modal-no-leader-overlay.component.scss'],
+    standalone: false,
 })
 export class SignallerModalNoLeaderOverlayComponent
     implements OnInit, OnDestroy

@@ -2,7 +2,7 @@ import type { OnChanges, OnDestroy } from '@angular/core';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type { Personnel } from 'digital-fuesim-manv-shared';
-import { UUID } from 'digital-fuesim-manv-shared';
+import type { UUID } from 'digital-fuesim-manv-shared';
 import {
     combineLatest,
     map,
@@ -21,6 +21,7 @@ import {
     selector: 'app-signaller-modal-region-leader',
     templateUrl: './signaller-modal-region-leader.component.html',
     styleUrls: ['./signaller-modal-region-leader.component.scss'],
+    standalone: false,
 })
 export class SignallerModalRegionLeaderComponent
     implements OnChanges, OnDestroy

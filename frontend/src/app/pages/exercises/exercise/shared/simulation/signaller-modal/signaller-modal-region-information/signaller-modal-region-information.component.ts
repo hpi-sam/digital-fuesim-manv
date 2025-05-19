@@ -2,7 +2,8 @@ import type { OnChanges, OnInit } from '@angular/core';
 import { Component, Input, TemplateRef, ViewChild } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type { ReportableInformation } from 'digital-fuesim-manv-shared';
-import { UUID, makeInterfaceSignallerKey } from 'digital-fuesim-manv-shared';
+import type { UUID } from 'digital-fuesim-manv-shared';
+import { makeInterfaceSignallerKey } from 'digital-fuesim-manv-shared';
 import { type Observable, BehaviorSubject, map } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import { Hotkey } from 'src/app/shared/services/hotkeys.service';
@@ -20,6 +21,7 @@ import { SignallerModalDetailsService } from '../details-modal/signaller-modal-d
     selector: 'app-signaller-modal-region-information',
     templateUrl: './signaller-modal-region-information.component.html',
     styleUrls: ['./signaller-modal-region-information.component.scss'],
+    standalone: false,
 })
 export class SignallerModalRegionInformationComponent
     implements OnInit, OnChanges

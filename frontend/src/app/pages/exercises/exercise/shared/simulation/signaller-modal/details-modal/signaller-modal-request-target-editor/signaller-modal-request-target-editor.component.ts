@@ -5,10 +5,10 @@ import type {
     ExerciseRequestTargetConfiguration,
     RequestBehaviorState,
 } from 'digital-fuesim-manv-shared';
+import type { UUID } from 'digital-fuesim-manv-shared';
 import {
     SimulatedRegionRequestTargetConfiguration,
     TraineesRequestTargetConfiguration,
-    UUID,
 } from 'digital-fuesim-manv-shared';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import type { AppState } from 'src/app/state/app.state';
@@ -30,12 +30,13 @@ import { SignallerModalDetailsService } from '../signaller-modal-details.service
     selector: 'app-signaller-modal-request-target-editor',
     templateUrl: './signaller-modal-request-target-editor.component.html',
     styleUrls: ['./signaller-modal-request-target-editor.component.scss'],
+    standalone: false,
 })
 export class SignallerModalRequestDestinationEditorComponent
     implements OnInit, OnChanges, OnDestroy
 {
-    public readonly TRAINEES_ID = 'trainees' as const;
-    public readonly TRAINEES_NAME = 'Die übende Einsatzleitung' as const;
+    public readonly TRAINEES_ID = 'trainees';
+    public readonly TRAINEES_NAME = 'Die übende Einsatzleitung';
 
     @Input() simulatedRegionId!: UUID;
     @Input() requestBehaviorId!: UUID;
@@ -85,8 +86,8 @@ export class SignallerModalRequestDestinationEditorComponent
             map(([target, simulatedRegions]) =>
                 target.type === 'traineesRequestTarget'
                     ? this.TRAINEES_NAME
-                    : simulatedRegions[target.targetSimulatedRegionId]?.name ??
-                      'unbekannt'
+                    : (simulatedRegions[target.targetSimulatedRegionId]?.name ??
+                      'unbekannt')
             )
         );
 

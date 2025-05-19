@@ -3,7 +3,8 @@ import { Component, Input, ViewChild } from '@angular/core';
 import { NgbPopover } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
 import type { ManagePatientTransportToHospitalBehaviorState } from 'digital-fuesim-manv-shared';
-import { StrictObject, UUID } from 'digital-fuesim-manv-shared';
+import type { UUID } from 'digital-fuesim-manv-shared';
+import { StrictObject } from 'digital-fuesim-manv-shared';
 import { difference } from 'lodash-es';
 import { combineLatest, map, type Observable } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
@@ -24,6 +25,7 @@ import { SignallerModalDetailsService } from '../signaller-modal-details.service
     selector: 'app-signaller-modal-transport-trays-editor',
     templateUrl: './signaller-modal-transport-trays-editor.component.html',
     styleUrls: ['./signaller-modal-transport-trays-editor.component.scss'],
+    standalone: false,
 })
 export class SignallerModalTransportTraysEditorComponent
     implements OnInit, OnChanges, OnDestroy

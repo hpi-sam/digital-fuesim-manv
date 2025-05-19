@@ -30,6 +30,7 @@ let firstVehiclesCount = 0;
     selector: 'app-send-alarm-group-interface',
     templateUrl: './send-alarm-group-interface.component.html',
     styleUrls: ['./send-alarm-group-interface.component.scss'],
+    standalone: false,
 })
 export class SendAlarmGroupInterfaceComponent implements OnInit, OnDestroy {
     private readonly destroy$ = new Subject<void>();

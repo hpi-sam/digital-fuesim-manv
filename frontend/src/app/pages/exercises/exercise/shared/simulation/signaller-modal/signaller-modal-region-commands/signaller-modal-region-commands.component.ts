@@ -1,7 +1,8 @@
 import type { OnChanges } from '@angular/core';
 import { Component, Input, TemplateRef, ViewChild } from '@angular/core';
 import type { ExerciseSimulationBehaviorType } from 'digital-fuesim-manv-shared';
-import { UUID, isInSpecificSimulatedRegion } from 'digital-fuesim-manv-shared';
+import type { UUID } from 'digital-fuesim-manv-shared';
+import { isInSpecificSimulatedRegion } from 'digital-fuesim-manv-shared';
 import { Hotkey } from 'src/app/shared/services/hotkeys.service';
 import { Store, createSelector } from '@ngrx/store';
 import type { AppState } from 'src/app/state/app.state';
@@ -17,6 +18,7 @@ import type { InterfaceSignallerInteraction } from '../signaller-modal-interacti
     selector: 'app-signaller-modal-region-commands',
     templateUrl: './signaller-modal-region-commands.component.html',
     styleUrls: ['./signaller-modal-region-commands.component.scss'],
+    standalone: false,
 })
 export class SignallerModalRegionCommandsComponent implements OnChanges {
     @Input()

@@ -1,7 +1,8 @@
 import type { OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { Component, Input } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { TransferPoint, UUID } from 'digital-fuesim-manv-shared';
+import type { UUID } from 'digital-fuesim-manv-shared';
+import { TransferPoint } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { combineLatest, map } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
@@ -23,6 +24,7 @@ import { SignallerModalDetailsService } from '../signaller-modal-details.service
     selector: 'app-signaller-modal-transfer-connections-editor',
     templateUrl: './signaller-modal-transfer-connections-editor.component.html',
     styleUrls: ['./signaller-modal-transfer-connections-editor.component.scss'],
+    standalone: false,
 })
 export class SignallerModalTransferConnectionsEditorComponent
     implements OnInit, OnChanges, OnDestroy

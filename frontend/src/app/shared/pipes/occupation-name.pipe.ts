@@ -16,6 +16,7 @@ const occupationNamesDictionary: {
 
 @Pipe({
     name: 'occupationName',
+    standalone: false,
 })
 export class OccupationNamePipe implements PipeTransform {
     transform(occupationType: ExerciseOccupationType | undefined): string {

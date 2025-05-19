@@ -5,6 +5,7 @@ import type { Hotkey } from '../../services/hotkeys.service';
     selector: 'app-hotkey-indicator',
     templateUrl: './hotkey-indicator.component.html',
     styleUrls: ['./hotkey-indicator.component.scss'],
+    standalone: false,
 })
 export class HotkeyIndicatorComponent {
     @Input() hotkey: Hotkey | null = null;

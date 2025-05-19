@@ -22,6 +22,7 @@ import {
     selector: 'app-signaller-modal-region-selector',
     templateUrl: './signaller-modal-region-selector.component.html',
     styleUrls: ['./signaller-modal-region-selector.component.scss'],
+    standalone: false,
 })
 export class SignallerModalRegionSelectorComponent
     implements OnInit, OnDestroy

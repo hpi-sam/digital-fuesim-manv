@@ -5,7 +5,7 @@ import type {
     ExerciseOccupationType,
     VehicleOccupationsRadiogram,
 } from 'digital-fuesim-manv-shared';
-import { UUID } from 'digital-fuesim-manv-shared';
+import type { UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import type { AppState } from 'src/app/state/app.state';
 import { createSelectRadiogram } from 'src/app/state/application/selectors/exercise.selectors';
@@ -14,6 +14,7 @@ import { createSelectRadiogram } from 'src/app/state/application/selectors/exerc
     selector: 'app-radiogram-card-content-vehicle-occupations',
     templateUrl: './radiogram-card-content-vehicle-occupations.component.html',
     styleUrls: ['./radiogram-card-content-vehicle-occupations.component.scss'],
+    standalone: false,
 })
 export class RadiogramCardContentVehicleOccupationsComponent implements OnInit {
     @Input() radiogramId!: UUID;

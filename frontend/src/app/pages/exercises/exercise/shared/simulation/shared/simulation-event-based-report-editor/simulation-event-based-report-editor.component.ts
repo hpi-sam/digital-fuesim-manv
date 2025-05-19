@@ -5,7 +5,8 @@ import type {
     ReportBehaviorState,
     SimulationBehaviorState,
 } from 'digital-fuesim-manv-shared';
-import { StrictObject, UUID } from 'digital-fuesim-manv-shared';
+import type { UUID } from 'digital-fuesim-manv-shared';
+import { StrictObject } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import type { HotkeyLayer } from 'src/app/shared/services/hotkeys.service';
@@ -61,6 +62,7 @@ interface EventBasedReport {
     selector: 'app-simulation-event-based-report-editor',
     templateUrl: './simulation-event-based-report-editor.component.html',
     styleUrls: ['./simulation-event-based-report-editor.component.scss'],
+    standalone: false,
 })
 export class SimulationEventBasedReportEditorComponent
     implements OnChanges, OnDestroy
@@ -132,7 +134,7 @@ export class SimulationEventBasedReportEditorComponent
 
     updateEventBasedReport(type: EventId, isEnabled: boolean) {
         this.exerciseService.proposeAction({
-            type: eventBasedReportData[type]!.actionType,
+            type: eventBasedReportData[type].actionType,
             simulatedRegionId: this.simulatedRegionId,
             behaviorId: this.reportBehaviorId,
             reportChanges: isEnabled,

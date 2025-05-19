@@ -5,9 +5,9 @@ import type {
     ExerciseRadiogram,
     ExerciseSimulationBehaviorType,
 } from 'digital-fuesim-manv-shared';
+import type { UUID } from 'digital-fuesim-manv-shared';
 import {
     StrictObject,
-    UUID,
     getKeyDetails,
     isAccepted,
     isInterfaceSignallerKeyForClient,
@@ -58,6 +58,7 @@ export function setLoadingState(
     selector: 'app-signaller-modal-interactions',
     templateUrl: './signaller-modal-interactions.component.html',
     styleUrls: ['./signaller-modal-interactions.component.scss'],
+    standalone: false,
 })
 export class SignallerModalInteractionsComponent
     implements OnInit, OnChanges, OnDestroy
@@ -89,6 +90,7 @@ export class SignallerModalInteractionsComponent
 
         return this.interactions.filter(
             (interaction) =>
+                // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
                 interaction.name.toLowerCase().includes(lowerFilter) ||
                 // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
                 interaction.details?.toLowerCase().includes(lowerFilter) ||

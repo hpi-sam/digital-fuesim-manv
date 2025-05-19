@@ -14,6 +14,7 @@ import {
     selector: 'app-signaller-modal-regions-overview',
     templateUrl: './signaller-modal-regions-overview.component.html',
     styleUrls: ['./signaller-modal-regions-overview.component.scss'],
+    standalone: false,
 })
 export class SignallerModalRegionsOverviewComponent implements OnInit {
     regions$!: Observable<

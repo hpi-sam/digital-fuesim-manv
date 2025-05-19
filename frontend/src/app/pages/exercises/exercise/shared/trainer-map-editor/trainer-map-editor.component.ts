@@ -100,7 +100,7 @@ export class TrainerMapEditorComponent {
         openEditVehicleTemplateModal(this.ngbModalService, mapImageTemplateId);
     }
 
-    public setCurrentCategory(category: ColorCode) {
+    public setCurrentCategory(category: PatientStatus) {
         this.currentCategory =
             this.colorCodeOfCategories[
                 category as Exclude<PatientStatus, 'black' | 'blue' | 'white'>

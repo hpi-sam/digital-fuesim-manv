@@ -2,7 +2,7 @@ import type { OnInit } from '@angular/core';
 import { Component, Input } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type { TransferConnectionsRadiogram } from 'digital-fuesim-manv-shared';
-import { UUID } from 'digital-fuesim-manv-shared';
+import type { UUID } from 'digital-fuesim-manv-shared';
 import { combineLatest, map, type Observable } from 'rxjs';
 import type { AppState } from 'src/app/state/app.state';
 import {
@@ -14,6 +14,7 @@ import {
     selector: 'app-radiogram-card-content-transfer-connections',
     templateUrl: './radiogram-card-content-transfer-connections.component.html',
     styleUrls: ['./radiogram-card-content-transfer-connections.component.scss'],
+    standalone: false,
 })
 export class RadiogramCardContentTransferConnectionsComponent
     implements OnInit
