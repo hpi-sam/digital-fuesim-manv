@@ -44,7 +44,7 @@ export class SignallerModalRegionsOverviewComponent implements OnInit {
                 Object.values(simulatedRegions).map((simulatedRegion) => {
                     const assignLeaderBehavior = simulatedRegion.behaviors.find(
                         (behavior) => behavior.type === 'assignLeaderBehavior'
-                    ) as AssignLeaderBehaviorState | undefined;
+                    );
 
                     if (!assignLeaderBehavior?.leaderId) {
                         return { name: simulatedRegion.name, hasLeader: false };

@@ -32,7 +32,11 @@
         [class.active]="index === selectedIndex"
     >
         <div
-            *appLet="(this.simulatedRegionId ? (requestable$ | async)?.[interaction.key] : true) as enabled"
+            *appLet="
+                this.simulatedRegionId
+                    ? (requestable$ | async)?.[interaction.key]
+                    : true as enabled
+            "
             class="d-flex flex-row mb-2"
         >
             <div class="flex-grow-1">
@@ -114,13 +118,13 @@
 
         <app-radiogram-card
             *ngFor="
-                let radiogram of ((requestedRadiograms$ | async)?.[
+                let radiogram of (requestedRadiograms$ | async)?.[
                     interaction.key
-                ] ?? []);
+                ] ?? [];
                 trackBy: 'id'
-                    | appTrackByProperty : ((requestedRadiograms$ | async)?.[
-                    interaction.key
-                ] ?? [])
+                    | appTrackByProperty
+                        : (requestedRadiograms$ | async)?.[interaction.key] ??
+                              []
             "
             [radiogramId]="radiogram.id"
             [first]="false"

@@ -152,9 +152,7 @@ export class RadiogramCardComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     initializeHotkeyLayer() {
-        if (!this.hotkeyLayer) {
-            this.hotkeyLayer = this.hotkeyService.createLayer();
-        }
+        this.hotkeyLayer ??= this.hotkeyService.createLayer();
     }
 
     acceptOrMarkAsDone() {

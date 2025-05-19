@@ -11,7 +11,10 @@
         [class.mt-2]="!first"
     >
         <ng-container
-            *appLet="(availableVehicles$ | async)?.[vehicleTemplate.vehicleType] ?? 0 as availableVehicles"
+            *appLet="
+                (availableVehicles$ | async)?.[vehicleTemplate.vehicleType] ??
+                0 as availableVehicles
+            "
         >
             <label class="col text-nowrap"
                 >{{ vehicleTemplate.name }}<br /><span class="text-muted">
