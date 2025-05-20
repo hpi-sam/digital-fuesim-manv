@@ -1,7 +1,13 @@
 import type { OnDestroy, OnInit } from '@angular/core';
 import { Component, ViewChild } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { TransferPoint } from 'digital-fuesim-manv-shared';
+import {
+    createVehicleParameters,
+    MapCoordinates,
+    StrictObject,
+    TransferPoint,
+    uuid,
+} from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { Subject, map, takeUntil } from 'rxjs';
 import { ExerciseService } from 'src/app/core/exercise.service';
@@ -11,7 +17,10 @@ import type { AppState } from 'src/app/state/app.state';
 import {
     createSelectAlarmGroup,
     selectAlarmGroups,
+    selectMaterialTemplates,
+    selectPersonnelTemplates,
     selectTransferPoints,
+    selectVehicleTemplates,
 } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectOwnClient } from 'src/app/state/application/selectors/shared.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
@@ -202,16 +211,63 @@ export class SendAlarmGroupInterfaceComponent implements OnInit, OnDestroy {
             this.firstVehiclesCount
         );
         this.firstVehiclesCount -= firstVehiclesCountReducedBy;
+
+        const vehicleTemplates = selectStateSnapshot(
+            selectVehicleTemplates,
+            this.store
+        );
+        const vehicleTemplatesById = Object.fromEntries(
+            vehicleTemplates.map((template) => [template.id, template])
+        );
+
+        const materialTemplates = selectStateSnapshot(
+            selectMaterialTemplates,
+            this.store
+        );
+        const personnelTemplates = selectStateSnapshot(
+            selectPersonnelTemplates,
+            this.store
+        );
+
+        const sortedAlarmGroupVehicles = StrictObject.values(
+            alarmGroup.alarmGroupVehicles
+        ).sort((a, b) => a.time - b.time);
+
+        // We have to provide a map position when creating a vehicle
+        // It will be overwritten directly after by putting the vehicle into transfer
+        const placeholderPosition = MapCoordinates.create(0, 0);
+
+        // Create vehicle parameters for the alarm group
+        // This has to be done in the frontend to ensure the UUIDs of the vehicles, material, and personnel are consistent across all clients
+        const vehicleParameters = sortedAlarmGroupVehicles.map(
+            (alarmGroupVehicle) =>
+                createVehicleParameters(
+                    uuid(),
+                    {
+                        ...vehicleTemplatesById[
+                            alarmGroupVehicle.vehicleTemplateId
+                        ]!,
+                        name: alarmGroupVehicle.name,
+                    },
+                    materialTemplates,
+                    personnelTemplates,
+                    placeholderPosition
+                )
+        );
+
         const request = await this.exerciseService.proposeAction({
             type: '[Emergency Operation Center] Send Alarm Group',
             clientName: selectStateSnapshot(selectOwnClient, this.store)!.name,
             alarmGroupId: alarmGroup.id,
+            sortedVehicleParameters: vehicleParameters,
             targetTransferPointId: this.selectedTarget!.key,
             firstVehiclesCount: firstVehiclesCountForAction,
             firstVehiclesTargetTransferPointId:
                 this.selectedFirstVehiclesTarget?.key,
         });
+
         this.loading = false;
+
         if (request.success) {
             this.messageService.postMessage({
                 title: `Alarmgruppe ${alarmGroup.name} alarmiert!`,
