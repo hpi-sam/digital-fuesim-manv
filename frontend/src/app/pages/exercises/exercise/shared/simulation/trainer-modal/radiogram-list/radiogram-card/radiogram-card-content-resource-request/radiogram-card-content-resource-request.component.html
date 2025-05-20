@@ -10,7 +10,7 @@
     <ng-container
         *ngIf="
             (radiogram.requiredResource.vehicleCounts | keys).length > 0;
-            else noResourcesRequired
+            else noResourcesSpecified
         "
     >
         <table class="table card-text mb-1">
@@ -99,7 +99,16 @@
         </ng-container>
     </ng-container>
 
-    <ng-template #noResourcesRequired>
-        <p class="card-text">Es werden keine Ressourcen benötigt.</p>
+    <ng-template #noResourcesSpecified>
+        <ng-container *ngIf="radiogram.canBeAccepted; else noResourcesRequired">
+            <!-- Before migration 39, the radiogram did not specify the exact resources needed -->
+            <p class="card-text">
+                Es werden weitere Ressourcen benötigt, aber es ist keine genaue
+                Aufstellung vorhanden.
+            </p>
+        </ng-container>
+        <ng-template #noResourcesRequired>
+            <p class="card-text">Es werden keine Ressourcen benötigt.</p>
+        </ng-template>
     </ng-template>
 </ng-container>
