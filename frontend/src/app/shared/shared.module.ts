@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import {
     NgbDropdownModule,
     NgbNavModule,
+    NgbPopover,
     NgbTooltip,
 } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
@@ -47,6 +48,12 @@ import { GeographicCoordinateDirective } from './validation/geographic-coordinat
 import { SimulatedRegionNameComponent } from './components/simulated-region-name/simulated-region-name.component';
 import { SearchableDropdownComponent } from './components/searchable-dropdown/searchable-dropdown.component';
 import { PatientIdentifierComponent } from './components/patient-identifier/patient-identifier.component';
+import { HotkeysService } from './services/hotkeys.service';
+import { HotkeyIndicatorComponent } from './components/hotkey-indicator/hotkey-indicator.component';
+import { PatientStatusDropdownComponent } from './components/patient-status-dropdown/patient-status-dropdown.component';
+import { SendAlarmGroupInterfaceComponent } from './components/send-alarm-group-interface/send-alarm-group-interface.component';
+import { OccupationNamePipe } from './pipes/occupation-name.pipe';
+import { OccupationShortNamePipe } from './pipes/occupation-short-name.pipe';
 
 @NgModule({
     declarations: [
@@ -90,6 +97,11 @@ import { PatientIdentifierComponent } from './components/patient-identifier/pati
         GeographicCoordinateDirective,
         SearchableDropdownComponent,
         PatientIdentifierComponent,
+        HotkeyIndicatorComponent,
+        PatientStatusDropdownComponent,
+        SendAlarmGroupInterfaceComponent,
+        OccupationNamePipe,
+        OccupationShortNamePipe,
     ],
     imports: [
         CommonModule,
@@ -98,6 +110,7 @@ import { PatientIdentifierComponent } from './components/patient-identifier/pati
         NgbDropdownModule,
         NgbNavModule,
         NgbTooltip,
+        NgbPopover,
     ],
     exports: [
         AutofocusDirective,
@@ -136,6 +149,12 @@ import { PatientIdentifierComponent } from './components/patient-identifier/pati
         GeographicCoordinateDirective,
         SearchableDropdownComponent,
         PatientIdentifierComponent,
+        HotkeyIndicatorComponent,
+        PatientStatusDropdownComponent,
+        SendAlarmGroupInterfaceComponent,
+        OccupationNamePipe,
+        OccupationShortNamePipe,
     ],
+    providers: [HotkeysService],
 })
 export class SharedModule {}

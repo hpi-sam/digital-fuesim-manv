@@ -44,6 +44,7 @@
         "chart.js": "^4.4.8",
         "class-validator": "^0.14.1",
         "digital-fuesim-manv-shared": "file:../shared",
+        "hotkeys-js": "^3.10.3",
         "immer": "^10.1.1",
         "lodash-es": "4.17.21",
         "ol": "^7.5.2",
