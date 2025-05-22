@@ -5,7 +5,6 @@
     <div class="col-auto">
         <input
             [id]="'eventBasedReportEditor_' + eventBasedReport.eventId"
-            #timeInput="ngModel"
             [ngModel]="
                 (reportBehaviorState$ | async)?.[eventBasedReport.enabledKey]
             "
@@ -17,7 +16,10 @@
     <div class="col-sm">
         <label [for]="'eventBasedReportEditor_' + eventBasedReport.eventId">
             {{ eventBasedReport.description }}
-            <app-hotkey-indicator [hotkey]="eventBasedReport.hotkey" />
+            <app-hotkey-indicator
+                *ngIf="useHotkeys"
+                [hotkey]="eventBasedReport.hotkey"
+            />
         </label>
     </div>
 </div>
