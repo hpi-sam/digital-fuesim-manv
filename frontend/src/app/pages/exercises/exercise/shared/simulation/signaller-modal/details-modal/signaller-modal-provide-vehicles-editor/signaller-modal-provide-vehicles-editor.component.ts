@@ -186,13 +186,13 @@ export class SignallerModalProvideVehiclesEditorComponent
                 if (result.success) {
                     this.messageService.postMessage({
                         title: 'Befehl erteilt',
-                        body: 'Der Fahrzeug wurde erfolgreich entsendet',
+                        body: 'Die Fahrzeuge werden in Kürze entsendet',
                         color: 'success',
                     });
                 } else {
                     this.messageService.postError({
                         title: 'Fehler beim Erteilen des Befehls',
-                        body: 'Das Fahrzeug konnte nicht entsendet werden',
+                        body: 'Der Fahrzeug-Befehl ist nicht bei der simulierten Abschnittsleitung angekommen',
                     });
                 }
 
