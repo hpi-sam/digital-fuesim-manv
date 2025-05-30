@@ -10,6 +10,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 ### Fixed
 
 - When moving an element on the map fails, the element will now be moved back to its previous location
+- The transfer overview now uses the names of the personnel types instead of their internal abbreviations
 
 ## [0.8.1] - 2025-04-29
 
