@@ -1,6 +1,9 @@
 import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { currentTransferOf, personnelTypeNames } from 'digital-fuesim-manv-shared';
+import {
+    currentTransferOf,
+    personnelTypeNames,
+} from 'digital-fuesim-manv-shared';
 import type { AppState } from 'src/app/state/app.state';
 import {
     selectExerciseStatus,
