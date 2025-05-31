@@ -138,7 +138,7 @@ export class SignallerModalRecurringReportModalComponent implements OnInit {
             } else {
                 this.messageService.postError({
                     title: 'Fehler beim Erteilen des Befehls',
-                    body: 'Die Einstellungen für den regelmäßigen Bericht wurden angepasst',
+                    body: 'Die Einstellungen für den regelmäßigen Bericht konnten nicht angepasst werden',
                 });
             }
 
