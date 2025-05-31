@@ -118,7 +118,7 @@ export class SignallerModalRecurringReportModalComponent implements OnInit {
                 behaviorId: this.reportBehaviorId,
                 informationType: this.informationType,
             });
-        } else if (!this.reportsEnabled && !this.recurringActivityId) {
+        } else {
             // Reports are currently not enabled and should not be
             // Do nothing
             actionPromise = Promise.resolve({ success: true });
@@ -126,26 +126,24 @@ export class SignallerModalRecurringReportModalComponent implements OnInit {
 
         this.loading = true;
 
-        if (actionPromise) {
-            actionPromise.then((result) => {
-                this.loading = false;
+        actionPromise.then((result) => {
+            this.loading = false;
 
-                if (result.success) {
-                    this.messageService.postMessage({
-                        title: 'Befehl erteilt',
-                        body: 'Die Einstellungen für den regelmäßigen Bericht wurden angepasst',
-                        color: 'success',
-                    });
-                } else {
-                    this.messageService.postError({
-                        title: 'Fehler beim Erteilen des Befehls',
-                        body: 'Die Einstellungen für den regelmäßigen Bericht wurden angepasst',
-                    });
-                }
+            if (result.success) {
+                this.messageService.postMessage({
+                    title: 'Befehl erteilt',
+                    body: 'Die Einstellungen für den regelmäßigen Bericht wurden angepasst',
+                    color: 'success',
+                });
+            } else {
+                this.messageService.postError({
+                    title: 'Fehler beim Erteilen des Befehls',
+                    body: 'Die Einstellungen für den regelmäßigen Bericht wurden angepasst',
+                });
+            }
 
-                this.close();
-            });
-        }
+            this.close();
+        });
     }
 
     public close() {
