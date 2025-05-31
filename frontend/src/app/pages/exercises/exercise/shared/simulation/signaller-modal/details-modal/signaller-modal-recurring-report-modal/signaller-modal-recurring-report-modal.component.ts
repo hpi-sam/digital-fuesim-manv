@@ -14,6 +14,8 @@ import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { MessageService } from 'src/app/core/messages/message.service';
 import { SignallerModalDetailsService } from '../signaller-modal-details.service';
 
+const defaultInterval = 15 * 60 * 1000; // 15 minutes
+
 @Component({
     selector: 'app-signaller-modal-recurring-report-modal',
     templateUrl: './signaller-modal-recurring-report-modal.component.html',
@@ -36,7 +38,7 @@ export class SignallerModalRecurringReportModalComponent implements OnInit {
     public reportBehaviorId: UUID | null = null;
     public recurringActivityId: UUID | null = null;
     public reportsEnabled = false;
-    public reportInterval = 15 * 60 * 1000;
+    public reportInterval = defaultInterval;
 
     public loading = false;
 
@@ -74,7 +76,7 @@ export class SignallerModalRecurringReportModalComponent implements OnInit {
             this.reportsEnabled = !!recurringActivity;
             this.recurringActivityId = recurringActivity?.id ?? null;
             this.reportInterval =
-                recurringActivity?.recurrenceIntervalTime ?? 15 * 60 * 1000;
+                recurringActivity?.recurrenceIntervalTime ?? defaultInterval;
         }
     }
 
