@@ -24,7 +24,7 @@
                 </div>
                 <button
                     class="btn btn-link text-danger text-decoration-none"
-                    title="Region nicht mehr verwalten"
+                    ngbTooltip="Region nicht mehr verwalten"
                     [tabIndex]="index + 1"
                     (click)="removeManagedRegion(managedRegion)"
                 >
@@ -42,6 +42,7 @@
             #addRegionPopover="ngbPopover"
             [disabled]="((unmanagedRegions$ | async)?.length ?? 0) === 0"
             [tabIndex]="((managedRegions$ | async)?.length ?? 0) + 1"
+            [appAutofocus]="true"
         >
             <span class="bi-plus me-1"></span>
             Hinzufügen
