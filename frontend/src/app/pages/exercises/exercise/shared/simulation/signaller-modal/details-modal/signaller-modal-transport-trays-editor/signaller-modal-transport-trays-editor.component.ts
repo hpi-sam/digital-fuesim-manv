@@ -62,6 +62,7 @@ export class SignallerModalTransportTraysEditorComponent
         this.hotkeyLayer = this.hotkeysService.createLayer();
         this.hotkeyLayer.addHotkey(this.addRegionHotkey);
         this.hotkeyLayer.addHotkey(this.removeRegionHotkey);
+        this.hotkeyLayer.addHotkey(this.finishHotkey);
     }
 
     ngOnChanges() {
