@@ -39,7 +39,7 @@ export const traineesRequestTarget: RequestTarget<TraineesRequestTargetConfigura
                 (radiogram) =>
                     radiogram.type === 'resourceRequestRadiogram' &&
                     isUnread(radiogram) &&
-                    radiogram.key === key
+                    radiogram.requestKey === key
             ) as Mutable<ResourceRequestRadiogram> | undefined;
             if (unreadRadiogram) {
                 if (isEmptyResource(requestedResource)) {
@@ -55,23 +55,23 @@ export const traineesRequestTarget: RequestTarget<TraineesRequestTargetConfigura
                     .filter(
                         (radiogram) =>
                             radiogram.type === 'resourceRequestRadiogram' &&
-                            radiogram.key === key
+                            radiogram.requestKey === key
                     )
                     .every(isDone) &&
                 !isEmptyResource(requestedResource)
             ) {
-                publishRadiogram(
-                    draftState,
-                    cloneDeepMutable(
-                        ResourceRequestRadiogram.create(
-                            nextUUID(draftState),
-                            requestingSimulatedRegionId,
-                            RadiogramUnpublishedStatus.create(),
-                            requestedResource,
-                            key
-                        )
+                const radiogram = cloneDeepMutable(
+                    ResourceRequestRadiogram.create(
+                        nextUUID(draftState),
+                        requestingSimulatedRegionId,
+                        null,
+                        RadiogramUnpublishedStatus.create()
                     )
                 );
+                radiogram.requiredResource = requestedResource;
+                radiogram.requestKey = key;
+                radiogram.informationAvailable = true;
+                publishRadiogram(draftState, radiogram);
                 // eslint-disable-next-line no-useless-return
                 return;
             }
