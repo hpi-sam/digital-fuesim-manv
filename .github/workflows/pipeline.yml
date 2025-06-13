@@ -3,8 +3,6 @@ name: Complete pipeline
 on:
     push:
     pull_request:
-        types:
-            - ready_for_review
 
 concurrency:
     group: ci-${{ github.ref }}
