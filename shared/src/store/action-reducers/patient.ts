@@ -286,6 +286,6 @@ export namespace PatientActionReducers {
             patient.customQRCode = customQRCode;
             return draftState;
         },
-        rights: 'trainer',
+        rights: 'participant',
     };
 }
