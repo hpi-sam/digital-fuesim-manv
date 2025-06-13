@@ -2,6 +2,9 @@ name: Complete pipeline
 
 on:
     push:
+        branches:
+            - main
+            - dev
     pull_request:
 
 concurrency:
