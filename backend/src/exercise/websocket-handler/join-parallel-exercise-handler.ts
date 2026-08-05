@@ -1,4 +1,9 @@
-import { parallelExerciseIdSchema, type UUID } from 'fuesim-digital-shared';
+import {
+    cloneDeepMutable,
+    ExerciseState,
+    parallelExerciseIdSchema,
+    type UUID,
+} from 'fuesim-digital-shared';
 import type { ExerciseServer, ExerciseSocket } from '../../exercise-server.js';
 import { NotFoundError, PermissionDeniedError } from '../../utils/http.js';
 import {
@@ -9,6 +14,7 @@ import type { Services } from '../../database/services/index.js';
 import { Config } from '../../config.js';
 import type { Repositories } from '../../database/repositories/index.js';
 import { secureOn } from './secure-on.js';
+import { Immutable } from 'immer';
 
 export function registerJoinParallelExerciseHandler(
     io: ExerciseServer,
@@ -58,6 +64,9 @@ export function registerJoinParallelExerciseHandler(
                             success: true,
                             payload: {
                                 exerciseInstances: value,
+                                templateState: cloneDeepMutable(
+                                    clientWrapper.getTemplateState()!
+                                ),
                             },
                         });
                     });

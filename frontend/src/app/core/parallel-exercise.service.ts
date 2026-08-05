@@ -1,6 +1,7 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, computed, inject, signal } from '@angular/core';
 import {
     ClientToServerEvents,
+    ExerciseState,
     ParallelExerciseId,
     ParallelExerciseInstanceSummary,
     ServerToClientEvents,
@@ -33,6 +34,9 @@ export class ParallelExerciseService {
     public readonly exerciseInstances = signal<
         ParallelExerciseInstanceSummary[]
     >([]);
+
+    public readonly templateState = signal<ExerciseState | null>(null);
+
     private readonly joinedParallelExerciseId =
         signal<ParallelExerciseId | null>(null);
 
@@ -90,6 +94,7 @@ export class ParallelExerciseService {
         );
         this.joinedParallelExerciseId.set(id);
         this.exerciseInstances.set(parsedResponse.exerciseInstances);
+        this.templateState.set(parsedResponse.templateState);
         return true;
     }
 

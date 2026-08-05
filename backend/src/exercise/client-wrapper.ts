@@ -250,6 +250,10 @@ export class ParallelExerciseClientWrapper extends ClientWrapper {
         );
     }
 
+    public getTemplateState() {
+        return this.chosenExercise?.templateStateString;
+    }
+
     public async applyActionToAll(action: ExerciseAction) {
         const isEditorOrAdmin =
             await this.repositories.organisationRepository.isMemberWithRoleOfOrganisationById(
