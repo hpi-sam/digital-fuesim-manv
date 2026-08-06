@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, input, signal } from '@angular/core';
 import { form } from '@angular/forms/signals';
 import {
     statusNames,
@@ -19,9 +19,9 @@ import {
     newCountCompletedEvalCriterion,
     newOrEvalCriterion,
     newCountPatientsAtStatusEvalCriterion,
+    ExerciseState,
 } from 'fuesim-digital-shared';
 import { FormsModule } from '@angular/forms';
-import { Store } from '@ngrx/store';
 import {
     NgbDropdown,
     NgbDropdownButtonItem,
@@ -30,10 +30,9 @@ import {
     NgbDropdownToggle,
 } from '@ng-bootstrap/ng-bootstrap';
 import { ExerciseService } from '../../../../../../core/exercise.service';
-import { AppState } from '../../../../../../state/app.state';
-import { selectEvalCriteria } from '../../../../../../state/application/selectors/exercise.selectors';
 import { type InputData } from './input-data';
 import { EvalCriterionFormsComponent } from './criterion-forms/criterion-forms.component';
+import { ParallelExerciseService } from '../../../../../../core/parallel-exercise.service';
 @Component({
     selector: 'app-eval-criterion-editor',
     templateUrl: './eval-criterion-editor.component.html',
@@ -49,9 +48,7 @@ import { EvalCriterionFormsComponent } from './criterion-forms/criterion-forms.c
     ],
 })
 /* TODO @JohannesPotzi : Make this indepentent of the didactic overview component. */
-export class EvalCriterionCreationCardComponent {
-    private readonly exerciseService = inject(ExerciseService);
-    private readonly store = inject<Store<AppState>>(Store);
+export class EvalCriterionEditorComponent {
     //for the dropdowns to select the critrerion creation type
     public readonly evalCriterionCategoryNames = evalCriterionCategoryNames;
     public readonly evalCriterionTypesNames = evalCriterionTypesNames;
@@ -59,6 +56,9 @@ export class EvalCriterionCreationCardComponent {
     public readonly numberEvalCriterionTypes = numberEvalCriterionTypes;
     public readonly combinedEvalCriterionTypes = combinedEvalCriterionTypes;
 
+    public readonly stateIn = input.required<ExerciseState>();
+    public readonly exerciseService = input<ExerciseService>();
+    public readonly parallelExerciseService = input<ParallelExerciseService>();
     public readonly criterionCreationCategory =
         signal<EvalCriterionCategory | null>(null);
 
@@ -68,7 +68,7 @@ export class EvalCriterionCreationCardComponent {
 
     /* TODO @JohannesPotzi : prune this for sub criteria selection to prevent circular input. */
     public readonly evalCriteria = computed(() =>
-        Object.values(this.store.selectSignal(selectEvalCriteria)())
+        Object.values(this.stateIn().evalCriteria)
     );
 
     public countInput: number | null = null;
@@ -94,11 +94,20 @@ export class EvalCriterionCreationCardComponent {
             console.log('ERROR: Trying to create 0 criteria in creation card.');
             return;
         }
-        await this.exerciseService.proposeAction({
-            type: '[EvalCriterion] New Criteria',
-            criteria: criteria,
-        });
+        const exService = this.exerciseService();
+        const pExService = this.parallelExerciseService();
+        if (pExService) {
+            /* TODO @JohannesPotzi */
+        } else if (exService) {
+            await exService.proposeAction({
+                type: '[EvalCriterion] New Criteria',
+                criteria: criteria,
+            });
+        }
     }
+    /**
+     * submits a criterion of the current selected criterion type, with parameters currently in the citerion form.
+     */
     public submitCriterion() {
         const name =
             this.criterionForm.name().value() !== ''

@@ -16,6 +16,7 @@ import {
     getOrganisationResponseDataSchema,
     organisationMembershipRoleSchema,
 } from './organisation.js';
+import { exerciseStateSchema } from '../state.js';
 
 export const getParallelExerciseResponseDataSchema = z.object({
     id: parallelExerciseIdSchema,
@@ -86,6 +87,7 @@ export const parallelExerciseInstancesSchema = z.array(
 
 export const joinParallelExerciseResponseDataSchema = z.object({
     exerciseInstances: parallelExerciseInstancesSchema,
+    templateState: exerciseStateSchema,
 });
 export type JoinParallelExerciseResponseData = z.infer<
     typeof joinParallelExerciseResponseDataSchema

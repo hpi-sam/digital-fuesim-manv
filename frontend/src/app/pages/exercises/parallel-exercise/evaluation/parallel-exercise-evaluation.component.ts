@@ -15,7 +15,6 @@ import { HttpResourceRef } from '@angular/common/http';
 import { ParallelExerciseService } from '../../../../core/parallel-exercise.service';
 import { ApiService } from '../../../../core/api.service';
 import { EvalResultStatusBadgeComponent } from '../../exercise/shared/didactic-overview/result-status-badge/eval-result-status-badge.component';
-import { TechnicalChallengeDetailsComponent } from '../../../../shared/components/technical-challenge-details/technical-challenge-details.component';
 
 @Component({
     selector: 'app-parallel-exercise-evaluation',
@@ -60,6 +59,9 @@ export class ParallelExerciseEvaluationComponent {
     parallelExercise: HttpResourceRef<
         GetParallelExerciseResponseData | undefined
     >;
+    //for the criterion editor
+    public readonly templateState = this.parallelExerciseService.templateState;
+
     constructor() {
         const apiService = this.apiService;
         this.parallelExercise = apiService.getParallelExerciseResource(
@@ -79,7 +81,7 @@ export class ParallelExerciseEvaluationComponent {
                     const reductionBase = Object.values(results.at(0)!).map(
                         (res) => res.criterion
                     );
-                    console.log('base criteria for reduction: ');
+                    /* console.log('base criteria for reduction: '); */
                     reductionBase.forEach((crit) => {
                         console.log(crit.name);
                     });
@@ -104,10 +106,10 @@ export class ParallelExerciseEvaluationComponent {
                             ),
                         ]
                     );
-                    console.log('global criteria: ');
+                    /* console.log('global criteria: ');
                     criteria.forEach((crit) => {
                         console.log(crit.name);
-                    });
+                    }); */
                     const criteriaMap = criteria.reduce<{
                         [criterionId: UUID]: EvalCriterion;
                     }>((mapObject, criterion) => {
