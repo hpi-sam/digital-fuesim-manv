@@ -128,7 +128,7 @@ export class CollectionDetailsTabComponent {
             title: 'Mitglieder einladen',
             description: `Sie können an dieser Stelle einen Zugriffscode erstellen, den sie an andere
                 Personen weitergeben können und welcher sieben Tage lang gültig ist.
-                Diese können dann über die Übungselemente-Startseite mit ihrem Benutzeraccount oder mit einer Organisationen bei der sie Mitglied sind dieser Sammlung beitreten.
+                Diese können dann über die Übungselemente-Startseite mit ihrem Benutzerkonto oder mit einer Organisation, in der sie Mitglied sind, dieser Sammlung beitreten.
                 Der neu begetretene Benutzeraccount bzw. die neu beigetretene Organisationen wird initial als Betrachter geführt.
                 `,
             type: 'Zugriffscode',
