@@ -129,7 +129,7 @@ export class CollectionDetailsTabComponent {
             description: `Sie können an dieser Stelle einen Zugriffscode erstellen, den sie an andere
                 Personen weitergeben können und welcher sieben Tage lang gültig ist.
                 Diese können dann über die Übungselemente-Startseite mit ihrem Benutzerkonto oder mit einer Organisation, in der sie Mitglied sind, dieser Sammlung beitreten.
-                Der neu begetretene Benutzeraccount bzw. die neu beigetretene Organisationen wird initial als Betrachter geführt.
+                Das neu begetretene Benutzerkonto bzw. die neu beigetretene Organisation wird initial als Betrachter geführt.
                 `,
             type: 'Zugriffscode',
             createInviteFn: async () =>
