@@ -112,7 +112,7 @@ export class CollectionDetailsTabComponent {
             this.ngbModalService,
             {
                 descriptionText:
-                    'Bitte wählen Sie eine der Organisationen, bei der sie Bearbeiter oder Administrator sind, aus, um sie zu dieser Sammlung als Mitglied hinzuzufügen. Die Organisation wird als Betrachter hinzugefügt.',
+                    'Bitte wählen Sie eine der Organisationen aus, bei der sie Bearbeiter oder Administrator sind, um sie zu dieser Sammlung als Mitglied hinzuzufügen. Die Organisation wird als Betrachter hinzugefügt.',
             }
         );
 
