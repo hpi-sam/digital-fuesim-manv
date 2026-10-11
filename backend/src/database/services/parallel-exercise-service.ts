@@ -387,9 +387,16 @@ export class ParallelExerciseService {
         return activeExercises;
     }
 
+    /**
+     *
+     * @param exercises
+     * @returns the instance summaries of the specified exercises
+     */
     public async getParallelExerciseInstanceSummaries(
         exercises: ActiveExercise[]
     ) {
+        //Checking for each exercise, if eval results have been saved.
+        //if not, the results based the initialState are saved and used.
         let isComplete = true;
         exercises.forEach((exercise) => {
             if (!this.evalResultsMap[exercise.exercise.id]) {
@@ -400,14 +407,7 @@ export class ParallelExerciseService {
             await this.initEvalResultsMap(exercises);
         }
         return exercises.map((exercise) => {
-            let incomplete = false;
             const state = exercise.exercise.currentStateString;
-            let evalResults: { [criterionId: UUID]: EvalResult };
-            if (this.evalResultsMap[exercise.exercise.id]) {
-                evalResults = this.evalResultsMap[exercise.exercise.id]!;
-            } else {
-                incomplete = true;
-            }
             return parallelExerciseInstanceSummarySchema.parse({
                 participantKey: exercise.participantKey,
                 trainerKey: exercise.trainerKey,

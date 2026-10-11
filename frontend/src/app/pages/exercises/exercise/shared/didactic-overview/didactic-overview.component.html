@@ -5,7 +5,13 @@
         </button>
     </div>
     @if (creatingcriterion) {
-        <app-eval-criterion-editor />
+        <app-eval-criterion-editor
+            [criteriaIn]="this.criteria()"
+            [resultsIn]="this.results()"
+            [patientsIn]="this.patients()"
+            [scoutablesIn]="this.scoutables()"
+            [technichalChallengesIn]="this.tcs()"
+        />
     }
 }
 <div
@@ -19,12 +25,12 @@
                 '(' +
                     this.completedCriteriaCount() +
                     '/' +
-                    this.results().length +
+                    this.resultsVals().length +
                     ')'
             }}
         </h5>
     </div>
-    @if (this.results().length === 0) {
+    @if (this.resultsVals().length === 0) {
         <p class="ms-3">
             Es sind aktuell keine Auswertungskriterien festgelegt.
         </p>

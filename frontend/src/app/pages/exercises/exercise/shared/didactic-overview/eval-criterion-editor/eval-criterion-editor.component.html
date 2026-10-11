@@ -103,6 +103,12 @@
             <app-eval-criterion-forms
                 [criterionCreationCategory]="this.criterionCreationCategory()"
                 [criterionCreationType]="this.criterionCreationType()"
+                [criteriaIn]="this.criteriaIn()"
+                [resultsIn]="this.resultsIn() ?? {}"
+                [currentCriterion]="this.currentCriterion()"
+                [patientsIn]="this.patientsIn()"
+                [technichalChallengesIn]="this.technichalChallengesIn()"
+                [scoutablesIn]="this.scoutablesIn()"
                 (criterionFormOut)="this.criterionForm = $event"
             />
         </div>

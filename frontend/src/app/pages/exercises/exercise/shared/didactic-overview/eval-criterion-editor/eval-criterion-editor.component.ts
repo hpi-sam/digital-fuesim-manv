@@ -20,6 +20,10 @@ import {
     newOrEvalCriterion,
     newCountPatientsAtStatusEvalCriterion,
     ExerciseState,
+    EvalResult,
+    TechnicalChallenge,
+    Scoutable,
+    Patient,
 } from 'fuesim-digital-shared';
 import { FormsModule } from '@angular/forms';
 import {
@@ -56,7 +60,19 @@ export class EvalCriterionEditorComponent {
     public readonly numberEvalCriterionTypes = numberEvalCriterionTypes;
     public readonly combinedEvalCriterionTypes = combinedEvalCriterionTypes;
 
-    public readonly stateIn = input.required<ExerciseState>();
+    public readonly currentCriterion = input<EvalCriterion>();
+    /* TODO @JohannesPotzi : prune this for sub criteria selection to prevent circular input. */
+    public readonly criteriaIn = input.required<{
+        [id: UUID]: EvalCriterion;
+    }>();
+    public readonly resultsIn = input<{
+        [critId: UUID]: EvalResult;
+    }>();
+    public readonly technichalChallengesIn = input.required<{
+        [id: UUID]: TechnicalChallenge;
+    }>();
+    public readonly scoutablesIn = input.required<{ [id: UUID]: Scoutable }>();
+    public readonly patientsIn = input.required<{ [id: UUID]: Patient }>();
     public readonly exerciseService = input<ExerciseService>();
     public readonly parallelExerciseService = input<ParallelExerciseService>();
     public readonly criterionCreationCategory =
@@ -64,11 +80,6 @@ export class EvalCriterionEditorComponent {
 
     public readonly criterionCreationType = signal<EvalCriterionType | null>(
         null
-    );
-
-    /* TODO @JohannesPotzi : prune this for sub criteria selection to prevent circular input. */
-    public readonly evalCriteria = computed(() =>
-        Object.values(this.stateIn().evalCriteria)
     );
 
     public countInput: number | null = null;

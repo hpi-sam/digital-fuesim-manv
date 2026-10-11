@@ -4,22 +4,25 @@ import {
     evalCriterionCategoryNames,
     UUID,
     evalCriterionTypesNames,
+    ComparativeOperator,
 } from 'fuesim-digital-shared';
 
 interface LocalInputData {
     leftChild: UUID | null;
     rightChild: UUID | null;
+    operator: ComparativeOperator | null;
 }
 
 @Component({
-    selector: 'app-greater-than-criterion-form',
-    templateUrl: './greater-than-criterion-form.component.html',
-    styleUrls: ['./greater-than-criterion-form.component.scss'],
+    selector: 'app-compare-criterion-form',
+    templateUrl: './compare-criterion-form.component.html',
+    styleUrls: ['./compare-criterion-form.component.scss'],
     imports: [],
 })
 export class CompareEvalCriterionFormComponent {
     public readonly leftChildOut = output<UUID | null>();
     public readonly rightChildOut = output<UUID | null>();
+    public readonly operatorOut = output<ComparativeOperator | null>();
 
     public readonly evalCriterionCategoryNames = evalCriterionCategoryNames;
     public readonly evalCriterionTypesNames = evalCriterionTypesNames;
@@ -27,6 +30,7 @@ export class CompareEvalCriterionFormComponent {
     readonly inputModel = signal<LocalInputData>({
         leftChild: null,
         rightChild: null,
+        operator: null,
     });
     criterionForm = form(this.inputModel);
 
@@ -34,6 +38,7 @@ export class CompareEvalCriterionFormComponent {
         effect(() => {
             this.leftChildOut.emit(this.criterionForm.leftChild().value());
             this.rightChildOut.emit(this.criterionForm.rightChild().value());
+            this.operatorOut.emit(this.criterionForm.operator().value());
         });
     }
 }

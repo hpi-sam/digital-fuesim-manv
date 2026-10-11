@@ -15,22 +15,30 @@ import { HttpResourceRef } from '@angular/common/http';
 import { ParallelExerciseService } from '../../../../core/parallel-exercise.service';
 import { ApiService } from '../../../../core/api.service';
 import { EvalResultStatusBadgeComponent } from '../../exercise/shared/didactic-overview/result-status-badge/eval-result-status-badge.component';
+import { EvalCriterionEditorComponent } from '../../exercise/shared/didactic-overview/eval-criterion-editor/eval-criterion-editor.component';
 
 @Component({
     selector: 'app-parallel-exercise-evaluation',
     templateUrl: './parallel-exercise-evaluation.component.html',
     styleUrls: ['parallel-exercise-evaluation.component.scss'],
-    imports: [RouterLink, EvalResultStatusBadgeComponent],
+    imports: [
+        RouterLink,
+        EvalResultStatusBadgeComponent,
+        EvalCriterionEditorComponent,
+    ],
 })
 export class ParallelExerciseEvaluationComponent {
     public readonly parallelExerciseService = inject(ParallelExerciseService);
     private readonly apiService = inject(ApiService);
     private readonly route = inject(ActivatedRoute);
-
+    creatingcriterion = false;
     public readonly templateId = computed(() => {
         const exercise = this.parallelExercise.value();
         return exercise ? exercise.template.id : null;
     });
+    public readonly evalcriteria = signal<{ [critId: UUID]: EvalCriterion }>(
+        {}
+    );
     public readonly rootCriteriaMap = signal<{
         [criterionId: UUID]: EvalCriterion;
     }>({});
@@ -116,6 +124,7 @@ export class ParallelExerciseEvaluationComponent {
                         mapObject[criterion.id] = criterion;
                         return mapObject;
                     }, {});
+                    this.evalcriteria.set(criteriaMap);
                     this.rootCriteriaMap.set(getRootCriteriaMap(criteriaMap));
                 } else {
                     this.rootCriteriaMap.set({});

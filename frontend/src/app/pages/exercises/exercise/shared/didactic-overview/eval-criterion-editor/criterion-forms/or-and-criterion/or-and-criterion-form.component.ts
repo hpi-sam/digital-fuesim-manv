@@ -9,6 +9,7 @@ import {
 } from 'fuesim-digital-shared';
 
 interface LocalInputData {
+    logicalOperator: LogicalOperator | null;
     subCriteria: (EvalCriterion | null)[];
 }
 
@@ -20,15 +21,20 @@ interface LocalInputData {
 })
 export class OrAndEvalCriterionFormComponent {
     public readonly subCriteriaOut = output<(EvalCriterion | null)[]>();
+    public readonly logicalOperatorOut = output<LogicalOperator | null>();
 
     readonly inputModel = signal<LocalInputData>({
         subCriteria: [],
+        logicalOperator: null,
     });
     criterionForm = form(this.inputModel);
 
     constructor() {
         effect(() => {
             this.subCriteriaOut.emit(this.criterionForm.subCriteria().value());
+            this.logicalOperatorOut.emit(
+                this.criterionForm.logicalOperator().value()
+            );
         });
     }
 

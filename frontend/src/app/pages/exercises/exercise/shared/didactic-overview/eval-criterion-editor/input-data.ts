@@ -1,5 +1,7 @@
 import type {
+    ComparativeOperator,
     EvalCriterion,
+    LogicalOperator,
     Patient,
     PatientStatus,
     StateMachineId,
@@ -11,8 +13,11 @@ import type {
 export interface InputData {
     name: string;
     countInput: number;
+    comparativeOperator: ComparativeOperator;
+    logicalOperator: LogicalOperator;
     timestampInput: number;
     patientStatusInput: PatientStatus;
+    targetMeasureTemplateId: UUID;
     technicalChallengeId: TechnicalChallengeId | '';
     targetStateMachineIds: StateMachineId[];
     targetStateMachineStateIds: {
@@ -20,7 +25,7 @@ export interface InputData {
     };
     targetPatients: Patient[];
     targetPatientsStatusMap: { [id: UUID]: PatientStatus };
-    targetScoutableId: UUID | '';
+    targetScoutableId: UUID;
     subCriteria: EvalCriterion[];
-    singleSubCriterion: UUID | '';
+    singleSubCriterion: UUID;
 }

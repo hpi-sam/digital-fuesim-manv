@@ -16,7 +16,7 @@ interface LocalInputData {
     styleUrls: ['./timestamp-criterion-form.component.scss'],
     imports: [AppSaveOnTypingDirective, FormsModule, FormField],
 })
-export class timestampEvalCriterionFormComponent {
+export class TimestampEvalCriterionFormComponent {
     public readonly evalCriterionCategoryNames = evalCriterionCategoryNames;
     public readonly evalCriterionTypesNames = evalCriterionTypesNames;
 

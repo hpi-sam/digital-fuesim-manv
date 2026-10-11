@@ -37,7 +37,12 @@
     }
     <!-- TODO @JohannesPotzi : correct input -->
     @case ('countMeasuresEvalCriterion') {
-        <app-count-measures-criterion-form [measureCategories]="{}" />
+        <app-count-measures-criterion-form
+            [measureCategories]="{}"
+            (targetMeasureTemplateIdOut)="
+                this.criterionForm.targetMeasureTemplateId().value.set($event)
+            "
+        />
     }
     @case ('reachTechnicalChallengeStateEvalCriterion') {
         <app-reach-technical-challenge-state-criterion-form
@@ -74,46 +79,63 @@
     }
     @case ('andEvalCriterion') {
         <!-- TODO @JohannesPotzi @Jogius : combine this form with the orEvalCriterion form -->
+        <app-or-and-criterion-form
+            (logicalOperatorOut)="
+                this.criterionForm.logicalOperator().value.set($event ?? 'and')
+            "
+        />
     }
     @case ('orEvalCriterion') {
         <!-- TODO @JohannesPotzi @Jogius : combine this form with the andEvalCriterion form -->
+        <app-or-and-criterion-form
+            (logicalOperatorOut)="
+                this.criterionForm.logicalOperator().value.set($event ?? 'or')
+            "
+        />
     }
     @case ('constNumEvalCriterion') {
-        <form class="ms-2">
-            <label>
-                Art:
-                {{ evalCriterionTypesNames.constNumEvalCriterion }}
-            </label>
-            <!-- TODO @JohannesPotzi @Jogius -->
-        </form>
+        <app-const-num-criterion-form
+            (numOut)="this.criterionForm.countInput().value.set($event)"
+        />
     }
     @case ('countCompletedEvalCriterion') {
-        <form class="ms-2">
-            <label>
-                Art:
-                {{ evalCriterionTypesNames.countCompletedEvalCriterion }}
-            </label>
-            <!-- TODO @JohannesPotzi @Jogius -->
-        </form>
+        <app-count-completed-criterion-form
+            [evalCriteria]="this.criteriaIn()"
+            (subCriteriaOut)="
+                this.criterionForm.subCriteria().value.set($event)
+            "
+        />
     }
     @case ('firstTrueAtEvalCriterion') {
-        <form class="ms-2">
-            <label>
-                Art:
-                {{ evalCriterionTypesNames.firstTrueAtEvalCriterion }}
-            </label>
-            <!-- TODO @JohannesPotzi @Jogius -->
-        </form>
+        <app-first-true-at-criterion-form
+            (subCriterionOut)="
+                this.criterionForm.singleSubCriterion().value.set($event ?? '')
+            "
+        />
     }
-    @case ('compareEvalCriterion') {}
-    @case ('notEvalCriterion') {}
+    @case ('compareEvalCriterion') {
+        <app-compare-criterion-form
+            (leftChildOut)="pushSubCriteria($event ? [$event] : [])"
+            (rightChildOut)="pushSubCriteria($event ? [$event] : [])"
+            (operatorOut)="
+                this.criterionForm
+                    .comparativeOperator()
+                    .value.set($event ?? 'lessThanOrEqual')
+            "
+        />
+    }
+    @case ('notEvalCriterion') {
+        <app-not-criterion-form
+            (targetCriterionOut)="
+                this.criterionForm.singleSubCriterion().value.set($event ?? '')
+            "
+        />
+    }
     @case ('timestampEvalCriterion') {
-        <form class="ms-2">
-            <label>
-                Art:
-                {{ evalCriterionTypesNames.timestampEvalCriterion }}
-            </label>
-            <!-- TODO @JohannesPotzi @Jogius -->
-        </form>
+        <app-timestamp-criterion-form
+            (timestampOut)="
+                this.criterionForm.timestampInput().value.set($event)
+            "
+        />
     }
 }

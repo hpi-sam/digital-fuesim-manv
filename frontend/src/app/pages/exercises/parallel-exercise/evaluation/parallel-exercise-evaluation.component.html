@@ -1,5 +1,26 @@
 <div class="card">
     <div class="card-header h4">Auswertung</div>
+    <div>
+        <button class="btn btn-primary" (click)="this.creatingcriterion = true">
+            Auswertungskriterium Erstellen
+        </button>
+    </div>
+    @if (creatingcriterion) {
+        @let templateState = this.templateState();
+        @if (templateState) {
+            <app-eval-criterion-editor
+                [criteriaIn]="this.evalcriteria()"
+                [patientsIn]="templateState.patients"
+                [scoutablesIn]="templateState.scoutables"
+                [technichalChallengesIn]="templateState.technicalChallenges"
+            />
+        } @else {
+            <span
+                >Die Vorlage konnte nicht geladen werden. Um es erneut zu
+                versuchen, könnten Sie die Seite neu laden.</span
+            >
+        }
+    }
     <!-- TODO @JohannesPotzi @Jogius : make this look better. -->
     <div class="container">
         <table class="table table-striped mb-0">

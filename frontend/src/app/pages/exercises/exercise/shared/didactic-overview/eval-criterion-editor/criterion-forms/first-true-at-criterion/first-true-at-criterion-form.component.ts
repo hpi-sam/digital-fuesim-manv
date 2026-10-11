@@ -4,10 +4,11 @@ import {
     EvalCriterion,
     evalCriterionCategoryNames,
     evalCriterionTypesNames,
+    UUID,
 } from 'fuesim-digital-shared';
 
 interface LocalInputData {
-    subCriterion: EvalCriterion | null;
+    subCriterion: UUID | null;
 }
 
 @Component({
@@ -17,7 +18,7 @@ interface LocalInputData {
     imports: [],
 })
 export class FristTrueAtEvalCriterionFormComponent {
-    public readonly subCriterionOut = output<EvalCriterion | null>();
+    public readonly subCriterionOut = output<UUID | null>();
 
     public readonly evalCriterionCategoryNames = evalCriterionCategoryNames;
     public readonly evalCriterionTypesNames = evalCriterionTypesNames;
