@@ -119,7 +119,7 @@ Verwaltet die Behandlung aller Patienten im jeweiligen simulierten Bereich. Alle
 
 #### Informationen
 
-In der oberen Hälfte wird der aktuelle Zustand der Behandlung angezeigt. Dies umfasst die aktuelle [Phase der Behandlung](#details) sowie eine Übersicht, welches Personal welchem Patienten zugeteilt wurde.
+In der oberen Hälfte wird der aktuelle Zustand der Behandlung angezeigt. Dies umfasst die aktuelle [Phase der Behandlung](#details-1) sowie eine Übersicht, welches Personal welchem Patienten zugeteilt wurde.
 
 > [!TIP]
 > Per Klick auf einen Patienten in der Liste öffnen sich dessen Details.
