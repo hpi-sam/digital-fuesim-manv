@@ -19,7 +19,7 @@ Um eine 2-Faktor-Authentifizierung einzurichten (stark empfohlen), das Passwort 
 ## Organisationen
 
 Um [Übungen, Vorlagen und Übungselemente](../4_editing/index.md) mit anderen Nutzern zu teilen und ggf. gemeinsam zu bearbeiten können Organisationen erstellt werden.
-Dazu kann über den eigenen Namen oben rechts und dann den Menüpunkt [<kbd>Organisationen</kbd>](https://fuesim.digital/organisations) die Organisationsverwaltung geöffnet werden. 
+Dazu kann über den eigenen Namen oben rechts und dann den Menüpunkt [<kbd>Organisationen</kbd>](https://fuesim.digital/organisations) die Organisationsverwaltung geöffnet werden.
 Auf der Seite können neue Organisationen erstellt werden und bestehende Organisationen verwaltet werden. Jeder Benutzer hat dabei eine "Personliche Organisation", in welcher alle privaten Inhalte gespeichert werden können. Diese Organisation kann nicht gelöscht oder von anderen Benutzern eingesehen werden.
 Eine neue Organisation kann über den Button <kbd>Neue Organisation erstellen</kbd> erstellt werden. Nach der Erstellung kann die Organisation Inhalte und Mitglieder hinzugefügt werden.
 

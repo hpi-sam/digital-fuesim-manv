@@ -109,7 +109,7 @@ Auf der Startseite gibt es (neben dem Button zum [Anlegen einer neuen Übung](#�
 
 ### Vorlagen importieren
 
-Um bereits erstellte Patienten, Fahrzeuge und Bilder (siehe [Übungselemente](3_exercise_elements.md)) wiederzuverwenden, können diese global in Sammlungen erstellt und gespeichert werden und von dort in Übungen verwendet werden.
+Um bereits erstellte Patienten, Fahrzeuge und Bilder (siehe [Übungselemente](3_exercise_elements.md)) wiederzuverwenden, können diese global in [Sammlungen](../4_editing/2_elements.md#) erstellt und gespeichert werden und von dort in Übungen verwendet werden.
 Bei der Erstellung einer Übungsvorlage oder einer Übung wird entweder automatisch die Standardsammlung, welche bereits von den Entwicklern vorgefertigte Elemente enthält, hinzugefügt, oder ein Popup angezeigt, um eine Sammlung hinzuzufügen (wo auch unter anderem die Standardsammlung ausgewählt werden kann).
 Die Elemente der ausgewählten Sammlung können daraufhin in der Übungs verwendet werden.
 

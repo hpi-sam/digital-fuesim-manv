@@ -25,6 +25,10 @@ Bereits bestehende Übungselemente können per Klick auf die Kachel angesehen un
 
 ### Personal
 
+Personal ist eine taktische Einheit in Übungen, die über die Einteilung auf einem [Fahrzeug](#fahrzeuge) in Übungen eingebunden wird. Details zur Verwendung in Übungen siehe [hier](../2_exercises/3_exercise_elements.html#fahrzeuge-mit-personal-und-material)
+
+Bei Personal können folgende Eigenschaften bearbeitet werden:
+
 ![Editor für Personal](./exercise_elements_personell_editor.png)
 
 - <kbd>**Name**</kbd>: Name des Personals, welcher in der Verwaltung (z.B. Fahrzeuge, welche dieses Personal enthalten) und der Statistik angezeigt wird.
@@ -42,6 +46,8 @@ Bereits bestehende Übungselemente können per Klick auf die Kachel angesehen un
 
 ### Material
 
+Material kann ähnlich wie [Personal](#personal) in Übungen verwendet werden, um Patienten zu behandeln. Details zur Verwendung in Übungen siehe [hier](../2_exercises/3_exercise_elements.html#fahrzeuge-mit-personal-und-material)
+
 ![Editor für Material](./exercise_elements_material_editor.png)
 
 - <kbd>**Name**</kbd>: Name des Materials, welcher in der Verwaltung (z.B. Fahrzeuge, welche dieses Material enthalten) und der Statistik angezeigt wird.
@@ -50,6 +56,11 @@ Bereits bestehende Übungselemente können per Klick auf die Kachel angesehen un
 - **Patientenbehandlung**: Siehe [Personal](#personal) für die Beschreibung der Behandlungskapazitäten.
 
 ### Fahrzeuge
+
+Fahrzeuge können zum Transport von Personal, Material und Patienten in Übungen verwendet werden. Details zur Verwendung in Übungen siehe [hier](../2_exercises/3_exercise_elements.html#fahrzeuge-mit-personal-und-material)
+
+> [!TIP]
+> Fahrzeuge in der FüSim Digital müssen dabei nicht immer typisch "Fahrzeuge aus dem echten Leben" abbilden; so können z.B. Tragetrupps als "Fahrzeug" erstellt werden, um den Transport von Patienten zu simulieren.
 
 ![Editor für Fahrzeuge (mit Personal und Material)](./exercise_elements_vehicle_editor.png)
 
@@ -66,6 +77,8 @@ Bereits bestehende Übungselemente können per Klick auf die Kachel angesehen un
 
 ### Alarmgruppen
 
+Alarmgruppen können in Übungen verwendet werden, um mehrere Fahrzeuge gleichzeitig zu alarmieren. Details zur Verwendung in Übungen siehe [hier](../2_exercises/3_exercise_elements.html#alarmgruppen)
+
 ![Editor für Alarmgruppen](./exercise_elements_alarmgroup_editor.png)
 
 - <kbd>**Name**</kbd>: Individueller Name, mit dem neu platzierte Fahrzeuge initial versehen werden. Fahrzeuge, die ein "#" im Namen haben, werden automatisch fortlaufend innerhalb des gleichen Fahrzeug-Typs nummeriert.
@@ -73,6 +86,8 @@ Bereits bestehende Übungselemente können per Klick auf die Kachel angesehen un
 - <kbd>**Fahrzeuge**</kbd>: Hier können die Fahrzeuge hinzugefügt oder entfernt werden, die bei der Alarmierung dieser Alarmgruppe auf die Karte gesetzt werden sollen. _Es steht die Fahrzeuge der aktuellen Sammlung sowie weiteren verwendeten Sammlungen zur Verfügung_
 
 ### Kartenbilder
+
+Kartenbilder können in Übungen beliebig platziert werden, um die Karte mit zusätzlichen Informationen zu versehen. Details zur Verwendung in Übungen siehe [hier](../2_exercises/3_exercise_elements.html#kartenbilder)
 
 ![Editor für Kartenbilder](./exercise_elements_image_editor.png)
 
@@ -150,6 +165,8 @@ Dieser Einladungscode kann auf der Übungselemente-Startseite unter <kbd>Sammlun
 > [!WARNING]
 > Mit dem Einladungscode kann ein Benutzer jede beliebige Organisation als Mitglied der Sammlung hinzufügen, auf die er Zugriff hat.
 > Daher sollte der Einladungscode nur an vertrauenswürdige Personen weitergegeben werden.
+
+Um eine Sammlung nur mit einer bestimmten Person zu teilen, muss diese Person die Sammlung zu ihrer [Persönlichen Organisation ("Private Inhalte")](../5_users/index.md#organisationen) hinzufügen, welche nur für diese Person zugänglich ist.
 
 #### Berechtigungen von Mitgliedern
 
